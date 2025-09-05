@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-spring/web": "^9.5.5",
-     "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow-models/mobilenet": "^2.0.4",
     "@tensorflow/tfjs": "^1.5.1",
     "axios": "^1.6.8",
     "lucide-react": "^0.475.0",
