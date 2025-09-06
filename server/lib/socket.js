@@ -7,7 +7,7 @@ const server = http.createServer(app)
 
 const io = new Server(server, {
   cors: {
-    origin: ['https://woofmeetup-1.onrender.com'],
+    origin: ['http://localhost:8000'],
   },
 })
 
