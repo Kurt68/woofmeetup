@@ -504,12 +504,12 @@ const DogDetector = () => {
             font-size: 0.875rem;
         }
 
-        {/* .note {
+        .note {
             font-size: 0.75rem;
             color: #6b7280;
             margin-top: 32px;
             line-height: 1.5;
-        } */}
+        }
 
         .hidden {
             display: none;
@@ -618,7 +618,7 @@ const DogDetector = () => {
               </div>
             )}
 
-            {/* {isDog === true && (
+            {isDog === true && (
               <div className="info-box success">
                 <p className="info-text">
                   <strong>Dog detected!</strong> The MobileNet model has
@@ -626,11 +626,19 @@ const DogDetector = () => {
                   using real computer vision technology.
                 </p>
               </div>
-            )} */}
+            )}
           </div>
         )}
 
- 
+        <div className="note">
+          <p>
+            <strong>Note:</strong> This component uses Google's MobileNet model,
+            a real pre-trained neural network that can identify and classify dog
+            breeds among 1000+ different object categories. The model analyzes
+            visual features in the uploaded image to determine if it contains a
+            dog and attempts to identify the specific breed.
+          </p>
+        </div>
       </div>
     </div>
   )
