@@ -7,7 +7,7 @@ import { Loader } from 'lucide-react'
 
 import { useAuthStore } from '../store/useAuthStore'
 
-const SERVER_URL = "'https://woofmeetup-1.onrender.com:8000" 
+const SERVER_URL = "http://localhost:8000" 
 
 const AuthModal = ({ setShowModal, isSignUp }) => {
   const [email, setEmail] = useState('')
