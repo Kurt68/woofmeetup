@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import axios from 'axios'
 import { useCookies } from 'react-cookie'
 import * as mobilenet from '@tensorflow-models/mobilenet'
+import * as tf from '@tensorflow/tfjs'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 const API_URL =
@@ -55,19 +56,57 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
   const loadModel = async () => {
     setIsModelLoading(true)
     try {
+      console.log('Initializing TensorFlow.js backends...')
+
+      // Initialize TensorFlow.js with WebGL backend, fallback to CPU
+      await tf.ready()
+
+      // Try to set WebGL backend, fallback to CPU if it fails
+      try {
+        await tf.setBackend('webgl')
+        console.log('Using WebGL backend')
+      } catch (webglError) {
+        console.warn('WebGL backend failed, falling back to CPU:', webglError)
+        await tf.setBackend('cpu')
+        console.log('Using CPU backend')
+      }
+
+      console.log('Loading MobileNet model...')
       const model = await mobilenet.load()
       setModel(model)
       setIsModelLoading(false)
+      console.log('Model loaded successfully')
     } catch (error) {
-      console.log(error)
+      console.error('Failed to load model:', error)
       setIsModelLoading(false)
     }
   }
 
   const identify = async () => {
-    const results = await model.classify(imageRef.current)
-    setResults(results)
-    setSubmitPicture(true)
+    // Check if model is loaded
+    if (!model) {
+      console.error('Model not loaded yet')
+      alert('AI model is still loading. Please wait a moment and try again.')
+      return
+    }
+
+    // Check if image is available
+    if (!imageRef.current) {
+      console.error('Image not loaded yet')
+      alert('Please wait for the image to load completely.')
+      return
+    }
+
+    try {
+      console.log('Classifying image...')
+      const results = await model.classify(imageRef.current)
+      console.log('Classification results:', results)
+      setResults(results)
+      setSubmitPicture(true)
+    } catch (error) {
+      console.error('Error during image classification:', error)
+      alert('Error analyzing image. Please try again.')
+    }
   }
   // match model api to list of all dog breeds
   const dogBreeds = [
@@ -560,8 +599,21 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
           )}
           {imageURL && (
             <>
-              <button onClick={identify} className="button">
-                Please identify image
+              <button
+                onClick={identify}
+                className="button"
+                disabled={!model || isModelLoading}
+                style={{
+                  backgroundColor: !model || isModelLoading ? '#9ca3af' : '',
+                  cursor: !model || isModelLoading ? 'not-allowed' : 'pointer',
+                  opacity: !model || isModelLoading ? 0.6 : 1,
+                }}
+              >
+                {isModelLoading
+                  ? 'Loading AI model...'
+                  : !model
+                  ? 'AI model not ready'
+                  : 'Please identify image'}
               </button>
             </>
           )}
