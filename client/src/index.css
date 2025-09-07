@@ -568,6 +568,29 @@ nav .logo-container .logo {
 .spinner svg {
   animation: spin 1s linear infinite;
 }
+
+/* Model Loading and Ready Status Styles */
+.model-loading-alert {
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  color: #92400e;
+  padding: 16px;
+  border-radius: 50px;
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.8;
+}
+
+.model-ready-alert {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  padding: 16px;
+  border-radius: 50px;
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.8;
+}
 @keyframes hide-scroll {
   from,
   to {

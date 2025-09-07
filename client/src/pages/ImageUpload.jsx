@@ -546,38 +546,15 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
       <div className="image-identification">
         {/* Model Loading Status */}
         {isModelLoading && (
-          <div
-            style={{
-              backgroundColor: '#fef3c7',
-              border: '1px solid #f59e0b',
-              color: '#92400e',
-              padding: '16px',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              textAlign: 'center',
-              fontSize: '16px',
-              fontWeight: '500',
-            }}
-          >
-            🤖 Loading AI Model... Please wait, this may take a moment.
+          <div className="model-loading-alert">
+            Loading AI Model... Please wait, this may take a moment.
           </div>
         )}
 
         {/* Model Ready Status */}
         {!isModelLoading && model && (
-          <div
-            style={{
-              backgroundColor: '#f0fdf4',
-              border: '1px solid #bbf7d0',
-              color: '#15803d',
-              padding: '12px',
-              borderRadius: '8px',
-              marginBottom: '16px',
-              textAlign: 'center',
-              fontSize: '14px',
-            }}
-          >
-            ✅ AI Model Ready - You can now upload and analyze images!
+          <div className="model-ready-alert">
+            &#10003; Model Ready - You can now upload and analyze images!
           </div>
         )}
 
