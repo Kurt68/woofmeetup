@@ -1,5 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import * as mobilenet from '@tensorflow-models/mobilenet'
+import * as tf from '@tensorflow/tfjs'
+import '@tensorflow/tfjs-backend-webgl'  // Import WebGL backend
+import '@tensorflow/tfjs-backend-cpu'    // Import CPU backend as fallback
+
 
 const DogDetector = () => {
   const [selectedImage, setSelectedImage] = useState(null)
@@ -20,20 +24,34 @@ const DogDetector = () => {
     loadOrCreateModel()
   }, [])
 
-  const loadOrCreateModel = async () => {
+const loadOrCreateModel = async () => {
+  try {
+    setModelStatus('Setting up TensorFlow.js...')
+    
+    // First, try to use WebGL backend (faster)
     try {
-      setModelStatus('Loading MobileNet model...')
-
-      // Load the pre-trained MobileNet model
-      const model = await mobilenet.load()
-
-      modelRef.current = model
-      setModelStatus('MobileNet model loaded successfully')
-    } catch (error) {
-      setError('Failed to load model: ' + error.message)
-      setModelStatus('Error loading model')
+      await tf.setBackend('webgl')
+      console.log('Using WebGL backend')
+    } catch (e) {
+      console.warn('WebGL backend failed, falling back to CPU:', e)
+      // Fall back to CPU if WebGL is not available
+      await tf.setBackend('cpu')
+      console.log('Using CPU backend')
     }
+    
+    setModelStatus('Loading MobileNet model...')
+
+    // Load the pre-trained MobileNet model
+    const model = await mobilenet.load()
+
+    modelRef.current = model
+    setModelStatus('MobileNet model loaded successfully')
+  } catch (error) {
+    console.error('Model loading error:', error)
+    setError('Failed to load model: ' + error.message)
+    setModelStatus('Error loading model')
   }
+}
 
   // List of dog breeds that MobileNet can identify
   const dogBreeds = [
