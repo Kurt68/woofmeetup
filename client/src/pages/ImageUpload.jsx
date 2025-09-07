@@ -3,7 +3,6 @@ import axios from 'axios'
 import { useCookies } from 'react-cookie'
 import * as mobilenet from '@tensorflow-models/mobilenet'
 import * as tf from '@tensorflow/tfjs'
-import LoadingSpinner from '../components/LoadingSpinner'
 
 const API_URL =
   import.meta.env.MODE === 'development'
@@ -465,14 +464,6 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
   useEffect(() => {
     loadModel()
   }, [])
-
-  if (isModelLoading) {
-    return (
-      <>
-        <LoadingSpinner />
-      </>
-    )
-  }
 
   return (
     <>
