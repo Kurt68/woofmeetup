@@ -2,7 +2,14 @@ import { create } from 'zustand'
 import axios from 'axios'
 import { io } from 'socket.io-client'
 
-const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8000/api/auth" : "/api/auth";
+const API_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:8000/api/auth'
+    : '/api/auth'
+const SOCKET_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:8000'
+    : window.location.origin
 
 axios.defaults.withCredentials = true
 
@@ -134,7 +141,7 @@ export const useAuthStore = create((set, get) => ({
     const { user } = get()
     if (!user || get().socket?.connected) return
 
-    const socket = io('http://localhost:8000', {
+    const socket = io(SOCKET_URL, {
       query: {
         userId: user._id,
       },
