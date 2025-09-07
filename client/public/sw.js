@@ -64,8 +64,8 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Cache app resources with standard strategy
-  if (url.origin === location.origin) {
+  // Cache app resources with standard strategy (only GET requests)
+  if (url.origin === location.origin && request.method === 'GET') {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {
         return cache.match(request).then((response) => {

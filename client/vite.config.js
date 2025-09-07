@@ -115,4 +115,12 @@ export default defineConfig(({ mode }) => ({
     ],
     exclude: ['@tensorflow/tfjs', '@tensorflow-models/mobilenet'],
   },
+  // Server configuration
+  server: {
+    fs: {
+      strict: false,
+    },
+    middlewareMode: false,
+    cors: true,
+  },
 }))
