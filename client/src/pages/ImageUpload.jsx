@@ -1,11 +1,19 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, lazy, Suspense } from 'react'
 import axios from 'axios'
 import { useCookies } from 'react-cookie'
+import {
+  preloadTensorFlow,
+  getTensorFlowModules,
+} from '../utilities/tensorflowPreloader'
+import performanceMonitor from '../utilities/performanceMonitor'
 
 const API_URL =
   import.meta.env.MODE === 'development'
     ? 'http://localhost:8000/api/auth'
     : '/api/auth'
+
+// Lazy load components to reduce initial bundle size
+const MascotSVG = lazy(() => import('../components/MascotSVG'))
 
 const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
   const [cookies] = useCookies(null)
@@ -18,6 +26,7 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
   const [submitPicture, setSubmitPicture] = useState(false)
   const [hideText, setHideText] = useState(false)
   const [dogBreeds, setDogBreeds] = useState([])
+  const [modelLoadRequested, setModelLoadRequested] = useState(false)
 
   const imageRef = useRef()
   const fileInputRef = useRef()
@@ -53,15 +62,15 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
 
   const loadModel = async () => {
     setIsModelLoading(true)
+    performanceMonitor.mark('tensorflow_model_load')
+
     try {
       console.log('Loading TensorFlow.js, MobileNet, and dog breeds...')
 
-      // Dynamically import TensorFlow.js, MobileNet, and dog breeds
-      const [tf, mobilenet, dogBreedsModule] = await Promise.all([
-        import('@tensorflow/tfjs'),
-        import('@tensorflow-models/mobilenet'),
-        import('../data/dogBreeds.json'),
-      ])
+      // Use preloader to get modules
+      const modules =
+        (await getTensorFlowModules()) || (await preloadTensorFlow())
+      const { tf, mobilenet, dogBreedsModule } = modules
 
       // Set dog breeds
       setDogBreeds(dogBreedsModule.default)
@@ -85,10 +94,12 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
       const model = await mobilenet.load()
       setModel(model)
       setIsModelLoading(false)
+      performanceMonitor.measure('tensorflow_model_load')
       console.log('Model loaded successfully')
     } catch (error) {
       console.error('Failed to load model:', error)
       setIsModelLoading(false)
+      performanceMonitor.measure('tensorflow_model_load')
     }
   }
 
@@ -109,12 +120,15 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
 
     try {
       console.log('Classifying image...')
+      performanceMonitor.mark('tensorflow_inference')
       const results = await model.classify(imageRef.current)
+      performanceMonitor.measure('tensorflow_inference')
       console.log('Classification results:', results)
       setResults(results)
       setSubmitPicture(true)
     } catch (error) {
       console.error('Error during image classification:', error)
+      performanceMonitor.measure('tensorflow_inference')
       alert('Error analyzing image. Please try again.')
     }
   }
@@ -125,81 +139,28 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
   const triggerUpload = () => {
     fileInputRef.current.click()
     setHideText(true)
+    // Load model when user first interacts with upload
+    if (!modelLoadRequested && !model) {
+      setModelLoadRequested(true)
+      loadModel()
+    }
   }
 
-  useEffect(() => {
-    loadModel()
-  }, [])
+  const handlePreload = () => {
+    // Start preloading TensorFlow when user shows intent (hover/focus)
+    if (!modelLoadRequested && !model) {
+      preloadTensorFlow().catch(console.error)
+    }
+  }
+
+  // Remove automatic model loading on mount
+  // Model will load when user first uploads an image
 
   return (
     <>
-      <div className="mascot">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="145.374"
-          height="126.629"
-          viewBox="0 0 145.374 126.629"
-        >
-          <g
-            id="Group_44"
-            data-name="Group 44"
-            transform="translate(-899.089 -2912.469)"
-          >
-            <g
-              id="Group_43"
-              data-name="Group 43"
-              transform="translate(899.089 2912.469)"
-            >
-              <g id="Group_42" data-name="Group 42">
-                <circle
-                  id="Ellipse_6"
-                  data-name="Ellipse 6"
-                  cx="38.874"
-                  cy="38.874"
-                  r="38.874"
-                  transform="matrix(0.999, 0.052, -0.052, 0.999, 35.652, 22.633)"
-                  fill="#fff"
-                />
-                <path
-                  id="Path_24"
-                  data-name="Path 24"
-                  d="M13.425,31.623c7.33-9.707,12.6-14.88,16.4-16.424A40.135,40.135,0,0,1,93.9,16.767a18.448,18.448,0,0,1,4.8,3.505,67.936,67.936,0,0,1,10.418,11.35c11.031,14.586,16.326,29.147,11.84,32.505-3.6,2.7-12.429-2.647-21.474-12.4a40.1,40.1,0,0,1-76.385.147C13.842,62.093,5.238,66.849,1.61,64.128-2.9,60.77,2.394,46.209,13.425,31.623ZM61.276,76.508a36.873,36.873,0,0,0,35.717-27.6c-.392-.441-.784-.907-1.152-1.373-7.869,5.27-21.915,5.418-27.97-1.986-7.869-9.634-.76-21.18,7.158-27.112a17.844,17.844,0,0,1,13.385-3.383,36.953,36.953,0,0,0-54.421.123,4.031,4.031,0,0,1,.539.343c4.511,3.334-.809,22.749-4.9,28.289-1.373,1.863-2.746,3.6-4.094,5.221A36.984,36.984,0,0,0,61.276,76.508ZM81.77,35.913a5.565,5.565,0,1,0-5.565,5.54A5.555,5.555,0,0,0,81.77,35.913Z"
-                  transform="matrix(0.891, 0.454, -0.454, 0.891, 36.169, 0)"
-                />
-                <ellipse
-                  id="Ellipse_1"
-                  data-name="Ellipse 1"
-                  cx="2.035"
-                  cy="2.008"
-                  rx="2.035"
-                  ry="2.008"
-                  transform="matrix(0.891, 0.454, -0.454, 0.891, 88.648, 62.748)"
-                />
-                <path
-                  id="Path_25"
-                  data-name="Path 25"
-                  d="M6.094,0A6.068,6.068,0,1,1,0,6.067,6.084,6.084,0,0,1,6.094,0ZM7.464,5.772A1.718,1.718,0,1,0,5.718,4.054,1.772,1.772,0,0,0,7.464,5.772Z"
-                  transform="matrix(0.891, 0.454, -0.454, 0.891, 58.585, 44.985)"
-                  fill="#b1832d"
-                />
-                <path
-                  id="Path_26"
-                  data-name="Path 26"
-                  d="M2.868,12.364a5.421,5.421,0,0,0,9.047-3.785V8.551c-1.879-1.1-4.645-3.114-4.645-5.423,0-3.517,2.738-3.114,6.282-3.114,3.517,0,6.5-.4,6.5,3.114,0,2.309-2.765,4.322-4.645,5.423h0a5.39,5.39,0,0,0,5.4,5.181,5.58,5.58,0,0,0,3.651-1.4,1.769,1.769,0,0,1,2.47.107,1.736,1.736,0,0,1-.107,2.443A8.8,8.8,0,0,1,20.828,17.2a8.9,8.9,0,0,1-7.141-3.571A8.922,8.922,0,0,1,.559,14.887a1.736,1.736,0,0,1-.107-2.443A1.7,1.7,0,0,1,2.868,12.364Z"
-                  transform="matrix(0.891, 0.454, -0.454, 0.891, 56.115, 65.783)"
-                />
-                <path
-                  id="Path_45"
-                  data-name="Path 45"
-                  d="M6.094,0A6.068,6.068,0,1,1,0,6.067,6.084,6.084,0,0,1,6.094,0ZM7.464,5.772A1.718,1.718,0,1,0,5.718,4.054,1.772,1.772,0,0,0,7.464,5.772Z"
-                  transform="matrix(0.891, 0.454, -0.454, 0.891, 84.938, 58.681)"
-                  fill="#b1832d"
-                />
-              </g>
-            </g>
-          </g>
-        </svg>
-      </div>
+      <Suspense fallback={<div className="mascot-loading">Loading...</div>}>
+        <MascotSVG />
+      </Suspense>
       <div className="image-identification">
         {/* Model Loading Status */}
         {isModelLoading && (
@@ -230,9 +191,8 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
             <label htmlFor="dogs-picture">
               <div className="instructions">
                 <p>
-                  {' '}
                   &#10003; AI checks an image to match a breed. Mixed breed it
-                  guesses but knows it&apos;s a dog.{' '}
+                  guesses but knows it&apos;s a dog.
                 </p>
 
                 <p>&#10003; Head shot & nothing in its mouth works best.</p>
@@ -256,7 +216,12 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
             </label>
           )}
           {!dogFound?.length && (
-            <button className="uploadImage" onClick={triggerUpload}>
+            <button
+              className="uploadImage"
+              onClick={triggerUpload}
+              onMouseEnter={handlePreload}
+              onFocus={handlePreload}
+            >
               Upload Image
             </button>
           )}

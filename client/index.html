@@ -10,7 +10,18 @@
   <meta name="apple-mobile-web-app-title" content="Woof Meetup" />
   <link rel="manifest" href="/site.webmanifest" />
 
-<!-- 
+  <!-- Performance optimizations -->
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="//unpkg.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+
+  <!-- Resource hints for critical chunks -->
+  <link rel="modulepreload" href="/src/main.jsx">
+
+  <!-- Preload critical CSS -->
+  <link rel="preload" href="/src/index.css" as="style">
+
+  <!-- 
   <link rel="icon" type="image/png" href="%PUBLIC_URL%/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="%PUBLIC_URL%/favicon.svg" />
   <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
