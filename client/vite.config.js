@@ -123,4 +123,8 @@ export default defineConfig(({ mode }) => ({
     middlewareMode: false,
     cors: true,
   },
+  // Resolve configuration
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
 }))
