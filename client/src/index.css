@@ -1058,10 +1058,10 @@ select {
   transition: all 0.35s;
 }
 
-.polaroid:hover {
+/* .polaroid:hover {
   transform: scale(1.2, 1.2) rotate(0deg) !important;
   transition: all 0.35s;
-}
+} */
 .swipe-info p {
   color: white;
   font-size: 1.7rem;
