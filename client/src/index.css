@@ -984,11 +984,27 @@ select {
 /* Touch action for mobile swipe restriction */
 @media (hover: none) and (pointer: coarse) {
   .swipe {
-    touch-action: pan-x;
+    touch-action: pan-x !important;
+  }
+
+  .polaroid-container {
+    touch-action: pan-x !important;
   }
 
   .polaroid {
-    touch-action: pan-x;
+    touch-action: pan-x !important;
+    /* Disable hover effects on touch devices */
+    transform: scale(0.8, 0.8) rotate(2deg) !important;
+    transition: none !important;
+  }
+
+  .polaroid:hover {
+    transform: scale(0.8, 0.8) rotate(2deg) !important;
+    transition: none !important;
+  }
+
+  .photo {
+    touch-action: pan-x !important;
   }
 }
 
