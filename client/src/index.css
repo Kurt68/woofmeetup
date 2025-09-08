@@ -989,9 +989,32 @@ select {
     transition: all 0.35s !important;
   }
 
-  /* Minimal touch restriction - only prevent vertical scrolling on the container */
-  .swipe-container {
-    touch-action: pan-x pan-y;
+  /* Make cards more touch-friendly on mobile */
+  .swipe {
+    cursor: grab;
+    touch-action: pan-x;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .swipe:active {
+    cursor: grabbing;
+  }
+
+  .polaroid {
+    pointer-events: auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Pressable elements for react-tinder-card mobile support */
+  .pressable {
+    pointer-events: auto !important;
+    touch-action: manipulation;
   }
 }
 
