@@ -120,12 +120,6 @@ const Dashboard = () => {
   const swiped = (direction, swipedUserId) => {
     console.log('Swipe detected:', direction) // Debug log
 
-    // Block up and down swipes completely
-    if (direction === 'up' || direction === 'down') {
-      console.log('Blocked vertical swipe:', direction)
-      return false
-    }
-
     if (direction === 'right') {
       updateMatches(swipedUserId)
     }
@@ -215,8 +209,6 @@ const Dashboard = () => {
                         outOfFrame(filteredMeetupTypeUsers.dogs_name)
                       }
                       preventSwipe={['up', 'down']}
-                      swipeRequirementType="position"
-                      swipeThreshold={100}
                       user={user}
                     >
                       <div className="polaroid">
