@@ -204,7 +204,7 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
           {/* Model Ready Status */}
           {!isModelLoading && model && (
             <div className="model-ready-alert">
-              &#10003;AI Dog Model Ready - You can nowanalyze images!
+              &#10003;AI Dog Model Ready - You can now analyze images!
             </div>
           )}
 
