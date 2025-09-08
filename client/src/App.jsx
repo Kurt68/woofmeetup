@@ -1,11 +1,3 @@
-// import Home from './pages/Home'
-// import EmailVerification from './pages/EmailVerification'
-// import ForgotPassword from './pages/ForgotPassword'
-// import ResetPassword from './pages/ResetPassword'
-// import Dashboard from './pages/Dashboard'
-// import Onboarding from './pages/Onboarding'
-// import EditDogProfile from './pages/EditDogProfile'
-// import AccountSettings from './pages/AccountSettings'
 import { lazy, Suspense } from 'react'
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
