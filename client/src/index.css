@@ -1034,10 +1034,10 @@ select {
   z-index: -1;
   transition: all 0.35s;
 }
-/* .polaroid:nth-of-type(4n + 1) {
+.polaroid:nth-of-type(4n + 1) {
   transform: scale(0.8, 0.8) rotate(2deg);
   transition: all 0.35s;
-} */
+}
 /* 
 .polaroid:hover {
   transform: scale(1.2, 1.2) rotate(0deg) !important;
