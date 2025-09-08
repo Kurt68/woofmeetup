@@ -1038,11 +1038,13 @@ select {
   transform: scale(0.8, 0.8) rotate(2deg);
   transition: all 0.35s;
 }
-/* 
-.polaroid:hover {
-  transform: scale(1.2, 1.2) rotate(0deg) !important;
-  transition: all 0.35s;
-} */
+/* Only apply hover effects on devices that actually support hover (desktop) */
+@media (hover: hover) and (pointer: fine) {
+  .polaroid:hover {
+    transform: scale(1.2, 1.2) rotate(0deg) !important;
+    transition: all 0.35s;
+  }
+}
 .swipe-info p {
   color: white;
   font-size: 1.7rem;
