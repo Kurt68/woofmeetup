@@ -5,7 +5,10 @@ import axios from 'axios'
 import { useCookies } from 'react-cookie'
 import { useSearchParams } from 'react-router-dom'
 
-const API_URL = import.meta.env.MODE === "development" ? "http://localhost:8000/api/auth" : "/api/auth";
+const API_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:8000/api/auth'
+    : '/api/auth'
 
 const Dashboard = () => {
   const [longitude, setLongitude] = useState(null)
@@ -203,6 +206,7 @@ const Dashboard = () => {
                       onCardLeftScreen={() =>
                         outOfFrame(filteredMeetupTypeUsers.dogs_name)
                       }
+                      preventSwipe={['up', 'down']}
                       user={user}
                     >
                       <div className="polaroid">
