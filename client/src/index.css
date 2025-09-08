@@ -981,33 +981,14 @@ select {
   user-select: none;
 }
 
-.swipe {
-  touch-action: pan-x;
-}
-
-.swipe * {
-  touch-action: pan-x;
-}
-
-.polaroid-container {
-  touch-action: pan-x;
-}
-
-/* Mobile-specific touch handling */
+/* Touch action for mobile swipe restriction */
 @media (hover: none) and (pointer: coarse) {
   .swipe {
-    touch-action: pan-x !important;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    touch-action: pan-x;
   }
 
   .polaroid {
-    touch-action: pan-x !important;
-    -webkit-touch-callout: none;
+    touch-action: pan-x;
   }
 }
 
@@ -1057,8 +1038,8 @@ select {
   transform: scale(0.8, 0.8) rotate(2deg);
   transition: all 0.35s;
 }
-
-/* .polaroid:hover {
+/* 
+.polaroid:hover {
   transform: scale(1.2, 1.2) rotate(0deg) !important;
   transition: all 0.35s;
 } */
