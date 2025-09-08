@@ -118,10 +118,19 @@ const Dashboard = () => {
   }
 
   const swiped = (direction, swipedUserId) => {
+    console.log('Swipe detected:', direction) // Debug log
+
+    // Only allow left and right swipes - completely ignore others
+    if (direction !== 'left' && direction !== 'right') {
+      console.log('Blocked swipe direction:', direction) // Debug log
+      return false // Explicitly return false to prevent the swipe
+    }
+
     if (direction === 'right') {
       updateMatches(swipedUserId)
     }
     setLastDirection(direction)
+    return true
   }
 
   const outOfFrame = (name) => {
@@ -206,8 +215,8 @@ const Dashboard = () => {
                       onCardLeftScreen={() =>
                         outOfFrame(filteredMeetupTypeUsers.dogs_name)
                       }
-                      preventSwipe={['up', 'down']}
-                      swipeThreshold={100}
+                      swipeRequirementType="position"
+                      swipeThreshold={200}
                       user={user}
                     >
                       <div className="polaroid pressable">
