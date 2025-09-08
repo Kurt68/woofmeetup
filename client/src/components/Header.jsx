@@ -29,7 +29,7 @@ const Header = ({ user }) => {
           alt={'photo of ' + user.dogs_name}
         />
         <h3>{user.dogs_name}</h3>
-        <Link className="edit-dog-profile" to="/editdogprofile">
+        <Link className="edit-dog-profile" to="/edit-dog-profile">
           <i className="edit-icon">&#9998;</i>
           <span>Edit Profile</span>
         </Link>

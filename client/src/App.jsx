@@ -64,7 +64,7 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route
               path="/"
@@ -75,7 +75,14 @@ const App = () => {
               }
             />
 
-            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route
+              path="/verify-email"
+              element={
+                <ProtectedRoute>
+                  <EmailVerification />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               path="/onboarding"
@@ -111,7 +118,7 @@ const App = () => {
               }
             />
             <Route
-              path="/editdogprofile"
+              path="/edit-dog-profile"
               element={
                 <ProtectedRoute>
                   <EditDogProfile />
