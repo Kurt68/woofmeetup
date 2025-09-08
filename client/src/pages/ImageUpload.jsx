@@ -15,6 +15,7 @@ import {
 } from '../utilities/tensorflowPreloader'
 import performanceMonitor from '../utilities/performanceMonitor'
 import logger from '../utilities/logger'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const API_URL =
   import.meta.env.MODE === 'development'
@@ -187,10 +188,20 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
 
   return (
     <Suspense
-      fallback={<div className="error-boundary-loading">Loading...</div>}
+      fallback={
+        <div className="error-boundary-loading">
+          <LoadingSpinner />
+        </div>
+      }
     >
       <ErrorBoundary>
-        <Suspense fallback={<div className="mascot-loading">Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className="mascot-loading">
+              <LoadingSpinner />
+            </div>
+          }
+        >
           <MascotSVG />
         </Suspense>
         <div className="image-identification">
@@ -213,7 +224,7 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
             onChange={fileSelected}
             type="file"
             accept="image/*"
-            // capture="camera"
+            /*capture="camera"*/
             className="uploadInput"
             ref={fileInputRef}
           />
