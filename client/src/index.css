@@ -981,6 +981,10 @@ select {
   user-select: none;
 }
 
+.swipe {
+  touch-action: pan-x;
+}
+
 .polaroid-container .swipe:first-child .polaroid {
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
 }
@@ -1012,6 +1016,7 @@ select {
 .polaroid {
   display: inline-block;
   cursor: grab;
+  touch-action: pan-x;
 }
 .polaroid:active {
   cursor: grabbing;

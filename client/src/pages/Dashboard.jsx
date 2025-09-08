@@ -207,11 +207,12 @@ const Dashboard = () => {
                         outOfFrame(filteredMeetupTypeUsers.dogs_name)
                       }
                       preventSwipe={['up', 'down']}
+                      swipeThreshold={100}
                       user={user}
                     >
-                      <div className="polaroid">
+                      <div className="polaroid pressable">
                         <div
-                          className="photo"
+                          className="photo pressable"
                           style={{
                             backgroundImage:
                               'url(' + filteredMeetupTypeUsers.imageUrl + ')',
