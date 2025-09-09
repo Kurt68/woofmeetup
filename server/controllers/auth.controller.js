@@ -164,7 +164,7 @@ export const verifyEmail = async (req, res) => {
     user.verificationTokenExpiresAt = undefined
     await user.save()
 
-    // await sendWelcomeEmail(user.email, user.userName)
+    await sendWelcomeEmail(user.email, user.userName)
 
     res.status(200).json({
       success: true,
@@ -200,10 +200,10 @@ export const forgotPassword = async (req, res) => {
     await user.save()
 
     // send email
-    // await sendPasswordResetEmail(
-    //   user.email,
-    //   `${process.env.CLIENT_URL}/reset-password/${resetToken}`
-    // )
+    await sendPasswordResetEmail(
+      user.email,
+      `${process.env.CLIENT_URL}/reset-password/${resetToken}`
+    )
 
     res.status(200).json({
       success: true,
@@ -239,7 +239,7 @@ export const resetPassword = async (req, res) => {
     user.resetPasswordExpiresAt = undefined
     await user.save()
 
-    // await sendResetSuccessEmail(user.email)
+    await sendResetSuccessEmail(user.email)
 
     res
       .status(200)

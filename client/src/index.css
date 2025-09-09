@@ -981,43 +981,6 @@ select {
   user-select: none;
 }
 
-/* Mobile-specific styles */
-@media (hover: none) and (pointer: coarse) {
-  /* Disable hover effects on touch devices */
-  .polaroid:hover {
-    transform: scale(0.8, 0.8) rotate(2deg) !important;
-    transition: all 0.35s !important;
-  }
-
-  /* Make cards more touch-friendly on mobile */
-  .swipe {
-    cursor: grab;
-    touch-action: pan-x;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-
-  .swipe:active {
-    cursor: grabbing;
-  }
-
-  .polaroid {
-    pointer-events: auto;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
-
-  /* Pressable elements for react-tinder-card mobile support */
-  .pressable {
-    pointer-events: auto !important;
-    touch-action: manipulation;
-  }
-}
-
 .polaroid-container .swipe:first-child .polaroid {
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.3);
 }
@@ -1064,13 +1027,7 @@ select {
   transform: scale(0.8, 0.8) rotate(2deg);
   transition: all 0.35s;
 }
-/* Only apply hover effects on devices that actually support hover (desktop) */
-@media (hover: hover) and (pointer: fine) {
-  .polaroid:hover {
-    transform: scale(1.2, 1.2) rotate(0deg) !important;
-    transition: all 0.35s;
-  }
-}
+
 .swipe-info p {
   color: white;
   font-size: 1.7rem;

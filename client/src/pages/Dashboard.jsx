@@ -118,8 +118,6 @@ const Dashboard = () => {
   }
 
   const swiped = (direction, swipedUserId) => {
-    console.log('Swipe detected:', direction, 'User ID:', swipedUserId) // Debug log
-
     if (direction === 'right') {
       updateMatches(swipedUserId)
     }
@@ -128,19 +126,6 @@ const Dashboard = () => {
 
   const outOfFrame = (name) => {
     console.log(name + ' left the screen!')
-  }
-
-  // Add touch event debugging
-  const handleTouchStart = (e) => {
-    console.log('Touch start detected on card')
-  }
-
-  const handleTouchMove = (e) => {
-    console.log('Touch move detected on card')
-  }
-
-  const handleTouchEnd = (e) => {
-    console.log('Touch end detected on card')
   }
 
   const matchedUserIdsandUser = user?.matches // database field
@@ -222,24 +207,17 @@ const Dashboard = () => {
                         outOfFrame(filteredMeetupTypeUsers.dogs_name)
                       }
                       preventSwipe={['up', 'down']}
-                      swipeRequirementType="position"
-                      swipeThreshold={50}
                       user={user}
                     >
-                      <div
-                        className="polaroid pressable"
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                      >
+                      <div className="">
                         <div
-                          className="photo pressable"
+                          className="photo"
                           style={{
                             backgroundImage:
                               'url(' + filteredMeetupTypeUsers.imageUrl + ')',
                           }}
                         >
-                          <div className="caption pressable">
+                          <div className="caption">
                             <p>
                               {filteredMeetupTypeUsers.dogs_name}
                               <span
