@@ -35,7 +35,7 @@ export const sendWelcomeEmail = async (email, userName) => {
     const response = await mailtrapClient.send({
       from: sender,
       to: recipient,
-      template_uuid: '9bf230c5-edc9-4e26-ac23-e9d4953b17b8',
+      template_uuid: 'adb08bc7-8995-4a9c-8617-ccf679a92c12',
       template_variables: {
         name: userName,
         company_info_name: 'Woof Meetup',
