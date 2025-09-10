@@ -738,7 +738,6 @@ summary {
   border-bottom: solid 4px rgb(83 200 160);
   font-size: 20px;
   margin: 2px;
-  padding: 10px;
   cursor: pointer;
 }
 .header-chat-container .matches:hover {
@@ -843,7 +842,7 @@ summary {
 /*-------- Chat Display --------*/
 .chat-display,
 .matches-display {
-  padding: 20px 20px 0 20px;
+  padding: 8px 20px 0 20px;
   max-height: 12rem;
   overflow-y: auto;
   scrollbar-color: pink white;
