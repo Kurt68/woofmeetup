@@ -66,41 +66,39 @@ const EmailVerification = () => {
   }, [code, handleSubmit])
 
   return (
-   
-      <div className="overlay">
+    <div className="overlay">
       <Nav minimal={true} />
-        <div className="auth-modal">
-          <h2>Verify Your Email</h2>
-          <p className="modal-copy">
-            Copy and paste the 6-digit code sent to your email address in the
-            input field below.
-          </p>
+      <div className="auth-modal">
+        <h2>Verify Your Email</h2>
+        <p className="modal-copy">
+          Copy and paste the 6-digit code sent to your email address in the
+          input field below. Check your junk/spam folder if you can't find it.
+        </p>
 
-          <form onSubmit={handleSubmit} className="form-verify-email">
-            {code.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
-                type="text"
-                maxLength="6"
-                value={digit}
-                onChange={(e) => handleChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className=""
-              />
-            ))}
-          </form>
-          {authError && <p className="auth-error">{authError}</p>}
-          <button
-            type="submit"
-            disabled={isLoading || code.some((digit) => !digit)}
-            className="secondary-button"
-          >
-            {isLoading ? 'Verifying...' : 'Verify Email'}
-          </button>
-        </div>
+        <form onSubmit={handleSubmit} className="form-verify-email">
+          {code.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => (inputRefs.current[index] = el)}
+              type="text"
+              maxLength="6"
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              className=""
+            />
+          ))}
+        </form>
+        {authError && <p className="auth-error">{authError}</p>}
+        <button
+          type="submit"
+          disabled={isLoading || code.some((digit) => !digit)}
+          className="secondary-button"
+        >
+          {isLoading ? 'Verifying...' : 'Verify Email'}
+        </button>
       </div>
-    
+    </div>
   )
 }
 export default EmailVerification

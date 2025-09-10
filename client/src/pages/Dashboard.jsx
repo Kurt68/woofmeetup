@@ -209,7 +209,7 @@ const Dashboard = () => {
                       preventSwipe={['up', 'down']}
                       user={user}
                     >
-                      <div className="">
+                      <div className="polaroid">
                         <div
                           className="photo"
                           style={{

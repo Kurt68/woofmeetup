@@ -286,6 +286,7 @@ nav .logo-container .logo {
   background-color: rgba(255, 193, 203, 0.3);
   justify-content: space-evenly;
   margin: 0 0 0.5rem 0;
+  width: fit-content;
 }
 .auth-modal .form-verify-email input {
   text-align: center;
@@ -1017,12 +1018,12 @@ select {
 .polaroid:active {
   cursor: grabbing;
 }
-.polaroid .polaroid:before {
+/* .polaroid .polaroid:before {
   content: '';
   position: absolute;
   z-index: -1;
   transition: all 0.35s;
-}
+} */
 .polaroid:nth-of-type(4n + 1) {
   transform: scale(0.8, 0.8) rotate(2deg);
   transition: all 0.35s;

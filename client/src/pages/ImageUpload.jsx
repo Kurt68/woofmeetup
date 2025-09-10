@@ -224,7 +224,6 @@ const ImageUpload = ({ setShowSecondButton, setHideImageUpload }) => {
             onChange={fileSelected}
             type="file"
             accept="image/*"
-            /*capture="camera"*/
             className="uploadInput"
             ref={fileInputRef}
           />
