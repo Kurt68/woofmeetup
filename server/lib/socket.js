@@ -10,7 +10,7 @@ const io = new Server(server, {
     origin:
       process.env.NODE_ENV === 'development'
         ? ['http://localhost:5173']
-        : ['https://woofmeetup-1.onrender.com'],
+        : ['https://woofmeetup.com'],
   },
 })
 
