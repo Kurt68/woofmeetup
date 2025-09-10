@@ -1430,20 +1430,3 @@ span.blink {
   padding: 1rem;
   border-radius: 30px;
 }
-
-.tooltip-container .photo-format {
-  max-width: 320px;
-  z-index: 1;
-  background-color: black;
-  padding: 1rem;
-  border-radius: 1rem;
-}
-.tooltip-container a {
-  color: pink;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.tooltip-container {
-  line-height: 1.5;
-}

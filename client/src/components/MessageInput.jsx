@@ -64,25 +64,6 @@ const MessageInput = () => {
           </div>
         </div>
       )}
-      <div className="tooltip-container">
-        Convert heic/heif iPhone/Android images to preview/send!{' '}
-        <a
-          data-tooltip-id="my-tooltip-multiline"
-          data-tooltip-html="To convert native .heic image format imported from your phone
-        on a mac open the HEIC file in the Preview app, go to File &gt; Export,
-        select JPEG as the format, and save the file for upload. <br /> <br />To convert .heic to JPEG on an iPhone, navigate to the HEIC
-        photo you wish to convert and select it. Then, use the ‘Share’ button
-        and opt to copy it. The photo auto converts to JPEG. Paste the file to a
-        folder on your phone for upload."
-        >
-          &#9432;
-        </a>
-        <Tooltip
-          id="my-tooltip-multiline"
-          opacity={1}
-          className="photo-format"
-        />
-      </div>
 
       <form onSubmit={handleSendMessage} className="container-form">
         <div className="row">
