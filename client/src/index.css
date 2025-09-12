@@ -632,8 +632,8 @@ f .auth-modal.onboarding input[type='text'],
   flex: 2;
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
   height: 100vh;
   position: relative;
   background-color: rgb(83 200 160);
@@ -791,7 +791,7 @@ summary {
 .edit-icon {
   transform: rotateZ(90deg);
   display: inline-block;
-  margin-top: .2rem;
+  margin-top: 0.2rem;
 }
 .keep-delete .secondary-button {
   text-transform: unset;
