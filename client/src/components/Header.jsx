@@ -2,11 +2,9 @@ import { Link } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import { useChatStore } from '../store/useChatStore'
 
-
 const Header = ({ user }) => {
   const { logout } = useAuthStore()
-    const { setSelectedUser } = useChatStore()
-  
+  const { setSelectedUser } = useChatStore()
 
   const userLogout = () => {
     logout()
@@ -30,8 +28,10 @@ const Header = ({ user }) => {
         />
         <h3>{user.dogs_name}</h3>
         <Link className="edit-dog-profile" to="/edit-dog-profile">
-         
-          <span> <i className="edit-icon">&#9998;</i> Edit Profile</span>
+          <span>
+            {' '}
+            <i className="edit-icon">&#9998;</i> Edit Profile
+          </span>
         </Link>
       </div>
     </div>

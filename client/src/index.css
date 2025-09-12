@@ -1429,6 +1429,7 @@ span.blink {
   padding: 1rem;
   list-style-type: none;
   line-height: 1.7;
+  margin: 0;
 }
 .instructions p {
   padding: 1rem;
