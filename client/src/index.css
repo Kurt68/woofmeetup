@@ -633,7 +633,7 @@ f .auth-modal.onboarding input[type='text'],
   display: flex;
   flex-direction: column;
   justify-content: start;
-  align-items: center;
+  align-items: flex-start;
   height: 100vh;
   position: relative;
   background-color: rgb(83 200 160);
