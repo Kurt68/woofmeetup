@@ -1335,7 +1335,7 @@ span.blink {
 .container-form {
   display: flex;
   gap: 0.5rem;
-  align-items: center;
+  align-items: start;
 }
 .row {
   display: flex;
@@ -1357,6 +1357,7 @@ span.blink {
   color: pink;
   background: none;
   border: none;
+  padding: 0;
 }
 .text-buttons svg {
   width: 35px;
