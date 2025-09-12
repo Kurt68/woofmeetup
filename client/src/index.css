@@ -269,7 +269,7 @@ nav .logo-container .logo {
   flex-direction: column;
   border: 1px solid rgb(255, 193, 203);
   background-color: rgba(255, 193, 203, 0.3);
-  padding: 1.5rem;
+  padding: 1.5rem 0.3em 1.5rem 0.3rem;
 }
 .auth-modal.onboarding form {
   flex-direction: row;
@@ -1420,7 +1420,6 @@ span.blink {
   height: 250vh;
 }
 .instructions {
-
   border-radius: 100px;
   background-color: rgba(255, 192, 203, 0.3);
   padding: 2rem;
