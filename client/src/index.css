@@ -187,30 +187,12 @@ nav .nav-button:disabled {
 }
 
 nav .logo-container {
-  /* width: 260px; */
+  width: 260px;
   margin: 15px 0 0 10px;
 }
 
 nav .logo-container .logo {
   width: 100%;
-}
-
-@media only screen and (max-width: 640px) {
-  nav {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  nav .logo-container {
-    margin: 15px auto 0;
-    display: flex;
-    justify-content: center;
-  }
-
-  nav .nav-button {
-    margin: 0 auto 0;
-    align-self: center;
-  }
 }
 
 /*-------- Home page --------*/
@@ -258,7 +240,7 @@ nav .logo-container .logo {
   height: auto;
   background-color: rgb(255, 255, 255);
   border-radius: 10px;
-  padding: 40px;
+  padding: 20px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
@@ -308,9 +290,8 @@ nav .logo-container .logo {
   flex-direction: row;
   border: 1px solid rgb(255, 193, 203);
   background-color: rgba(255, 193, 203, 0.3);
-  justify-content: space-evenly;
+  justify-content: space-between;
   margin: 0 0 0.5rem 0;
-  width: fit-content;
 }
 .auth-modal .form-verify-email input {
   text-align: center;
@@ -331,7 +312,7 @@ nav .logo-container .logo {
   font-size: 17px;
   border: 1px solid pink;
 }
-.auth-modal.onboarding input[type='text'],
+f .auth-modal.onboarding input[type='text'],
 .auth-modal.onboarding input[type='number'] {
   margin: 0;
 }
@@ -1439,10 +1420,12 @@ span.blink {
   height: 250vh;
 }
 .instructions {
-  text-align: left;
-  p:nth-child(odd) {
-    background-color: rgba(255, 192, 203, 0.3);
-  }
+
+  border-radius: 100px;
+  background-color: rgba(255, 192, 203, 0.3);
+  padding: 2rem;
+  list-style-type: none;
+  line-height: 1.7;
 }
 .instructions p {
   padding: 1rem;
