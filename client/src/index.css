@@ -626,7 +626,7 @@ f .auth-modal.onboarding input[type='text'],
   .instructions {
     margin-left: 9rem;
     margin-right: 9rem;
-}
+  }
 }
 .dashboard .swipe-container {
   flex: 2;
@@ -789,6 +789,8 @@ summary {
 }
 .edit-icon {
   transform: rotateZ(90deg);
+  display: inline-block;
+  margin-top: .2rem;
 }
 .keep-delete .secondary-button {
   text-transform: unset;

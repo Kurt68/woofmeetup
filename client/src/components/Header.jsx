@@ -30,8 +30,8 @@ const Header = ({ user }) => {
         />
         <h3>{user.dogs_name}</h3>
         <Link className="edit-dog-profile" to="/edit-dog-profile">
-          <i className="edit-icon">&#9998;</i>
-          <span>Edit Profile</span>
+         
+          <span> <i className="edit-icon">&#9998;</i> Edit Profile</span>
         </Link>
       </div>
     </div>
