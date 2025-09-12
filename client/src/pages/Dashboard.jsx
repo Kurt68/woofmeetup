@@ -156,44 +156,7 @@ const Dashboard = () => {
                 <p>Allow geolocation!</p>
               </button>
             ) : null}
-            <div className="select-distance">
-              <form onSubmit={handleSubmit}>
-                <section>
-                  <label htmlFor="distance">Search </label>
-                  <select
-                    name="distance"
-                    id="distance"
-                    value={selectDistance}
-                    onChange={(e) =>
-                      setSearchParams(
-                        (prev) => {
-                          prev.set('selectDistance', e.target.value)
-                          return prev
-                        },
-                        { replace: true }
-                      )
-                    }
-                  >
-                    <option value="5">5 miles</option>
-                    <option value="10">10 miles</option>
-                    <option value="15">15 miles</option>
-                    <option value="20">20 miles</option>
-                    <option value="25">25 miles</option>
-                    <option value="30">30 miles</option>
-                    <option value="35">35 miles</option>
-                    <option value="40">40 miles</option>
-                    <option value="45">45 miles</option>
-                    <option value="50">50 miles</option>
-                    <option value="55">55 miles</option>
-                    <option value="60">60 miles</option>
-                  </select>
-
-                  <button className="submit" type="submit">
-                    Submit
-                  </button>
-                </section>
-              </form>
-            </div>
+         
             <div className="polaroid-container">
               {longitude && latitude
                 ? filteredMeetupTypeUsers?.map((filteredMeetupTypeUsers) => (
@@ -267,6 +230,44 @@ const Dashboard = () => {
                     </TinderCard>
                   ))
                 : null}
+            </div>
+               <div className="select-distance">
+              <form onSubmit={handleSubmit}>
+                <section>
+                  <label htmlFor="distance">Search </label>
+                  <select
+                    name="distance"
+                    id="distance"
+                    value={selectDistance}
+                    onChange={(e) =>
+                      setSearchParams(
+                        (prev) => {
+                          prev.set('selectDistance', e.target.value)
+                          return prev
+                        },
+                        { replace: true }
+                      )
+                    }
+                  >
+                    <option value="5">5 miles</option>
+                    <option value="10">10 miles</option>
+                    <option value="15">15 miles</option>
+                    <option value="20">20 miles</option>
+                    <option value="25">25 miles</option>
+                    <option value="30">30 miles</option>
+                    <option value="35">35 miles</option>
+                    <option value="40">40 miles</option>
+                    <option value="45">45 miles</option>
+                    <option value="50">50 miles</option>
+                    <option value="55">55 miles</option>
+                    <option value="60">60 miles</option>
+                  </select>
+
+                  <button className="submit" type="submit">
+                    Submit
+                  </button>
+                </section>
+              </form>
             </div>
           </div>
         </div>
