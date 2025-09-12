@@ -581,10 +581,9 @@ f .auth-modal.onboarding input[type='text'],
   border: 1px solid #f59e0b;
   color: #92400e;
   padding: 16px;
-  border-radius: 50px;
   margin-bottom: 3rem;
   text-align: center;
-  line-height: 1.8;
+  line-height: 1.4;
 }
 
 .model-ready-alert {
@@ -592,10 +591,9 @@ f .auth-modal.onboarding input[type='text'],
   border: 1px solid #bbf7d0;
   color: #15803d;
   padding: 16px;
-  border-radius: 50px;
-  margin-bottom: 3rem;
+  margin-bottom: 1rem;
   text-align: center;
-  line-height: 1.8;
+  line-height: 1.4;
 }
 @keyframes hide-scroll {
   from,
@@ -625,6 +623,10 @@ f .auth-modal.onboarding input[type='text'],
     display: flex;
     justify-content: space-between;
   }
+  .instructions {
+    margin-left: 9rem;
+    margin-right: 9rem;
+}
 }
 .dashboard .swipe-container {
   flex: 2;
