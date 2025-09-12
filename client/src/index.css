@@ -713,7 +713,7 @@ summary {
   position: absolute;
   left: 0;
   right: 0;
-  top: 5.5rem;
+  top: 4rem;
 }
 
 /*-------- Chat Container --------*/
@@ -766,6 +766,9 @@ summary {
   justify-content: space-evenly;
   color: rgb(255, 255, 255);
   text-decoration: none;
+}
+.select-distance {
+  margin-top: -1rem;
 }
 .select-distance label {
   color: white;
