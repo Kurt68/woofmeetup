@@ -187,7 +187,7 @@ nav .nav-button,
   }
 
   nav .nav-button {
-    margin-top: 3rem;
+    margin-top: 1rem;
   }
 }
 
@@ -208,14 +208,10 @@ nav .nav-button:disabled {
   color: white;
 }
 
-nav .logo-container {
-  /* width: 260px; */
+/* nav .logo-container {
   margin: 15px 0 0 10px;
-}
+} */
 
-nav .logo-container .logo {
-  width: 100%;
-}
 
 /*-------- Home page --------*/
 .background-color {
