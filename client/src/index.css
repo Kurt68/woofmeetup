@@ -212,6 +212,7 @@ nav .logo-container {
   margin: 15px 0 0 10px;
 }
 
+
 /*-------- Home page --------*/
 .background-color {
   background-color: #53c8a0;
@@ -1453,17 +1454,4 @@ span.blink {
 .instructions p {
   padding: 1rem;
   border-radius: 30px;
-}
-
-/* Mobile-specific fix for equal horizontal padding in message input */
-@media only screen and (max-width: 640px) {
-  /* Match input's internal horizontal padding with buttons so visual spacing is equal */
-  .container-input .border-form {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-  .container-input .text-buttons {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
 }
