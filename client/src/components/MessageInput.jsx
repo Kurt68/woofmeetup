@@ -89,14 +89,15 @@ const MessageInput = () => {
           >
             <Image />
           </button>
-        </div>
-        <button
+           <button
           type="submit"
           className="text-buttons"
           disabled={!text.trim() && !imagePreview}
         >
           <Send size={20} />
         </button>
+        </div>
+       
       </form>
     </div>
   )
