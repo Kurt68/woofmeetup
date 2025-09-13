@@ -30,7 +30,10 @@ a:active {
   color: black;
   background-color: transparent;
 }
-
+a.focus {
+  color: black;
+  background-color: transparent;
+}
 .error-background {
   padding-top: 3rem;
   background-color: pink;
@@ -211,7 +214,6 @@ nav .nav-button:disabled {
 nav .logo-container {
   margin: 15px 0 0 10px;
 }
-
 
 /*-------- Home page --------*/
 .background-color {
