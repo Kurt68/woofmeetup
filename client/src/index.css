@@ -186,9 +186,9 @@ nav .nav-button,
     max-width: 400px;
   }
 
-  nav .nav-button {
+  /* nav .nav-button {
     margin-top: 1rem;
-  }
+  } */
 }
 
 @keyframes pulse {
@@ -208,9 +208,9 @@ nav .nav-button:disabled {
   color: white;
 }
 
-/* nav .logo-container {
+nav .logo-container {
   margin: 15px 0 0 10px;
-} */
+}
 
 
 /*-------- Home page --------*/
@@ -634,7 +634,7 @@ f .auth-modal.onboarding input[type='text'],
   .home h1 {
     display: block;
   }
-  nav .logo-container {
+  nav .logo-container img {
     width: 450px;
   }
   .dashboard {
