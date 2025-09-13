@@ -30,10 +30,10 @@ a:active {
   color: black;
   background-color: transparent;
 }
-a.focus {
+/* a.focus {
   color: black;
   background-color: transparent;
-}
+} */
 .error-background {
   padding-top: 3rem;
   background-color: pink;
@@ -761,7 +761,6 @@ summary {
   font-size: 20px;
   margin: 2px;
   cursor: pointer;
-  /* color: black; */
 }
 .header-chat-container .matches:hover {
   border: none;
