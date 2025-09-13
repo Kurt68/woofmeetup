@@ -789,7 +789,7 @@ summary {
   text-decoration: none;
 }
 .select-distance {
-  /* margin-top: -1rem; */
+  margin-top: -1rem;
 }
 .select-distance label {
   color: white;
