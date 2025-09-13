@@ -778,6 +778,7 @@ summary {
 
 .header-chat-container .option :not(:disabled) {
   border-bottom: solid 4px pink;
+  color: pink
 }
 
 .header-chat-container .profile,
