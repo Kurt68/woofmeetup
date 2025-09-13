@@ -761,7 +761,7 @@ summary {
   font-size: 20px;
   margin: 2px;
   cursor: pointer;
-  color: black;
+  /* color: black; */
 }
 .header-chat-container .matches:hover {
   border: none;
@@ -775,6 +775,10 @@ summary {
 
 .header-chat-container .option:disabled {
   border-bottom: solid 4px rgb(187, 187, 187);
+}
+
+.header-chat-container .option :not(:disabled) {
+  border-bottom: solid 4px pink;
 }
 
 .header-chat-container .profile,
