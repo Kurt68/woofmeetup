@@ -1359,7 +1359,7 @@ span.blink {
 .row {
   display: flex;
   flex: 1 1 0%;
-  gap: 0.5rem;
+  /* gap: 0.5rem; */
 }
 .border-form {
   border-radius: 0.5rem;
