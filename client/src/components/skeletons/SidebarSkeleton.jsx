@@ -1,5 +1,5 @@
 const SidebarSkeleton = ({ error }) => {
-  const skeletonContacts = Array(3).fill(null)
+  const skeletonContacts = Array(2).fill(null)
 
   return (
     <aside className="sidebar">
