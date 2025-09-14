@@ -484,7 +484,8 @@ f .auth-modal.onboarding input[type='text'],
   padding-left: 0.6rem;
   outline: none;
 }
-#dogs_name, #about {
+#dogs_name,
+#about {
   margin: 0;
 }
 .onboarding form button,
@@ -1462,7 +1463,7 @@ span.blink {
   padding: 0.5rem;
   list-style-type: none;
   line-height: 1.7;
-  margin: 0;
+  margin-bottom: 1rem;
 }
 .instructions p {
   padding: 1rem;
