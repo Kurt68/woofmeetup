@@ -7,6 +7,8 @@ body {
   text-align: center;
   overflow-x: hidden;
   animation: hide-scroll 7s;
+  -webkit-tap-highlight-color: transparent;
+  -tap-highlight-color: transparent;
 }
 
 a:link {
@@ -769,7 +771,10 @@ summary {
   margin: 2px;
   cursor: pointer;
 }
-.header-chat-container .matches:hover {
+.header-chat-container button:focus {
+  outline: none;
+}
+/* .header-chat-container .matches:hover {
   border: none;
   background-color: rgb(255, 255, 255);
   border-bottom: solid 4px pink;
@@ -777,7 +782,7 @@ summary {
   margin: 2px;
   padding: 10px;
   cursor: pointer;
-}
+} */
 
 .header-chat-container .option:disabled {
   border-bottom: solid 4px rgb(187, 187, 187);
