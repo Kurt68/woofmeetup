@@ -484,7 +484,9 @@ f .auth-modal.onboarding input[type='text'],
   padding-left: 0.6rem;
   outline: none;
 }
-
+#dogs_name, #about {
+  margin: 0;
+}
 .onboarding form button,
 .image-identification button {
   padding: 15px 30px;
@@ -492,7 +494,7 @@ f .auth-modal.onboarding input[type='text'],
   font-size: 15px;
   border: solid 2px rgb(83 200 160);
   border-radius: 10px;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
 }
 .image-identification form {
   padding: 0;
