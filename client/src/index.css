@@ -328,7 +328,7 @@ nav .logo-container {
 .auth-modal input[type='text'],
 .auth-modal input[type='number'] {
   padding: 8px;
-  /* margin: 8px; */
+  margin: 8px;
   font-size: 17px;
   border: 1px solid pink;
 }
