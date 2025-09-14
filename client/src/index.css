@@ -492,7 +492,7 @@ f .auth-modal.onboarding input[type='text'],
   font-size: 15px;
   border: solid 2px rgb(83 200 160);
   border-radius: 10px;
-  margin-top: 1rem;
+  margin-top: 0;
 }
 .image-identification form {
   padding: 0;
@@ -612,7 +612,7 @@ f .auth-modal.onboarding input[type='text'],
   border: 1px solid #bbf7d0;
   color: #15803d;
   padding: 16px;
-  margin-bottom: 1rem;
+  margin-bottom: 0;
   text-align: center;
   line-height: 1.4;
 }
