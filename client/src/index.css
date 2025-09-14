@@ -661,7 +661,7 @@ f .auth-modal.onboarding input[type='text'],
   flex-direction: column;
   /* justify-content:flex-end; */
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   position: relative;
   background-color: rgb(83 200 160);
 }
@@ -1414,7 +1414,7 @@ span.blink {
   }
 }
 .sidebar-render .avatar.gray {
-  margin-top: -0.35rem;
+  margin-top: -0.45rem;
 }
 .avatar.gray {
   background-color: whitesmoke;
