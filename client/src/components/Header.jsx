@@ -18,7 +18,7 @@ const Header = ({ user }) => {
           &larr; Sign Out
         </span>
         <Link to="/account-settings" className="account-settings-link">
-          Account Stuff
+          Account
         </Link>
 
         <img

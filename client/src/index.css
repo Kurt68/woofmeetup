@@ -661,7 +661,7 @@ f .auth-modal.onboarding input[type='text'],
   flex-direction: column;
   /* justify-content:flex-end; */
   align-items: center;
-  min-height: 100vh;
+  min-height: 100dvh;
   position: relative;
   background-color: rgb(83 200 160);
 }
