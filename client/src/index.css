@@ -295,7 +295,7 @@ nav .logo-container {
   flex-direction: row;
 } */
 .edit form {
-  flex-direction: row;
+  flex-direction: column;
 }
 .auth-modal form.image-submit {
   border: none;
@@ -1414,7 +1414,7 @@ span.blink {
   }
 }
 .sidebar-render .avatar.gray {
-  margin-top: -.4rem;
+  margin-top: -0.35rem;
 }
 .avatar.gray {
   background-color: whitesmoke;

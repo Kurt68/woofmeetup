@@ -2,7 +2,6 @@ import { useRef, useState } from 'react'
 import { useChatStore } from '../store/useChatStore'
 import { Image, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
-import { Tooltip } from 'react-tooltip'
 
 const MessageInput = () => {
   const [text, setText] = useState('')
@@ -89,15 +88,14 @@ const MessageInput = () => {
           >
             <Image />
           </button>
-           <button
-          type="submit"
-          className="text-buttons"
-          disabled={!text.trim() && !imagePreview}
-        >
-          <Send size={20} />
-        </button>
+          <button
+            type="submit"
+            className="text-buttons"
+            disabled={!text.trim() && !imagePreview}
+          >
+            <Send size={20} />
+          </button>
         </div>
-       
       </form>
     </div>
   )
