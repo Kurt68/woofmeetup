@@ -328,7 +328,7 @@ nav .logo-container {
 .auth-modal input[type='text'],
 .auth-modal input[type='number'] {
   padding: 8px;
-  margin: 8px;
+  /* margin: 8px; */
   font-size: 17px;
   border: 1px solid pink;
 }
@@ -492,7 +492,7 @@ f .auth-modal.onboarding input[type='text'],
   font-size: 15px;
   border: solid 2px rgb(83 200 160);
   border-radius: 10px;
-  margin-top: 0;
+  margin-top: 1rem;
 }
 .image-identification form {
   padding: 0;
