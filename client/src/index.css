@@ -8,7 +8,6 @@ body {
   overflow-x: hidden;
   animation: hide-scroll 7s;
   -webkit-tap-highlight-color: transparent;
-  -tap-highlight-color: transparent;
 }
 
 a:link {
