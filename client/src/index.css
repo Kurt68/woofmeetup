@@ -294,9 +294,9 @@ nav .logo-container {
 .auth-modal.onboarding form {
   flex-direction: row;
 }
-.edit form {
+/* .edit form {
   flex-direction: row;
-}
+} */
 .auth-modal form.image-submit {
   border: none;
   background-color: white;
@@ -492,6 +492,7 @@ f .auth-modal.onboarding input[type='text'],
   font-size: 15px;
   border: solid 2px rgb(83 200 160);
   border-radius: 10px;
+  margin-top: 0;
 }
 .image-identification form {
   padding: 0;
@@ -647,6 +648,9 @@ f .auth-modal.onboarding input[type='text'],
     margin-left: 9rem;
     margin-right: 9rem;
   }
+  .image-identification {
+    padding: 1rem;
+  }
 }
 .dashboard .swipe-container {
   flex: 2;
@@ -778,7 +782,7 @@ summary {
 
 .header-chat-container .option :not(:disabled) {
   border-bottom: solid 4px pink;
-  color: pink
+  color: pink;
 }
 
 .header-chat-container .profile,
@@ -1453,7 +1457,7 @@ span.blink {
 }
 .instructions {
   background-color: rgba(255, 192, 203, 0.3);
-  padding: 1rem;
+  padding: 0.5rem;
   list-style-type: none;
   line-height: 1.7;
   margin: 0;
