@@ -661,14 +661,9 @@ f .auth-modal.onboarding input[type='text'],
   flex-direction: column;
   /* justify-content:flex-end; */
   align-items: center;
-  /* Avoid mobile URL bar height shifts causing scroll */
-  height: 100vh; /* fallback */
-  height: 100svh; /* prefer small viewport height on mobile */
-  min-height: 0;
+  min-height: 100dvh;
   position: relative;
   background-color: rgb(83 200 160);
-  overflow: hidden; /* prevent inner abs-pos content from triggering page scroll */
-  overscroll-behavior: contain; /* reduce scroll chaining/bounce */
 }
 
 .account-settings {
