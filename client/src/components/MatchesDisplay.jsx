@@ -35,13 +35,7 @@ const MatchesDisplay = ({ matches, setClickedUser }) => {
   }, [matches])
 
   useEffect(() => {
-    const handler = setTimeout(() => {
-      getMatches()
-    }, 5000)
-
-    return () => {
-      clearTimeout(handler)
-    }
+    getMatches()
   }, [getMatches])
 
   const filteredMatchedProfiles = matchedProfiles?.filter(
@@ -49,8 +43,7 @@ const MatchesDisplay = ({ matches, setClickedUser }) => {
       matchedProfile.matches.filter((profile) => profile.user_id == userId)
         .length > 0
   )
-  if (matchesLoading)
-    return <SidebarSkeleton matches={error} /> 
+  if (matchesLoading) return <SidebarSkeleton matches={error} />
 
   return (
     <div className="matches-display">
