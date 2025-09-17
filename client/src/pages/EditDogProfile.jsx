@@ -127,154 +127,160 @@ const EditDogProfile = () => {
             Keep Image
           </button>
           {keepCurrentImage && (
-            <form className="auth-modal" onSubmit={patchCurrentUserProfile}>
-              <section>
-                <label htmlFor="dogs_name">
-                  <strong>Dogs Name</strong>
-                </label>
-                <input
-                  type="text"
-                  id="dogs_name"
-                  name="dogs_name"
-                  placeholder="Dogs Name"
-                  required={true}
-                  value={formData.dogs_name}
-                  onChange={handleChange}
-                />
-                <label htmlFor="age">
-                  <strong>Age</strong>
-                </label>
-                <div className="multiple-input-container">
+            <div className="auth-modal">
+              <form onSubmit={patchCurrentUserProfile}>
+                <section>
+                  <label htmlFor="dogs_name">
+                    <strong>Dogs Name</strong>
+                  </label>
                   <input
-                    type="number"
-                    id="age"
-                    name="age"
-                    placeholder="Age"
+                    type="text"
+                    id="dogs_name"
+                    name="dogs_name"
+                    placeholder="Dogs Name"
                     required={true}
-                    value={formData.age}
+                    value={formData.dogs_name}
                     onChange={handleChange}
                   />
-                </div>
-                <label>
-                  <strong>Choose a Meetup</strong>
-                </label>
-                <div className="multiple-input-container">
-                  <input
-                    type="radio"
-                    id="meetup-type-play-dates"
-                    name="meetup_type"
-                    value="Play Dates"
-                    onChange={handleChange}
-                    checked={formData.meetup_type === 'Play Dates'}
-                  />
-                  <label htmlFor="meetup-type-play-dates">Play Dates</label>
-                  <input
-                    type="radio"
-                    id="meetup-type-exercise-buddy"
-                    name="meetup_type"
-                    value="Exercise Buddy"
-                    onChange={handleChange}
-                    checked={formData.meetup_type === 'Exercise Buddy'}
-                  />
-                  <label htmlFor="meetup-type-exercise-buddy">
-                    Exercise Buddy
+                  <label htmlFor="age">
+                    <strong>Age</strong>
+                  </label>
+                  <div className="multiple-input-container">
+                    <input
+                      type="number"
+                      id="age"
+                      name="age"
+                      placeholder="Age"
+                      required={true}
+                      value={formData.age}
+                      onChange={handleChange}
+                    />
+                  </div>
+                  <label>
+                    <strong>Choose a Meetup</strong>
+                  </label>
+                  <div className="multiple-input-container">
+                    <input
+                      type="radio"
+                      id="meetup-type-play-dates"
+                      name="meetup_type"
+                      value="Play Dates"
+                      onChange={handleChange}
+                      checked={formData.meetup_type === 'Play Dates'}
+                    />
+                    <label htmlFor="meetup-type-play-dates">Play Dates</label>
+                    <input
+                      type="radio"
+                      id="meetup-type-exercise-buddy"
+                      name="meetup_type"
+                      value="Exercise Buddy"
+                      onChange={handleChange}
+                      checked={formData.meetup_type === 'Exercise Buddy'}
+                    />
+                    <label htmlFor="meetup-type-exercise-buddy">
+                      Exercise Buddy
+                    </label>
+                    <input
+                      type="radio"
+                      id="meetup-type-walk-companion"
+                      name="meetup_type"
+                      value="Walk Companion"
+                      onChange={handleChange}
+                      checked={formData.meetup_type === 'Walk Companion'}
+                    />
+                    <label htmlFor="meetup-type-walk-companion">
+                      Walk Companion
+                    </label>
+                  </div>
+                  <label>
+                    <strong>Show Me</strong>
+                  </label>
+                  <div className="multiple-input-container">
+                    <input
+                      type="radio"
+                      id="play-dates-interest"
+                      name="meetup_interest"
+                      value="Play Dates"
+                      onChange={handleChange}
+                      checked={formData.meetup_interest === 'Play Dates'}
+                    />
+                    <label htmlFor="play-dates-interest">Play Dates</label>
+                    <input
+                      type="radio"
+                      id="exercise-buddy-interest"
+                      name="meetup_interest"
+                      value="Exercise Buddy"
+                      onChange={handleChange}
+                      checked={formData.meetup_interest === 'Exercise Buddy'}
+                    />
+                    <label htmlFor="exercise-buddy-interest">
+                      Exercise Buddy
+                    </label>
+                    <input
+                      type="radio"
+                      id="walk-companion-interest"
+                      name="meetup_interest"
+                      value="Walk Companion"
+                      onChange={handleChange}
+                      checked={formData.meetup_interest === 'Walk Companion'}
+                    />
+                    <label htmlFor="walk-companion-interest">
+                      Walk Companion
+                    </label>
+                    <input
+                      type="radio"
+                      id="all-meetup-types"
+                      name="meetup_interest"
+                      value="Show all meetup activites"
+                      onChange={handleChange}
+                      checked={
+                        formData.meetup_interest === 'Show all meetup activites'
+                      }
+                    />
+                    <label htmlFor="all-meetup-types">
+                      Show all meetup activities
+                    </label>
+                  </div>
+                  <label htmlFor="about">
+                    <strong>About Me</strong>
                   </label>
                   <input
-                    type="radio"
-                    id="meetup-type-walk-companion"
-                    name="meetup_type"
-                    value="Walk Companion"
+                    type="text"
+                    id="about"
+                    name="about"
+                    required={true}
+                    placeholder="I like long walks with friends..."
+                    value={formData.about}
                     onChange={handleChange}
-                    checked={formData.meetup_type === 'Walk Companion'}
                   />
-                  <label htmlFor="meetup-type-walk-companion">
-                    Walk Companion
-                  </label>
-                </div>
-                <label>
-                  <strong>Show Me</strong>
-                </label>
-                <div className="multiple-input-container">
-                  <input
-                    type="radio"
-                    id="play-dates-interest"
-                    name="meetup_interest"
-                    value="Play Dates"
-                    onChange={handleChange}
-                    checked={formData.meetup_interest === 'Play Dates'}
-                  />
-                  <label htmlFor="play-dates-interest">Play Dates</label>
-                  <input
-                    type="radio"
-                    id="exercise-buddy-interest"
-                    name="meetup_interest"
-                    value="Exercise Buddy"
-                    onChange={handleChange}
-                    checked={formData.meetup_interest === 'Exercise Buddy'}
-                  />
-                  <label htmlFor="exercise-buddy-interest">
-                    Exercise Buddy
+                  <label htmlFor="show-meetup-type">
+                    Show meetup type on profile
                   </label>
                   <input
-                    type="radio"
-                    id="walk-companion-interest"
-                    name="meetup_interest"
-                    value="Walk Companion"
+                    type="checkbox"
+                    id="show-meetup-type"
+                    name="show_meetup_type"
                     onChange={handleChange}
-                    checked={formData.meetup_interest === 'Walk Companion'}
+                    checked={formData.show_meetup_type}
                   />
-                  <label htmlFor="walk-companion-interest">
-                    Walk Companion
-                  </label>
                   <input
-                    type="radio"
-                    id="all-meetup-types"
-                    name="meetup_interest"
-                    value="Show all meetup activites"
+                    type="hidden"
+                    required={true}
+                    value={formData.current_user_search_radius}
                     onChange={handleChange}
-                    checked={
-                      formData.meetup_interest === 'Show all meetup activites'
-                    }
                   />
-                  <label htmlFor="all-meetup-types">
-                    Show all meetup activities
-                  </label>
-                </div>
-                <label htmlFor="about">
-                  <strong>About Me</strong>
-                </label>
-                <input
-                  type="text"
-                  id="about"
-                  name="about"
-                  required={true}
-                  placeholder="I like long walks with friends..."
-                  value={formData.about}
-                  onChange={handleChange}
-                />
-                <label htmlFor="show-meetup-type">
-                  Show meetup type on profile
-                </label>
-                <input
-                  type="checkbox"
-                  id="show-meetup-type"
-                  name="show_meetup_type"
-                  onChange={handleChange}
-                  checked={formData.show_meetup_type}
-                />
-                <input
-                  type="hidden"
-                  required={true}
-                  value={formData.current_user_search_radius}
-                  onChange={handleChange}
-                />
-                <br />
-                <button type="submit" disabled={isLoading}>
-                  {isLoading ? <Loader className="spin" size={28} /> : 'Submit'}
-                </button>
-                {error && <p className="server-error">{error}</p>}
-              </section>
-            </form>
+                  <br />
+                  <button type="submit" disabled={isLoading}>
+                    {isLoading ? (
+                      <Loader className="spin" size={28} />
+                    ) : (
+                      'Submit'
+                    )}
+                  </button>
+                  {error && <p className="server-error">{error}</p>}
+                </section>
+              </form>
+            </div>
           )}
           {!removeImage
             ? !removeImage && (
