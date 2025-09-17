@@ -190,7 +190,7 @@ nav .nav-button,
   }
 
   .header-chat-container .header {
-    background: #53c8a0;
+    background: #53c8a0 !important;
   }
 }
 
