@@ -189,9 +189,9 @@ nav .nav-button,
     max-width: 400px;
   }
 
-  /* nav .nav-button {
-    margin-top: 1rem;
-  } */
+  .header-chat-container .header {
+    background: #53c8a0;
+  }
 }
 
 @keyframes pulse {
