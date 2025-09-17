@@ -332,7 +332,7 @@ nav .logo-container {
   font-size: 17px;
   border: 1px solid pink;
 }
-f .auth-modal.onboarding input[type='text'],
+.auth-modal.onboarding input[type='text'],
 .auth-modal.onboarding input[type='number'] {
   margin: 0;
 }
@@ -485,7 +485,8 @@ f .auth-modal.onboarding input[type='text'],
   outline: none;
 }
 #dogs_name,
-#about {
+#about,
+#age {
   margin: 0;
 }
 .onboarding form button,
