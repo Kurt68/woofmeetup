@@ -179,8 +179,8 @@ nav .nav-button,
   }
 
   nav .logo-container {
-    margin: 15px 20px 0 20px;
-    height: auto;
+    margin: 15px 20px 0 20px !important;
+    height: auto !important;
   }
 
   nav .logo-container .logo {
@@ -210,7 +210,7 @@ nav .nav-button:disabled {
 }
 
 nav .logo-container {
-  margin: 15px 0 0 10px;
+  margin: 15px 0 0 0;
 }
 
 /*-------- Home page --------*/
