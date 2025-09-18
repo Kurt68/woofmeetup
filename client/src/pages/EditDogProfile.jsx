@@ -297,7 +297,8 @@ const EditDogProfile = () => {
         </div>
 
         {showSecondButton && (
-          <form className="auth-modal" onSubmit={patchCurrentUserProfile}>
+          <div className="auth-modal">
+          <form onSubmit={patchCurrentUserProfile}>
             <section>
               <label htmlFor="dogs_name">
                 <strong>Dogs Name</strong>
@@ -441,6 +442,7 @@ const EditDogProfile = () => {
               {error && <p className="server-error">{error}</p>}
             </section>
           </form>
+          </div>
         )}
       </div>
     </>
