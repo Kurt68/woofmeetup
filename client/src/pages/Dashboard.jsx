@@ -206,6 +206,11 @@ const Dashboard = () => {
                                 }{' '}
                                 miles from you.
                               </span>
+                                   <span className="about">
+                                    <br />
+                                {', '}
+                                About{filteredMeetupTypeUsers.about}
+                              </span>
 
                               <span
                                 className={
