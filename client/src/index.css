@@ -967,10 +967,15 @@ select {
   top: 6.9rem;
   user-select: none;
 }
-/* .caption .dogs_name,
-.caption .about {
+.dog-info::first-letter {
+  text-transform: uppercase;
+}
+
+.dogs_name,
+.about {
   display: inline-block;
-} */
+  text-transform: lowercase;
+}
 .caption p,
 .caption span {
   font-size: 1.4rem;

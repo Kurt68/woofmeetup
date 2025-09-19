@@ -183,9 +183,9 @@ const Dashboard = () => {
                           <div className="caption">
                             <p>
                               <span className="dogs_name">
-                                {filteredMeetupTypeUsers.dogs_name} 
+                                {filteredMeetupTypeUsers.dogs_name}
                               </span>
-                          
+
                               <span
                                 className={
                                   filteredMeetupTypeUsers.show_meetup_type
@@ -209,8 +209,8 @@ const Dashboard = () => {
                                 }{' '}
                                 miles from you.
                               </span>
+                              <br />
                               <span className="about">
-                                <br />
                                 {filteredMeetupTypeUsers.about}
                               </span>
 
