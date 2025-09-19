@@ -967,7 +967,8 @@ select {
   top: 6.9rem;
   user-select: none;
 }
-.caption span {
+.caption .dogs_name,
+.caption .about {
   display: inline-block;
 }
 .caption p,
