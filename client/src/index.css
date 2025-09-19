@@ -488,7 +488,7 @@ nav .logo-container {
   margin: 0;
 }
 
-.dogs-name::first-letter,
+.dogs_name::first-letter,
 .about::first-letter {
   text-transform: uppercase;
 }
