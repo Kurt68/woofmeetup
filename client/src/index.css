@@ -723,7 +723,7 @@ summary {
   text-decoration: none !important;
   position: absolute;
   right: 0.5rem;
-  top: 0.5rem;
+  top: 0.2rem;
 }
 .privacy-policy ul,
 .terms-conditions ul {
@@ -823,7 +823,7 @@ summary {
 }
 .log-out-icon {
   position: absolute;
-  top: 0.5rem;
+  top: 0.2rem;
   left: 0.5rem;
   font-size: 15px;
 }
