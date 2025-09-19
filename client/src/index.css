@@ -931,7 +931,7 @@ select {
   background-position: right;
   background-repeat: no-repeat;
   border: none;
-  padding: 0.7rem 7rem 0.7rem 0.6rem;
+  padding: 0.4rem 7rem 0.4rem 0.6rem;
   cursor: pointer;
   border-radius: 50px;
 }
