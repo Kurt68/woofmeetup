@@ -798,8 +798,8 @@ summary {
   text-align: left;
   text-indent: 1rem;
 }
-select:focus {
-  outline: none;
+::selection {
+  color: black;
 }
 
 .edit-dog-profile {
