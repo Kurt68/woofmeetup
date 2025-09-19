@@ -964,7 +964,7 @@ select {
 }
 .caption {
   position: relative;
-  top: 6.9rem;
+  top: 6.8rem;
   user-select: none;
 }
 .dog-info::first-letter {
