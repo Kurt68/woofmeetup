@@ -799,11 +799,12 @@ summary {
   text-indent: 1rem;
 }
 ::selection {
-  color: black !important;
+  background-color: transparent;
+  color: inherit;
 }
-select:focus {
-  outline: none;
-  appearance: none; 
+::-moz-selection {
+  background-color: transparent;
+  color: inherit;
 }
 
 .edit-dog-profile {
