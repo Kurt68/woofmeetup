@@ -492,6 +492,10 @@ nav .logo-container {
 .about::first-letter {
   text-transform: uppercase;
 }
+.dogs-name,
+.about {
+  text-transform: lowercase;
+}
 .onboarding form button,
 .image-identification button {
   padding: 15px 30px;
