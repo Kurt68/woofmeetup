@@ -487,10 +487,7 @@ nav .logo-container {
 #age {
   margin: 0;
 }
-.dogs-name,
-.about {
-  text-transform: lowercase;
-}
+
 .dogs-name::first-letter,
 .about::first-letter {
   text-transform: uppercase;
