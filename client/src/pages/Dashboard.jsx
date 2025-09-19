@@ -181,7 +181,7 @@ const Dashboard = () => {
                           }}
                         >
                           <div className="caption">
-                            <p>
+                            <p className="dog-info">
                               <span className="dogs_name">
                                 {filteredMeetupTypeUsers.dogs_name}
                               </span>
