@@ -207,7 +207,7 @@ const Dashboard = () => {
                                 {
                                   filteredMeetupTypeUsers.distance_to_other_users
                                 }{' '}
-                                miles from you.
+                                miles from you
                               </span>
                               <br />
                               <span className="about">
