@@ -931,7 +931,7 @@ select {
   background-position: right;
   background-repeat: no-repeat;
   border: none;
-  padding: 0.4rem 7rem 0.4rem 0.6rem;
+  padding: 0.7rem 7rem 0.7rem 0.6rem;
   cursor: pointer;
   border-radius: 50px;
 }
@@ -970,7 +970,9 @@ select {
 .dog-info::first-letter {
   text-transform: uppercase;
 }
-
+.dog-info {
+  text-transform: lowercase;
+}
 .dogs_name,
 .about {
   display: inline-block;
