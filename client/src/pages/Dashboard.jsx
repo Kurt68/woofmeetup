@@ -185,7 +185,7 @@ const Dashboard = () => {
                               <span className="dogs_name">
                                 {filteredMeetupTypeUsers.dogs_name} 
                               </span>
-                              <br />
+                          
                               <span
                                 className={
                                   filteredMeetupTypeUsers.show_meetup_type

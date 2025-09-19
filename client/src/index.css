@@ -487,15 +487,15 @@ nav .logo-container {
 #age {
   margin: 0;
 }
-
-.dogs-name::first-letter,
-.about::first-letter {
-  text-transform: uppercase;
-}
 .dogs-name,
 .about {
   text-transform: lowercase;
 }
+.dogs-name::first-letter,
+.about::first-letter {
+  text-transform: uppercase;
+}
+
 .onboarding form button,
 .image-identification button {
   padding: 15px 30px;
