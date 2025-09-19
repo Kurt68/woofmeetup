@@ -966,7 +966,9 @@ select {
   position: relative;
   top: 6.9rem;
   user-select: none;
-  display: inline-block
+}
+.caption span {
+  display: inline-block;
 }
 .caption p,
 .caption span {
