@@ -799,7 +799,11 @@ summary {
   text-indent: 1rem;
 }
 ::selection {
-  color: black;
+  color: black !important;
+}
+select:focus {
+  outline: none;
+  appearance: none; 
 }
 
 .edit-dog-profile {
