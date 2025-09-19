@@ -968,6 +968,7 @@ select {
   font-family: 'Poor Story', system-ui !important;
   font-weight: 600;
   font-style: normal;
+  line-height: 1.2;
 }
 .profile .avatar,
 .match-button .img-container {
@@ -994,7 +995,7 @@ select {
   }
   .caption p,
   .caption span {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
   .caption {
     top: 7.5rem;

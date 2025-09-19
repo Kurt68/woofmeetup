@@ -156,7 +156,7 @@ const Dashboard = () => {
                 <p>Allow geolocation!</p>
               </button>
             ) : null}
-         
+
             <div className="polaroid-container">
               {longitude && latitude
                 ? filteredMeetupTypeUsers?.map((filteredMeetupTypeUsers) => (
@@ -206,10 +206,9 @@ const Dashboard = () => {
                                 }{' '}
                                 miles from you.
                               </span>
-                                   <span className="about">
-                                    <br />
-                                {', '}
-                                About{filteredMeetupTypeUsers.about}
+                              <span className="about">
+                                <br />
+                               {filteredMeetupTypeUsers.about}
                               </span>
 
                               <span
@@ -236,7 +235,7 @@ const Dashboard = () => {
                   ))
                 : null}
             </div>
-               <div className="select-distance">
+            <div className="select-distance">
               <form onSubmit={handleSubmit}>
                 <section>
                   <label htmlFor="distance">Search </label>
