@@ -1155,7 +1155,7 @@ select {
   color: white;
   background: rgb(83 200 160);
   cursor: pointer;
-  border-radius: 50px;
+  border-radius: 75px;
   box-shadow: rgba(0, 0, 0, 0.2) -4px 9px 15px -6px;
 }
 .background-button .avatar {
