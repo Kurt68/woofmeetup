@@ -26,7 +26,7 @@ const Header = ({ user }) => {
           src={user.imageUrl}
           alt={'photo of ' + user.dogs_name}
         />
-        <h3>{user.dogs_name}</h3>
+        <h4>{user.dogs_name}</h4>
         <Link className="edit-dog-profile" to="/edit-dog-profile">
           <span>
             {' '}

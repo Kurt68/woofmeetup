@@ -190,7 +190,7 @@ nav .nav-button,
   .header-chat-container .header {
     background: #53c8a0 !important;
   }
-  /* .profile h3 {
+  /* .profile h4 {
     display: none;
   } */
   .avatar:not(.profile .avatar) {
@@ -859,7 +859,7 @@ summary {
   margin-right: 0.5rem;
 }
 
-.profile h3 {
+.profile h4 {
   margin: 4px 0 0 0;
 }
 
@@ -1235,7 +1235,7 @@ span.blink {
 
 /* Chat Windwow  */
 .chat-scroll {
-  max-height: 16rem;
+  max-height: 18rem;
   overflow-y: auto;
   scrollbar-color: pink white;
 }
