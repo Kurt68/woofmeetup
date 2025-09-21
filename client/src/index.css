@@ -1122,7 +1122,6 @@ select {
   justify-content: flex-end;
   align-items: center;
   position: relative;
-  height: 1rem
 }
 .position {
   display: flex;
