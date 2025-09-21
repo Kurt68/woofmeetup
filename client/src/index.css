@@ -194,8 +194,10 @@ nav .nav-button,
     display: none;
   } */
   .avatar:not(.profile .avatar) {
-    width: 3rem !important;
-    height: 3rem !important;
+   
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+    border: 3px solid pink;
   }
 }
 
