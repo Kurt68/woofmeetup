@@ -194,12 +194,12 @@ nav .nav-button,
     display: none;
   } */
   .avatar {
-  object-fit: cover;
-  border-radius: 9999px;
-  width: 3rem;
-  height: 3rem;
-  border: 4px solid pink;
-}
+    object-fit: cover;
+    border-radius: 9999px;
+    width: 3rem!important;
+    height: 3rem!important;
+    border: 4px solid pink;
+  }
 }
 
 @keyframes pulse {
