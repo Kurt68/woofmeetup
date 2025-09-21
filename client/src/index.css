@@ -193,12 +193,9 @@ nav .nav-button,
   /* .profile h3 {
     display: none;
   } */
-  .profile .avatar {
-    object-fit: cover;
-    border-radius: 9999px;
-    width: 3rem;
-    height: 3rem;
-    border: 4px solid pink;
+  .avatar:not(.profile .avatar) {
+    width: 3rem !important;
+    height: 3rem !important;
   }
 }
 
