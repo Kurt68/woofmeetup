@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 const MessageInput = () => {
   const [text, setText] = useState('')
   const [imagePreview, setImagePreview] = useState(null)
+  const [isSendingImage, setIsSendingImage] = useState(false)
   const fileInputRef = useRef(null)
   const { sendMessage } = useChatStore()
 
@@ -32,6 +33,9 @@ const MessageInput = () => {
     e.preventDefault()
     if (!text.trim() && !imagePreview) return
 
+    const sendingImage = Boolean(imagePreview)
+    if (sendingImage) setIsSendingImage(true)
+
     try {
       await sendMessage({
         text: text.trim(),
@@ -44,6 +48,8 @@ const MessageInput = () => {
       if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (error) {
       console.error('Failed to send message:', error)
+    } finally {
+      if (sendingImage) setIsSendingImage(false)
     }
   }
 
@@ -61,6 +67,18 @@ const MessageInput = () => {
               &#x2715;
             </div>
           </div>
+
+          {isSendingImage && (
+            <div
+              className="sending-indicator"
+              aria-live="polite"
+              aria-label="Sending image"
+            >
+              <span className="dot" />
+              <span className="dot" />
+              <span className="dot" />
+            </div>
+          )}
         </div>
       )}
 
