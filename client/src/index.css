@@ -758,7 +758,7 @@ summary {
   position: absolute;
   left: 0;
   right: 0;
-  top: 2.5rem;
+  top: 3rem;
 }
 
 /*-------- Chat Container --------*/
@@ -784,8 +784,9 @@ summary {
   background-color: rgb(255, 255, 255);
   border-bottom: solid 3px rgb(83 200 160);
   font-size: 18px;
-  margin: 2px;
+  margin: 4px;
   cursor: pointer;
+  padding: 0 0.1rem 0 0.1rem;
 }
 
 .header-chat-container .option:disabled {
@@ -914,7 +915,7 @@ summary {
   margin-right: 1rem;
 }
 .match-button h3 {
-  margin-top: 0.35rem;
+  margin-top: 0.1rem;
   font-weight: 500;
 }
 
