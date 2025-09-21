@@ -200,6 +200,9 @@ nav .nav-button,
   .background-button {
     padding: 1rem !important;
   }
+  .select-distance label {
+    display: none;
+  }
 }
 
 @keyframes pulse {
