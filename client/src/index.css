@@ -190,9 +190,16 @@ nav .nav-button,
   .header-chat-container .header {
     background: #53c8a0 !important;
   }
-  .profile h3 {
+  /* .profile h3 {
     display: none;
-  }
+  } */
+  .avatar {
+  object-fit: cover;
+  border-radius: 9999px;
+  width: 3rem;
+  height: 3rem;
+  border: 4px solid pink;
+}
 }
 
 @keyframes pulse {
@@ -1173,8 +1180,8 @@ select {
 .avatar {
   object-fit: cover;
   border-radius: 9999px;
-  width: 4rem;
-  height: 4rem;
+  width: 5rem;
+  height: 5rem;
   border: 4px solid pink;
 }
 .online-users {
