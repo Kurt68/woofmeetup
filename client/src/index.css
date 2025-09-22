@@ -203,6 +203,9 @@ nav .nav-button,
   .select-distance label {
     display: none;
   }
+  .polaroid-container .swipe:first-child .polaroid {
+    margin-top: 2rem;
+  }
 }
 
 @keyframes pulse {
