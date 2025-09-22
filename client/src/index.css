@@ -680,8 +680,9 @@ nav .logo-container {
   /* justify-content:flex-end; */
   align-items: center;
   min-height: 100dvh;
-  position: relative;
+  /* position: relative; */
   background-color: rgb(83 200 160);
+  justify-content: start;
 }
 
 .account-settings {
@@ -754,12 +755,12 @@ summary {
     padding: 0 20%;
   }
 }
-.swipe {
+/* .swipe {
   position: absolute;
   left: 0;
   right: 0;
   top: 3rem;
-}
+} */
 
 /*-------- Chat Container --------*/
 
