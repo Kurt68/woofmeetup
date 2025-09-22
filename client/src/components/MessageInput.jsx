@@ -87,7 +87,7 @@ const MessageInput = () => {
           <input
             type="text"
             className="border-form"
-            placeholder="Type a message..."
+            placeholder="Type a message/send image jpg, gif, png, svg on desktop..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
