@@ -204,7 +204,7 @@ nav .nav-button,
     display: none;
   }
   .polaroid-container .swipe:first-child .polaroid {
-    margin-top: 2rem;
+    margin-top: -2rem;
   }
 }
 
