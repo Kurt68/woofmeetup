@@ -57,20 +57,14 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    // Read latest value from the form to avoid stale state during the same tick
-    const selected =
-      e.currentTarget?.elements?.distance?.value ?? selectDistance
     try {
       const response = await axios.put(`${API_URL}/user-select-distance`, {
         userId,
-        selectDistance: selected,
+        selectDistance: selectDistance,
       })
-      const success = response.status === 200
+      const success = (response.status = 200)
       if (success) {
-        // Ensure client state reflects latest server state before fetching users
-        await getUser()
-        // Pass override radius so results reflect change immediately
-        await getMeetupTypeUsers(selected)
+        getMeetupTypeUsers()
       }
     } catch (err) {
       console.log(err)
@@ -88,22 +82,18 @@ const Dashboard = () => {
     }
   }, [userId])
 
-  const getMeetupTypeUsers = useCallback(
-    async (overrideRadius) => {
-      try {
-        const response = await axios.get(`${API_URL}/meetup-type-users`, {
-          params: {
-            userId,
-            ...(overrideRadius ? { searchRadius: overrideRadius } : {}),
-          },
-        })
-        setMeetupTypeUsers(response.data)
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    [userId]
-  )
+  const getMeetupTypeUsers = useCallback(async () => {
+    try {
+      const response = await axios.get(`${API_URL}/meetup-type-users`, {
+        params: {
+          userId,
+        },
+      })
+      setMeetupTypeUsers(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [userId])
 
   useEffect(() => {
     getUser()

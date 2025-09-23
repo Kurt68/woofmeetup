@@ -396,7 +396,6 @@ export const getMeetupTypeUsers = async (req, res) => {
             current_location: '$location.coordinates',
             meetup_interest: '$meetup_interest',
             search_radius: '$current_user_search_radius',
-            search_radius_override: parseInt(req.query.searchRadius) || null,
           },
           pipeline: [
             {
@@ -484,12 +483,7 @@ export const getMeetupTypeUsers = async (req, res) => {
             {
               $match: {
                 $expr: {
-                  $lte: [
-                    '$distance_to_other_users',
-                    {
-                      $ifNull: ['$$search_radius_override', '$$search_radius'],
-                    },
-                  ],
+                  $lte: ['$distance_to_other_users', '$$search_radius'],
                 },
               },
             },
