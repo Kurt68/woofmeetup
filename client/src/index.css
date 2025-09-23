@@ -822,14 +822,14 @@ summary {
   text-align: left;
   text-indent: 1rem;
 }
-::selection {
+/* ::selection {
   background-color: transparent;
   color: inherit;
 }
 ::-moz-selection {
   background-color: transparent;
   color: inherit;
-}
+} */
 select option:checked {
   color: black;
 }
