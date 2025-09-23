@@ -955,6 +955,7 @@ select {
   padding: 0.75rem 7rem 0.75rem 0.6rem;
   cursor: pointer;
   border-radius: 50px;
+  color: black;
 }
 
 .submit {
