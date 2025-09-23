@@ -74,7 +74,8 @@ const Dashboard = () => {
           },
           { replace: true }
         )
-        getMeetupTypeUsers()
+        // Fetch new cards immediately with the selected radius
+        await getMeetupTypeUsers(current)
       }
     } catch (err) {
       console.log(err)
@@ -92,18 +93,26 @@ const Dashboard = () => {
     }
   }, [userId])
 
-  const getMeetupTypeUsers = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}/meetup-type-users`, {
-        params: {
-          userId,
-        },
-      })
-      setMeetupTypeUsers(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [userId])
+  const getMeetupTypeUsers = useCallback(
+    async (overrideDistance) => {
+      try {
+        const response = await axios.get(`${API_URL}/meetup-type-users`, {
+          params: {
+            userId,
+            selectDistance: overrideDistance ?? selectDistance,
+          },
+          headers: {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+          },
+        })
+        setMeetupTypeUsers(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    [userId, selectDistance]
+  )
 
   useEffect(() => {
     getUser()

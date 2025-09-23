@@ -380,7 +380,8 @@ export const getUser = async (req, res) => {
 // Get current user meetup_interest and all users who have same meetup_interest or
 // show all meetup activites to the user along with current_user_search_radius from the Database
 export const getMeetupTypeUsers = async (req, res) => {
-  const { userId } = req.query
+  const { userId, selectDistance } = req.query
+  const overrideRadius = parseInt(selectDistance)
 
   try {
     // One degree of latitude equals approximately 364,000 feet (69 miles), one minute equals 6,068 feet (1.15 miles),
@@ -395,7 +396,18 @@ export const getMeetupTypeUsers = async (req, res) => {
           let: {
             current_location: '$location.coordinates',
             meetup_interest: '$meetup_interest',
-            search_radius: '$current_user_search_radius',
+            search_radius: {
+              $cond: {
+                if: {
+                  $and: [
+                    { $ne: [overrideRadius, NaN] },
+                    { $gt: [overrideRadius, 0] },
+                  ],
+                },
+                then: overrideRadius,
+                else: '$current_user_search_radius',
+              },
+            },
           },
           pipeline: [
             {
