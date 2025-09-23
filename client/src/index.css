@@ -830,6 +830,9 @@ summary {
   background-color: transparent;
   color: inherit;
 }
+select option:checked {
+  color: black;
+}
 
 .edit-dog-profile {
   font-size: 15px;
