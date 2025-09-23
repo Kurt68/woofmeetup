@@ -20,6 +20,7 @@ const EditDogProfile = () => {
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [aboutError, setAboutError] = useState('')
 
   const [user, setUser] = useState({})
 
@@ -72,6 +73,12 @@ const EditDogProfile = () => {
   const patchCurrentUserProfile = async (e) => {
     e.preventDefault()
 
+    // Block submit if About exceeds 26 chars
+    if (typeof formData.about === 'string' && formData.about.length > 26) {
+      setAboutError('About must be 26 characters or fewer.')
+      return
+    }
+
     try {
       setIsLoading(true)
       setError(null)
@@ -92,6 +99,15 @@ const EditDogProfile = () => {
     const name = e.target.name
     const value =
       e.target.type === 'checkbox' ? e.target.checked : e.target.value
+
+    // Validate about field length (max 26 characters)
+    if (name === 'about') {
+      if (typeof value === 'string' && value.length > 26) {
+        setAboutError('About must be 26 characters or fewer.')
+      } else {
+        setAboutError('')
+      }
+    }
 
     setFormData((prevState) => ({
       ...prevState,
@@ -249,10 +265,15 @@ const EditDogProfile = () => {
                     id="about"
                     name="about"
                     required={true}
-                    placeholder="Max 26 characters please..."
+                    placeholder="I like to play ball..."
                     value={formData.about}
                     onChange={handleChange}
                   />
+                  {aboutError && (
+                    <p className="server-error" role="alert">
+                      {aboutError}
+                    </p>
+                  )}
                   <label htmlFor="show-meetup-type">
                     Show meetup type on profile
                   </label>
@@ -270,7 +291,10 @@ const EditDogProfile = () => {
                     onChange={handleChange}
                   />
                   <br />
-                  <button type="submit" disabled={isLoading}>
+                  <button
+                    type="submit"
+                    disabled={isLoading || aboutError.length > 0}
+                  >
                     {isLoading ? (
                       <Loader className="spin" size={28} />
                     ) : (
@@ -419,10 +443,15 @@ const EditDogProfile = () => {
                   id="about"
                   name="about"
                   required={true}
-                  placeholder="I like long walks with friends..."
+                  placeholder="I like to play ball..."
                   value={formData.about}
                   onChange={handleChange}
                 />
+                {aboutError && (
+                  <p className="server-error" role="alert">
+                    {aboutError}
+                  </p>
+                )}
                 <label htmlFor="show-meetup-type">
                   Show meetup type on profile
                 </label>
@@ -440,7 +469,10 @@ const EditDogProfile = () => {
                   onChange={handleChange}
                 />
                 <br />
-                <button type="submit" disabled={isLoading}>
+                <button
+                  type="submit"
+                  disabled={isLoading || aboutError.length > 0}
+                >
                   {isLoading ? <Loader className="spin" size={28} /> : 'Submit'}
                 </button>
                 {error && <p className="server-error">{error}</p>}

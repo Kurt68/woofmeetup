@@ -206,7 +206,7 @@ const Onboarding = () => {
                     id="about"
                     name="about"
                     required={true}
-                    placeholder="Max 26 characters please..."
+                    placeholder="I like to play ball..."
                     value={formData.about}
                     onChange={handleChange}
                   />
