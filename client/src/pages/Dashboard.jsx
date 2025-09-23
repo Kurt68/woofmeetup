@@ -36,6 +36,7 @@ const Dashboard = () => {
   }
 
   function handleLocationClick() {
+    setClickedGeo(true)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error)
     } else {
@@ -54,6 +55,10 @@ const Dashboard = () => {
   const [lastDirection, setLastDirection] = useState()
   const [cookies] = useCookies('user')
   const userId = cookies.UserId
+
+  // Hint popup for broadening search
+  const [showSearchHint, setShowSearchHint] = useState(false)
+  const [clickedGeo, setClickedGeo] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -137,12 +142,56 @@ const Dashboard = () => {
       !matchedUserIdsandUser.includes(meetupTypeUsers.user_id) // No matched UserId and User include meetupTypeUsers.user_id
   )
 
+  // Show a hint after geolocation if no matches are found
+  useEffect(() => {
+    if (!clickedGeo) return
+    if (longitude == null || latitude == null) return
+    if (!Array.isArray(filteredMeetupTypeUsers)) return
+    if (filteredMeetupTypeUsers.length !== 0) return
+
+    const count = Number(localStorage.getItem('searchHintShownCount') || '0')
+    if (count >= 3) return
+
+    setShowSearchHint(true)
+    localStorage.setItem('searchHintShownCount', String(count + 1))
+
+    const timer = setTimeout(() => setShowSearchHint(false), 6000)
+    return () => clearTimeout(timer)
+  }, [clickedGeo, longitude, latitude, filteredMeetupTypeUsers, selectDistance])
+
   // for testing Error Boundary
   // throw new Error('Component')
   return (
     <>
       {user && (
         <div className="dashboard">
+          {showSearchHint && (
+            <div
+              className="search-hint-backdrop"
+              onClick={() => setShowSearchHint(false)}
+            >
+              <div
+                className="search-hint"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="search-hint-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 id="search-hint-title">Tip</h3>
+                <p>
+                  Not seeing potential matches after enabling location? Try
+                  broadening your search radius (default is 10 miles).
+                </p>
+                <button
+                  className="search-hint-close"
+                  type="button"
+                  onClick={() => setShowSearchHint(false)}
+                >
+                  Got it
+                </button>
+              </div>
+            </div>
+          )}
           <ChatContainer user={user} />
           <div className="swipe-container">
             <div className="swipe-info">

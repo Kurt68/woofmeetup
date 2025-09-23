@@ -40,7 +40,7 @@ const Onboarding = () => {
 
     // Block submit if About exceeds 26 chars
     if (typeof formData.about === 'string' && formData.about.length > 26) {
-      setAboutError('About must be 26 characters or fewer.')
+      setAboutError('About me must be 26 characters or fewer.')
       return
     }
 
@@ -67,7 +67,7 @@ const Onboarding = () => {
     // Validate about field length (max 26 characters)
     if (name === 'about') {
       if (typeof value === 'string' && value.length > 26) {
-        setAboutError('About must be 26 characters or fewer.')
+        setAboutError('About me must be 26 characters or fewer.')
       } else {
         setAboutError('')
       }
