@@ -36,7 +36,6 @@ const Dashboard = () => {
   }
 
   function handleLocationClick() {
-    setClickedGeo(true)
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(success, error)
     } else {
@@ -55,10 +54,6 @@ const Dashboard = () => {
   const [lastDirection, setLastDirection] = useState()
   const [cookies] = useCookies('user')
   const userId = cookies.UserId
-
-  // Toast for broadening search after geolocation
-  const [clickedGeo, setClickedGeo] = useState(false)
-  const [showGeoToast, setShowGeoToast] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -142,82 +137,12 @@ const Dashboard = () => {
       !matchedUserIdsandUser.includes(meetupTypeUsers.user_id) // No matched UserId and User include meetupTypeUsers.user_id
   )
 
-  // Show a toast up to 3 times if, after geolocation, there are no nearby matches
-  useEffect(() => {
-    if (!clickedGeo) return
-    if (longitude == null || latitude == null) return
-    if (!Array.isArray(filteredMeetupTypeUsers)) return
-    if (filteredMeetupTypeUsers.length !== 0) return
-
-    const count = Number(localStorage.getItem('geoToastCount') || '0')
-    if (count >= 3) return
-
-    setShowGeoToast(true)
-    localStorage.setItem('geoToastCount', String(count + 1))
-
-    const timer = setTimeout(() => setShowGeoToast(false), 5000)
-    return () => clearTimeout(timer)
-  }, [clickedGeo, longitude, latitude, filteredMeetupTypeUsers])
-
   // for testing Error Boundary
   // throw new Error('Component')
   return (
     <>
       {user && (
         <div className="dashboard">
-          {/* Geo Toast (no global CSS to minimize surface area) */}
-          {showGeoToast && (
-            <div
-              role="status"
-              aria-live="polite"
-              style={{
-                position: 'fixed',
-                left: '50%',
-                transform: 'translateX(-50%)',
-                bottom: '16px',
-                zIndex: 1000,
-                background: '#ffffff',
-                color: '#000',
-                borderRadius: '9999px',
-                padding: '10px 16px',
-                boxShadow:
-                  '0 10px 36px rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.06)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-              }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: '10px',
-                  height: '10px',
-                  background: 'pink',
-                  borderRadius: '50%',
-                  boxShadow: '0 0 0 6px rgba(255,192,203,0.35)',
-                }}
-              />
-              <span style={{ fontSize: '14px' }}>
-                Not seeing potential matches after enabling location? Try
-                broadening your search radius (default is 10 miles).
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowGeoToast(false)}
-                style={{
-                  marginLeft: '6px',
-                  color: 'white',
-                  backgroundColor: 'pink',
-                  border: 'none',
-                  borderRadius: '9999px',
-                  padding: '6px 10px',
-                  cursor: 'pointer',
-                }}
-              >
-                Got it
-              </button>
-            </div>
-          )}
           <ChatContainer user={user} />
           <div className="swipe-container">
             <div className="swipe-info">
