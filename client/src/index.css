@@ -921,7 +921,7 @@ select option:checked {
   flex-direction: column;
   margin-right: 1rem;
 }
-.match-button h3 {
+.match-button h4 {
   margin-top: 0.1rem;
   font-weight: 500;
 }
