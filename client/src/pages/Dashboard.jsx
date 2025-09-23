@@ -67,7 +67,10 @@ const Dashboard = () => {
       })
       const success = response.status === 200
       if (success) {
-        getMeetupTypeUsers()
+        // Ensure client state reflects latest server state before fetching users
+        await getUser()
+        // Pass override radius so results reflect change immediately
+        await getMeetupTypeUsers(selected)
       }
     } catch (err) {
       console.log(err)
@@ -85,18 +88,22 @@ const Dashboard = () => {
     }
   }, [userId])
 
-  const getMeetupTypeUsers = useCallback(async () => {
-    try {
-      const response = await axios.get(`${API_URL}/meetup-type-users`, {
-        params: {
-          userId,
-        },
-      })
-      setMeetupTypeUsers(response.data)
-    } catch (error) {
-      console.log(error)
-    }
-  }, [userId])
+  const getMeetupTypeUsers = useCallback(
+    async (overrideRadius) => {
+      try {
+        const response = await axios.get(`${API_URL}/meetup-type-users`, {
+          params: {
+            userId,
+            ...(overrideRadius ? { searchRadius: overrideRadius } : {}),
+          },
+        })
+        setMeetupTypeUsers(response.data)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    [userId]
+  )
 
   useEffect(() => {
     getUser()
