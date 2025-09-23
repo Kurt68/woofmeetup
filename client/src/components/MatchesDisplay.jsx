@@ -59,7 +59,7 @@ const MatchesDisplay = ({ matches, setClickedUser }) => {
             alt={match?.dogs_name + ' profile'}
           />
 
-          <h3>{match?.dogs_name}</h3>
+          <h4>{match?.dogs_name}</h4>
         </div>
       ))}
     </div>
