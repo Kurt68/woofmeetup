@@ -57,12 +57,15 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    // Read latest value from the form to avoid stale state during the same tick
+    const selected =
+      e.currentTarget?.elements?.distance?.value ?? selectDistance
     try {
       const response = await axios.put(`${API_URL}/user-select-distance`, {
         userId,
-        selectDistance,
+        selectDistance: selected,
       })
-      const success = (response.status = 200)
+      const success = response.status === 200
       if (success) {
         getMeetupTypeUsers()
       }
