@@ -57,13 +57,23 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    // Read the current value directly from the form to avoid stale state
+    const current = e.currentTarget.distance?.value || selectDistance
     try {
       const response = await axios.put(`${API_URL}/user-select-distance`, {
         userId,
-        selectDistance: selectDistance,
+        selectDistance: current,
       })
-      const success = (response.status = 200)
+      const success = response.status === 200
       if (success) {
+        // Keep URL in sync (optional, ensures query param matches submitted value)
+        setSearchParams(
+          (prev) => {
+            prev.set('selectDistance', String(current))
+            return prev
+          },
+          { replace: true }
+        )
         getMeetupTypeUsers()
       }
     } catch (err) {
