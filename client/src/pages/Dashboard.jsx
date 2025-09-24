@@ -1,7 +1,8 @@
 import TinderCard from 'react-tinder-card'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import ChatContainer from '../components/ChatContainer'
 import axios from 'axios'
+import toast from 'react-hot-toast'
 import { useCookies } from 'react-cookie'
 import { useSearchParams } from 'react-router-dom'
 
@@ -152,6 +153,26 @@ const Dashboard = () => {
     (meetupTypeUsers) =>
       !matchedUserIdsandUser.includes(meetupTypeUsers.user_id) // No matched UserId and User include meetupTypeUsers.user_id
   )
+
+  // Show a toast hint if no users are available at small radius
+  useEffect(() => {
+    const radius = Number(selectDistance)
+    if (
+      longitude &&
+      latitude &&
+      Array.isArray(filteredMeetupTypeUsers) &&
+      filteredMeetupTypeUsers.length === 0 &&
+      radius <= 10
+    ) {
+      toast.success(
+        'Not seeing users? Increase your search radius to find more matches.',
+        {
+          id: 'radius-hint',
+          duration: 4000,
+        }
+      )
+    }
+  }, [filteredMeetupTypeUsers, selectDistance, longitude, latitude])
 
   // for testing Error Boundary
   // throw new Error('Component')
