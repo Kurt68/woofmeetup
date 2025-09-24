@@ -831,7 +831,7 @@ summary {
   margin-right: 0.5rem;
 }
 
-.profile h4 {
+.profile h4, .match-button h4 {
   margin: 4px 0 0 0;
 }
 
