@@ -965,7 +965,7 @@ select {
 
 .polaroid {
   background: #fff;
-  padding: 1.3rem 1.3rem 5.8rem 1.3rem;
+  padding: 1.3rem 1.3rem 5.5rem 1.3rem;
   max-width: 330px;
 }
 .photo {
@@ -979,19 +979,8 @@ select {
 }
 .caption {
   position: relative;
-  top: 6.8rem;
+  top: 5.3rem;
   user-select: none;
-}
-.dog-info::first-letter {
-  text-transform: uppercase;
-}
-.dog-info {
-  text-transform: lowercase;
-}
-.dogs_name,
-.about {
-  display: inline-block;
-  text-transform: lowercase;
 }
 .caption p,
 .caption span {
@@ -1000,7 +989,6 @@ select {
   font-family: 'Poor Story', system-ui !important;
   font-weight: 600;
   font-style: normal;
-  line-height: 1.2;
 }
 .profile .avatar,
 .match-button .img-container {
@@ -1022,15 +1010,15 @@ select {
   }
   .polaroid {
     background: #fff;
-    padding: 1.3rem 1.3rem 6.3rem 1.3rem;
+    padding: 1.3rem 1.3rem 6rem 1.3rem;
     max-width: 500px;
   }
   .caption p,
   .caption span {
-    font-size: 1.6rem;
+    font-size: 2rem;
   }
   .caption {
-    top: 7.7rem;
+    top: 7.5rem;
   }
   .onboarding form .multiple-input-container {
     display: flex;
@@ -1053,6 +1041,7 @@ select {
   }
 }
 .dashboard .swipe-container {
+  justify-content: start;
   user-select: none;
 }
 
@@ -1092,7 +1081,12 @@ select {
 .polaroid:active {
   cursor: grabbing;
 }
-
+.polaroid .polaroid:before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  transition: all 0.35s;
+}
 .polaroid:nth-of-type(4n + 1) {
   transform: scale(0.8, 0.8) rotate(2deg);
   transition: all 0.35s;
