@@ -1391,13 +1391,13 @@ span.blink {
 .sending-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin-left: 0.5rem;
-  height: 1rem;
+  height: 1.25rem;
 }
 .sending-indicator .dot {
-  width: 6px;
-  height: 6px;
+  width: 10px;
+  height: 10px;
   border-radius: 9999px;
   background-color: pink;
   opacity: 0.7;
@@ -1414,11 +1414,11 @@ span.blink {
   0%,
   80%,
   100% {
-    transform: scale(0.6);
+    transform: scale(0.8);
     opacity: 0.4;
   }
   40% {
-    transform: scale(1);
+    transform: scale(1.3);
     opacity: 1;
   }
 }
