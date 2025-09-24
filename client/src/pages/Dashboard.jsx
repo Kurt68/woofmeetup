@@ -55,25 +55,22 @@ const Dashboard = () => {
   const [cookies] = useCookies('user')
   const userId = cookies.UserId
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    // Read the current value directly from the form to avoid stale state
-    const current = e.currentTarget.distance?.value || selectDistance
+  const handleDistanceChange = async (e) => {
+    const current = e.target.value
+    // Keep URL in sync for UI/state
+    setSearchParams(
+      (prev) => {
+        prev.set('selectDistance', String(current))
+        return prev
+      },
+      { replace: true }
+    )
     try {
       const response = await axios.put(`${API_URL}/user-select-distance`, {
         userId,
         selectDistance: current,
       })
-      const success = response.status === 200
-      if (success) {
-        // Keep URL in sync (optional, ensures query param matches submitted value)
-        setSearchParams(
-          (prev) => {
-            prev.set('selectDistance', String(current))
-            return prev
-          },
-          { replace: true }
-        )
+      if (response.status === 200) {
         // Fetch new cards immediately with the selected radius
         await getMeetupTypeUsers(current)
       }
@@ -258,42 +255,28 @@ const Dashboard = () => {
                 : null}
             </div>
             <div className="select-distance">
-              <form onSubmit={handleSubmit}>
-                <section>
-                  <label htmlFor="distance">Search </label>
-                  <select
-                    name="distance"
-                    id="distance"
-                    value={selectDistance}
-                    onChange={(e) =>
-                      setSearchParams(
-                        (prev) => {
-                          prev.set('selectDistance', e.target.value)
-                          return prev
-                        },
-                        { replace: true }
-                      )
-                    }
-                  >
-                    <option value="5">5 miles</option>
-                    <option value="10">10 miles</option>
-                    <option value="15">15 miles</option>
-                    <option value="20">20 miles</option>
-                    <option value="25">25 miles</option>
-                    <option value="30">30 miles</option>
-                    <option value="35">35 miles</option>
-                    <option value="40">40 miles</option>
-                    <option value="45">45 miles</option>
-                    <option value="50">50 miles</option>
-                    <option value="55">55 miles</option>
-                    <option value="60">60 miles</option>
-                  </select>
-
-                  <button className="submit" type="submit">
-                    Submit
-                  </button>
-                </section>
-              </form>
+              <section>
+                <label htmlFor="distance">Search </label>
+                <select
+                  name="distance"
+                  id="distance"
+                  value={selectDistance}
+                  onChange={handleDistanceChange}
+                >
+                  <option value="5">5 miles</option>
+                  <option value="10">10 miles</option>
+                  <option value="15">15 miles</option>
+                  <option value="20">20 miles</option>
+                  <option value="25">25 miles</option>
+                  <option value="30">30 miles</option>
+                  <option value="35">35 miles</option>
+                  <option value="40">40 miles</option>
+                  <option value="45">45 miles</option>
+                  <option value="50">50 miles</option>
+                  <option value="55">55 miles</option>
+                  <option value="60">60 miles</option>
+                </select>
+              </section>
             </div>
           </div>
         </div>
