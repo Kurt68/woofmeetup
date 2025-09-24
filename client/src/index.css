@@ -954,13 +954,13 @@ select {
 }
 .caption {
   position: relative;
-  top: 6.8rem;
+  top: 6.5rem;
   user-select: none;
 }
 .caption p,
 .caption span {
   font-size: 1.4rem;
-  line-height: 1.2;
+  line-height: 1.1;
   text-align: center;
   font-family: 'Poor Story', system-ui !important;
   font-weight: 600;
@@ -994,7 +994,7 @@ select {
     font-size: 1.5rem;
   }
   .caption {
-    top: 7.2rem;
+    top: 6.9rem;
   }
   .onboarding form .multiple-input-container {
     display: flex;
