@@ -164,13 +164,19 @@ const Dashboard = () => {
       filteredMeetupTypeUsers.length === 0 &&
       radius <= 10
     ) {
-      toast.success(
-        'Not seeing users? Increase your search radius to find more matches.',
-        {
-          id: 'radius-hint',
-          duration: 4000,
-        }
-      )
+      // Limit to showing at most twice per browser using localStorage counter
+      const key = 'radius-hint-count'
+      const count = Number(localStorage.getItem(key) || '0')
+      if (count < 2) {
+        toast.success(
+          'Not seeing users? Increase your search radius to find more matches if they exist.',
+          {
+            id: 'radius-hint',
+            duration: 4000,
+          }
+        )
+        localStorage.setItem(key, String(count + 1))
+      }
     }
   }, [filteredMeetupTypeUsers, selectDistance, longitude, latitude])
 
