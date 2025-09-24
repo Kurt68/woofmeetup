@@ -225,10 +225,7 @@ const Dashboard = () => {
                         >
                           <div className="caption">
                             <p className="dog-info">
-                              <span className="dogs_name">
-                                {filteredMeetupTypeUsers.dogs_name}
-                              </span>
-
+                              {filteredMeetupTypeUsers.dogs_name}
                               <span
                                 className={
                                   filteredMeetupTypeUsers.show_meetup_type
@@ -236,27 +233,18 @@ const Dashboard = () => {
                                     : ''
                                 }
                               />
-
                               {filteredMeetupTypeUsers.show_meetup_type
                                 ? filteredMeetupTypeUsers.meetup_type
                                 : ''}
-
-                              <span className="age">
-                                {', '}
-                                Age {filteredMeetupTypeUsers.age}
-                              </span>
-                              <span className="distance">
-                                <br />
-                                {
-                                  filteredMeetupTypeUsers.distance_to_other_users
-                                }{' '}
-                                miles from you
-                              </span>
+                              {', '}
+                              Age {filteredMeetupTypeUsers.age}
                               <br />
-                              <span className="about">
-                                {filteredMeetupTypeUsers.about}
-                              </span>
-
+                              {
+                                filteredMeetupTypeUsers.distance_to_other_users
+                              }{' '}
+                              miles from you
+                              <br />
+                              {filteredMeetupTypeUsers.about}
                               <span
                                 className={
                                   filteredMeetupTypeUsers.meetup_type ==
@@ -283,7 +271,6 @@ const Dashboard = () => {
             </div>
             <div className="select-distance">
               <section>
-               
                 <select
                   name="distance"
                   id="distance"
