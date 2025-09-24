@@ -658,7 +658,7 @@ nav .logo-container {
   flex: 2;
   display: flex;
   flex-direction: column;
-  justify-content:flex-end;
+  /* justify-content:flex-end; */
   align-items: center;
   min-height: 100dvh;
   position: relative;
@@ -739,7 +739,7 @@ summary {
   position: absolute;
   left: 0;
   right: 0;
-  /* top: 6rem; */
+  top: 2.5rem;
 }
 
 /*-------- Chat Container --------*/
@@ -831,7 +831,7 @@ summary {
   margin-right: 0.5rem;
 }
 
-.profile h3 {
+.profile h4 {
   margin: 4px 0 0 0;
 }
 
@@ -950,7 +950,7 @@ select {
 }
 .caption {
   position: relative;
-  top: 6.8rem;
+  top: 6.9rem;
   user-select: none;
 }
 .caption p,
