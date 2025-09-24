@@ -168,7 +168,7 @@ nav .nav-button,
 
 @media only screen and (max-width: 640px) {
   .allow-geo-location {
-    margin-top: 2rem;
+    /* margin-top: 2rem; */
   }
 
   /* Mobile nav layout */
