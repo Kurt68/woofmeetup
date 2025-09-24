@@ -283,7 +283,7 @@ const Dashboard = () => {
             </div>
             <div className="select-distance">
               <section>
-                <label htmlFor="distance">Search </label>
+               
                 <select
                   name="distance"
                   id="distance"
