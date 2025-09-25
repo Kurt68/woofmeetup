@@ -226,7 +226,7 @@ const Dashboard = () => {
                           <div className="caption">
                             <p className="dog-info">
                               {filteredMeetupTypeUsers.dogs_name}
-                              <span
+                              {/* <span
                                 className={
                                   filteredMeetupTypeUsers.show_meetup_type
                                     ? 'hyphen'
@@ -235,7 +235,7 @@ const Dashboard = () => {
                               />
                               {filteredMeetupTypeUsers.show_meetup_type
                                 ? filteredMeetupTypeUsers.meetup_type
-                                : ''}
+                                : ''} */}
                               {', '}
                               Age {filteredMeetupTypeUsers.age}
                               <br />
