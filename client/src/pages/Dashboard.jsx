@@ -137,6 +137,14 @@ const Dashboard = () => {
   const swiped = (direction, swipedUserId) => {
     if (direction === 'right') {
       updateMatches(swipedUserId)
+      toast.success('You waged right! 🐕', {
+        duration: 2000,
+      })
+    } else if (direction === 'left') {
+      toast('You waged left!', {
+        duration: 2000,
+        icon: '👋',
+      })
     }
     setLastDirection(direction)
   }
@@ -188,9 +196,6 @@ const Dashboard = () => {
         <div className="dashboard">
           <ChatContainer user={user} />
           <div className="swipe-container">
-            <div className="swipe-info">
-              {lastDirection ? <p>You waged {lastDirection}!</p> : <p />}
-            </div>
             {!longitude && !latitude ? (
               <button
                 className="allow-geo-location"
