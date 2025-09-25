@@ -137,13 +137,12 @@ const Dashboard = () => {
   const swiped = (direction, swipedUserId) => {
     if (direction === 'right') {
       updateMatches(swipedUserId)
-      toast.success('You waged right! 🐕', {
+      toast.success('You waged right!', {
         duration: 2000,
       })
     } else if (direction === 'left') {
       toast('You waged left!', {
         duration: 2000,
-        icon: '👋',
       })
     }
     setLastDirection(direction)
