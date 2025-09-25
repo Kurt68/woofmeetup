@@ -143,6 +143,7 @@ const Dashboard = () => {
     } else if (direction === 'left') {
       toast('You waged left!', {
         duration: 2000,
+        icon: '😥',
       })
     }
     setLastDirection(direction)
