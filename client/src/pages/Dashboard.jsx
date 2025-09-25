@@ -1,5 +1,5 @@
 import TinderCard from 'react-tinder-card'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import ChatContainer from '../components/ChatContainer'
 import axios from 'axios'
 import toast from 'react-hot-toast'
