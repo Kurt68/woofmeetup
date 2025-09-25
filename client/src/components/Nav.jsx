@@ -1,5 +1,5 @@
-import whiteLogo from '../images/woofmeetup_logo_white.svg'
-import blackLogo from '../images/woofmeetup_logo_black.svg'
+import whiteLogo from '../images/woofmeetup_logo_pink.svg'
+import pinkLogo from '../images/color-logo-woofmeetup.svg'
 import { Link } from 'react-router-dom'
 
 const Nav = ({ authToken, minimal, setShowModal, showModal, setIsSignUp }) => {
@@ -14,7 +14,7 @@ const Nav = ({ authToken, minimal, setShowModal, showModal, setIsSignUp }) => {
         <Link to="/dashboard">
           <img
             className="logo"
-            src={minimal ? whiteLogo : blackLogo}
+            src={minimal ? whiteLogo : pinkLogo}
             alt="Logo"
           />
         </Link>
