@@ -14,7 +14,7 @@ const Nav = ({ authToken, minimal, setShowModal, showModal, setIsSignUp }) => {
         <Link to="/dashboard">
           <img
             className="logo"
-            src={minimal ? blackLogo : whiteLogo}
+            src={minimal ? whiteLogo : blackLogo}
             alt="Logo"
           />
         </Link>

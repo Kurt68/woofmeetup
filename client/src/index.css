@@ -30,10 +30,7 @@ a:active {
   color: black;
   background-color: transparent;
 }
-/* a.focus {
-  color: black;
-  background-color: transparent;
-} */
+
 .error-background {
   padding-top: 3rem;
   background-color: pink;
@@ -289,9 +286,7 @@ nav .logo-container {
   background-color: rgba(255, 193, 203, 0.3);
   padding: 1.5rem 0.3em 1.5rem 0.3rem;
 }
-/* .auth-modal.onboarding form {
-  flex-direction: row;
-} */
+
 .edit form {
   flex-direction: column;
 }
@@ -494,7 +489,6 @@ nav .logo-container {
   font-size: 15px;
   border: solid 2px rgb(83 200 160);
   border-radius: 10px;
-  /* margin-top: 1rem; */
 }
 .image-identification form {
   padding: 0;
@@ -658,7 +652,6 @@ nav .logo-container {
   flex: 2;
   display: flex;
   flex-direction: column;
-  /* justify-content:flex-end; */
   align-items: center;
   min-height: 100dvh;
   position: relative;
