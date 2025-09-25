@@ -44,7 +44,7 @@ const ChatModal = ({ user }) => {
       <div className="chat-modal-overlay">
         <div className="chat-modal">
           <div className="chat-modal-header">
-            <h3>{selectedUser?.userName}</h3>
+            <h4>{selectedUser?.userName}</h4>
             <div className="close-icon" onClick={handleClose}>
               &#x2715;
             </div>
@@ -62,7 +62,7 @@ const ChatModal = ({ user }) => {
     <div className="chat-modal-overlay">
       <div className="chat-modal">
         <div className="chat-modal-header">
-          <h3>{selectedUser?.userName}</h3>
+          <h4>{selectedUser?.userName}</h4>
           <div className="close-icon" onClick={handleClose}>
             &#x2715;
           </div>

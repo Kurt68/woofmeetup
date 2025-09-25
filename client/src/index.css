@@ -1556,10 +1556,11 @@ span.blink {
   border-radius: 10px 10px 0 0;
 }
 
-.chat-modal-header h3 {
+.chat-modal-header h4 {
   margin: 0;
   font-size: 1.2rem;
   color: #333;
+  margin-top: -2px;
 }
 
 /* Chat Window in Modal */
