@@ -87,7 +87,7 @@ const MessageInput = () => {
           <input
             type="text"
             className="border-form"
-            placeholder="Type message/upload image..."
+            placeholder="Message/upload image..."
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
