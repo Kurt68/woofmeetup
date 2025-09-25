@@ -168,7 +168,7 @@ nav .nav-button,
 
 @media only screen and (max-width: 639px) {
   .account-settings {
-    top: 5.2rem;
+    top: 5.2rem !important;
   }
 
   /* Mobile nav layout */
@@ -1073,7 +1073,7 @@ select {
 
 /* Chat Head */
 .padding-border {
-  padding: 0.2rem 1rem 0 0;
+  padding: 0.2rem 0.8rem 0 0;
   margin-top: 0.5rem;
   background: linear-gradient(
     to bottom,
@@ -1207,7 +1207,7 @@ span.blink {
 .padding {
   overflow-y: auto;
   padding: 1rem;
-  margin-top: 1rem;
+  margin-top: 0;
   flex: 1 1 0%;
 }
 .chat {
