@@ -1506,26 +1506,27 @@ span.blink {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-end;
   z-index: 1000;
-  padding: 1rem 5vw;
+  padding: 0;
 }
 
 .chat-modal {
   position: relative;
-  width: 90vw;
+  width: 100vw;
   max-width: 500px;
-  height: calc(100vh - 2rem);
-  max-height: calc(100vh - 2rem);
-  height: calc(100dvh - 2rem);
-  max-height: calc(100dvh - 2rem);
+  height: 95vh;
+  max-height: 95vh;
+  height: 95dvh;
+  max-height: 95dvh;
   background-color: white;
-  border-radius: 10px 10px 0 0;
+  border-radius: 20px 20px 0 0;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .chat-modal .close-icon {
@@ -1553,7 +1554,7 @@ span.blink {
   align-items: center;
   padding: 1rem;
   border-bottom: 1px solid #eee;
-  border-radius: 10px 10px 0 0;
+  border-radius: 20px 20px 0 0;
 }
 
 .chat-modal-header h4 {
