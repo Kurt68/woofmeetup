@@ -1508,15 +1508,17 @@ span.blink {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  padding: 2vh 5vw;
+  padding: 1rem 5vw;
 }
 
 .chat-modal {
   position: relative;
   width: 90vw;
   max-width: 500px;
-  height: 96vh;
-  max-height: 96vh;
+  height: calc(100vh - 2rem);
+  max-height: calc(100vh - 2rem);
+  height: calc(100dvh - 2rem);
+  max-height: calc(100dvh - 2rem);
   background-color: white;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
