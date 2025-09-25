@@ -1506,27 +1506,26 @@ span.blink {
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   z-index: 1000;
-  padding: 0;
+  padding: 2rem 1rem;
+  padding-top: max(2rem, env(safe-area-inset-top, 0px) + 1rem);
+  padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px) + 1rem);
 }
 
 .chat-modal {
   position: relative;
-  width: 100vw;
+  width: 100%;
   max-width: 500px;
-  height: 95vh;
-  max-height: 95vh;
-  height: 95dvh;
-  max-height: 95dvh;
+  height: 100%;
+  max-height: 100%;
   background-color: white;
-  border-radius: 20px 20px 0 0;
+  border-radius: 20px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  margin-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .chat-modal .close-icon {
@@ -1576,7 +1575,7 @@ span.blink {
   flex-shrink: 0; /* Prevent shrinking */
   border-top: 1px solid #eee;
   background-color: white;
-  border-radius: 0;
+  border-radius: 0 0 20px 20px;
   min-height: 80px; /* Ensure minimum height for input area */
   margin: 0;
   padding: 0;
