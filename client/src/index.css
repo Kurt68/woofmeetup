@@ -1514,8 +1514,8 @@ span.blink {
   position: relative;
   width: 90vw;
   max-width: 500px;
-  height: 80vh;
-  max-height: 600px;
+  height: calc(100vh - 2rem);
+  max-height: calc(100vh - 2rem);
   background-color: white;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
@@ -1550,7 +1550,6 @@ span.blink {
   align-items: center;
   padding: 1rem;
   border-bottom: 1px solid #eee;
-  background-color: #f8f9fa;
   border-radius: 10px 10px 0 0;
 }
 
