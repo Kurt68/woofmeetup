@@ -1495,3 +1495,63 @@ span.blink {
   padding: 1rem;
   border-radius: 30px;
 }
+
+/*-------- Chat Modal --------*/
+.chat-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.chat-modal {
+  position: relative;
+  width: 90vw;
+  max-width: 500px;
+  height: 80vh;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-modal .close-icon {
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  cursor: pointer;
+  font-size: 1.7rem;
+  color: pink;
+  font-weight: bolder;
+  z-index: 1001;
+  background-color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Chat Window in Modal */
+.chat-modal .chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  margin-top: 2rem; /* Space for close button */
+}
+
+.chat-modal .message-input-container {
+  margin-top: auto;
+  padding: 1rem;
+  border-top: 1px solid #eee;
+}

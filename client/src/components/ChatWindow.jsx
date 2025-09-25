@@ -46,7 +46,7 @@ const ChatWindow = ({ user }) => {
   }
 
   return (
-    <div>
+    <>
       <ChatHeader />
       <div className="chat-scroll padding">
         {messages.map((message) => (
@@ -83,7 +83,7 @@ const ChatWindow = ({ user }) => {
         ))}
       </div>
       <MessageInput />
-    </div>
+    </>
   )
 }
 

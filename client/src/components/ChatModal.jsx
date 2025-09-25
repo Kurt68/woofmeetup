@@ -1,0 +1,109 @@
+import { useEffect, useRef } from 'react'
+import { useChatStore } from '../store/useChatStore'
+import ChatHeader from './ChatHeader'
+import MessageInput from './MessageInput'
+import MessageSkeleton from './skeletons/MessageSkeleton'
+import { formatMessageTime } from '../utilities/formatTime'
+
+const ChatModal = ({ user }) => {
+  const {
+    messages,
+    getMessages,
+    isMessagesLoading,
+    selectedUser,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+    setSelectedUser,
+  } = useChatStore()
+
+  const messageEndRef = useRef(null)
+
+  const handleClose = () => {
+    setSelectedUser(null)
+  }
+
+  useEffect(() => {
+    getMessages(selectedUser._id)
+    subscribeToMessages()
+
+    return () => unsubscribeFromMessages()
+  }, [
+    getMessages,
+    selectedUser._id,
+    subscribeToMessages,
+    unsubscribeFromMessages,
+  ])
+
+  useEffect(() => {
+    if (messageEndRef.current && messages) {
+      messageEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages])
+
+  if (isMessagesLoading) {
+    return (
+      <div className="chat-modal-overlay">
+        <div className="chat-modal">
+          <div className="close-icon" onClick={handleClose}>
+            &#x2715;
+          </div>
+          <ChatHeader />
+          <MessageSkeleton />
+          <div className="message-input-container">
+            <MessageInput />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="chat-modal-overlay">
+      <div className="chat-modal">
+        <div className="close-icon" onClick={handleClose}>
+          &#x2715;
+        </div>
+        <ChatHeader />
+        <div className="chat-scroll padding">
+          {messages.map((message) => (
+            <div
+              key={message._id}
+              className={`chat ${
+                message.senderId === user._id ? 'chat-end' : 'chat-start'
+              }`}
+              ref={messageEndRef}
+            >
+              <div className="chat-image">
+                <div className="border-radius">
+                  <img
+                    className="avatar"
+                    src={
+                      message.senderId === user._id
+                        ? user.imageUrl || '/avatar.png'
+                        : selectedUser.imageUrl || '/avatar.png'
+                    }
+                    alt="profile pic"
+                  />
+                </div>
+              </div>
+              <div className="chat-header">
+                <time className="time">
+                  {formatMessageTime(message.createdAt)}
+                </time>
+              </div>
+              <div className="chat-bubble column-chat-bubble">
+                {message.image && <img src={message.image} alt="Attachment" />}
+                {message.text && <p>{message.text}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="message-input-container">
+          <MessageInput />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default ChatModal
