@@ -1,6 +1,5 @@
 import { useEffect, useRef } from 'react'
 import { useChatStore } from '../store/useChatStore'
-import ChatHeader from './ChatHeader'
 import MessageInput from './MessageInput'
 import MessageSkeleton from './skeletons/MessageSkeleton'
 import { formatMessageTime } from '../utilities/formatTime'
@@ -44,10 +43,12 @@ const ChatModal = ({ user }) => {
     return (
       <div className="chat-modal-overlay">
         <div className="chat-modal">
-          <div className="close-icon" onClick={handleClose}>
-            &#x2715;
+          <div className="chat-modal-header">
+            <h3>{selectedUser?.userName}</h3>
+            <div className="close-icon" onClick={handleClose}>
+              &#x2715;
+            </div>
           </div>
-          <ChatHeader />
           <MessageSkeleton />
           <div className="message-input-container">
             <MessageInput />
@@ -60,10 +61,12 @@ const ChatModal = ({ user }) => {
   return (
     <div className="chat-modal-overlay">
       <div className="chat-modal">
-        <div className="close-icon" onClick={handleClose}>
-          &#x2715;
+        <div className="chat-modal-header">
+          <h3>{selectedUser?.userName}</h3>
+          <div className="close-icon" onClick={handleClose}>
+            &#x2715;
+          </div>
         </div>
-        <ChatHeader />
         <div className="chat-scroll padding">
           {messages.map((message) => (
             <div

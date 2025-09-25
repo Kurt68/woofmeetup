@@ -1542,16 +1542,67 @@ span.blink {
   justify-content: center;
 }
 
+/* Chat Modal Header */
+.chat-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+  border-radius: 10px 10px 0 0;
+}
+
+.chat-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
 /* Chat Window in Modal */
 .chat-modal .chat-scroll {
   flex: 1;
   overflow-y: auto;
   padding: 1rem;
-  margin-top: 2rem; /* Space for close button */
+  min-height: 0; /* Important for flex scrolling */
 }
 
 .chat-modal .message-input-container {
-  margin-top: auto;
-  padding: 1rem;
+  flex-shrink: 0; /* Prevent shrinking */
   border-top: 1px solid #eee;
+  background-color: white;
+  border-radius: 0 0 10px 10px;
+}
+
+/* Fix input layout in modal */
+.chat-modal .container-input {
+  padding: 0.75rem;
+}
+
+.chat-modal .container-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center; /* Changed from start to center */
+}
+
+.chat-modal .row {
+  display: flex;
+  flex: 1;
+  gap: 0.25rem;
+  align-items: center; /* Ensure buttons align with input */
+}
+
+.chat-modal .border-form {
+  flex: 1;
+  min-height: 40px; /* Ensure consistent height */
+  padding: 8px 12px;
+}
+
+.chat-modal .text-buttons {
+  flex-shrink: 0; /* Prevent button shrinking */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
 }
