@@ -1549,7 +1549,7 @@ span.blink {
 /* Chat Modal Header */
 .chat-modal-header {
   display: flex;
-  justify-content: space-center;
+  justify-content:center;
   align-items: center;
   padding: 1rem;
   border-bottom: 1px solid #eee;
