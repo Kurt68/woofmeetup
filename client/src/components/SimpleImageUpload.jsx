@@ -12,6 +12,7 @@ const SimpleImageUpload = ({
   setShowSecondButton,
   setHideImageUpload,
   setImageUploaded,
+  isUserPhoto = false,
 }) => {
   const [cookies] = useCookies(null)
   const [file, setFile] = useState(null)
@@ -36,18 +37,23 @@ const SimpleImageUpload = ({
       formData.append('UserId', cookies.UserId)
       formData.append('image', file)
 
-      await axios.put(`${API_URL}/image`, formData, {
+      // Use different endpoint based on whether it's a user photo or dog photo
+      const endpoint = isUserPhoto ? '/profile-image' : '/image'
+
+      await axios.put(`${API_URL}${endpoint}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
       setUploadSuccess(true)
       if (setImageUploaded) setImageUploaded(true)
 
-      // Auto-proceed to next step after successful upload
-      setTimeout(() => {
-        setShowSecondButton(true)
-        setHideImageUpload(true)
-      }, 1500)
+      // Auto-proceed to next step after successful upload (only for dog photos)
+      if (!isUserPhoto) {
+        setTimeout(() => {
+          setShowSecondButton(true)
+          setHideImageUpload(true)
+        }, 1500)
+      }
     } catch (error) {
       console.error('Error uploading image:', error)
       setUploadError('Failed to upload image. Please try again.')
@@ -60,6 +66,7 @@ const SimpleImageUpload = ({
     setShowSecondButton,
     setHideImageUpload,
     setImageUploaded,
+    isUserPhoto,
   ])
 
   const handleFileSelect = useCallback((e) => {
@@ -124,12 +131,13 @@ const SimpleImageUpload = ({
   }, [imageURL])
 
   return (
-    <div className="simple-image-upload">
+    <div className={`simple-image-upload ${isUserPhoto ? 'user-photo' : ''}`}>
       <div className="upload-container">
-        <h3>Upload Your Dog's Photo</h3>
+        {!isUserPhoto && <h3>Upload Your Dog's Photo</h3>}
         <p className="upload-description">
-          Choose a clear photo of your dog to help other dog owners recognize
-          them during meetups.
+          {isUserPhoto
+            ? 'Choose a clear photo of yourself to help other dog owners recognize you during meetups.'
+            : 'Choose a clear photo of your dog to help other dog owners recognize them during meetups.'}
         </p>
 
         {/* Hidden file input */}
@@ -165,14 +173,7 @@ const SimpleImageUpload = ({
           <div className="image-preview">
             <img
               src={imageURL}
-              alt="Dog preview"
-              style={{
-                maxWidth: '100%',
-                maxHeight: '300px',
-                objectFit: 'contain',
-                borderRadius: '8px',
-                border: '2px solid #e5e7eb',
-              }}
+              alt={isUserPhoto ? 'Profile preview' : 'Dog preview'}
             />
           </div>
         )}
@@ -213,7 +214,7 @@ const SimpleImageUpload = ({
                 </>
               )}
 
-              {uploadSuccess && (
+              {uploadSuccess && !isUserPhoto && (
                 <button
                   type="button"
                   onClick={proceedToNextStep}
@@ -222,147 +223,17 @@ const SimpleImageUpload = ({
                   Continue to Profile Setup
                 </button>
               )}
+
+              {uploadSuccess && isUserPhoto && (
+                <div className="upload-status success">
+                  <Check size={20} />
+                  Profile photo uploaded successfully!
+                </div>
+              )}
             </div>
           )}
         </div>
       </div>
-
-      <style jsx>{`
-        .simple-image-upload {
-          max-width: 500px;
-          margin: 0 auto;
-          padding: 20px;
-        }
-
-        .upload-container {
-          text-align: center;
-        }
-
-        .upload-container h3 {
-          margin-bottom: 10px;
-          color: #374151;
-        }
-
-        .upload-description {
-          color: #6b7280;
-          margin-bottom: 20px;
-          font-size: 14px;
-        }
-
-        .upload-status {
-          padding: 12px;
-          border-radius: 6px;
-          margin-bottom: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-        }
-
-        .upload-status.uploading {
-          background-color: #fef3c7;
-          color: #92400e;
-          border: 1px solid #fcd34d;
-        }
-
-        .upload-status.success {
-          background-color: #d1fae5;
-          color: #065f46;
-          border: 1px solid #34d399;
-        }
-
-        .upload-status.error {
-          background-color: #fee2e2;
-          color: #991b1b;
-          border: 1px solid #f87171;
-        }
-
-        .spinner {
-          width: 16px;
-          height: 16px;
-          border: 2px solid #fcd34d;
-          border-top: 2px solid #92400e;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-          0% {
-            transform: rotate(0deg);
-          }
-          100% {
-            transform: rotate(360deg);
-          }
-        }
-
-        .image-preview {
-          margin: 20px 0;
-          padding: 10px;
-          background-color: #f9fafb;
-          border-radius: 8px;
-        }
-
-        .upload-actions {
-          margin-top: 20px;
-        }
-
-        .image-actions {
-          display: flex;
-          gap: 10px;
-          justify-content: center;
-          flex-wrap: wrap;
-        }
-
-        .upload-button {
-          padding: 12px 24px;
-          border-radius: 6px;
-          border: none;
-          font-weight: 500;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          transition: all 0.2s;
-          min-width: 120px;
-          justify-content: center;
-        }
-
-        .upload-button.primary {
-          background-color: #3b82f6;
-          color: white;
-        }
-
-        .upload-button.primary:hover:not(:disabled) {
-          background-color: #2563eb;
-        }
-
-        .upload-button.secondary {
-          background-color: #f3f4f6;
-          color: #374151;
-          border: 1px solid #d1d5db;
-        }
-
-        .upload-button.secondary:hover:not(:disabled) {
-          background-color: #e5e7eb;
-        }
-
-        .upload-button:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-        }
-
-        @media (max-width: 480px) {
-          .image-actions {
-            flex-direction: column;
-            align-items: center;
-          }
-
-          .upload-button {
-            width: 100%;
-            max-width: 200px;
-          }
-        }
-      `}</style>
     </div>
   )
 }
