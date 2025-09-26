@@ -649,7 +649,7 @@ nav .logo-container {
   }
 }
 .dashboard .swipe-container {
-  padding-top: 3rem;
+  padding-top: 2.5rem;
   flex: 2;
   display: flex;
   flex-direction: column;
@@ -733,7 +733,7 @@ summary {
   position: absolute;
   left: 0;
   right: 0;
-  top: 2.5rem;
+  top: 3rem;
 }
 
 /*-------- Chat Container --------*/
