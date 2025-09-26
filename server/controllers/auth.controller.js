@@ -589,6 +589,12 @@ export const putUser = async (req, res) => {
         current_user_search_radius: formData.current_user_search_radius,
       },
     }
+
+    // Only include image_name if it's provided
+    if (formData.image_name) {
+      updateDocument.$set.image_name = formData.image_name
+    }
+
     const insertedUser = await User.updateOne(query, updateDocument)
     res.json(insertedUser)
   } catch (error) {
