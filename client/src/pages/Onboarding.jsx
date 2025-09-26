@@ -216,7 +216,7 @@ const Onboarding = () => {
                       {aboutError}
                     </p>
                   )}
-                  <label htmlFor="show-meetup-type">
+                  {/* <label htmlFor="show-meetup-type">
                     Show meetup type on profile
                   </label>
                   <input
@@ -225,7 +225,7 @@ const Onboarding = () => {
                     name="show_meetup_type"
                     onChange={handleChange}
                     checked={formData.show_meetup_type}
-                  />
+                  /> */}
                   <input
                     type="hidden"
                     required={true}
@@ -254,7 +254,7 @@ const Onboarding = () => {
                     {isLoading ? (
                       <Loader className="spin" size={28} />
                     ) : (
-                      'Submit'
+                      'Submit Profile'
                     )}
                   </button>
                   {error && <p className="server-error">{error}</p>}
