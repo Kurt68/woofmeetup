@@ -4,9 +4,8 @@ const ImageUploadInstructions = memo(() => (
   <div>
     <ul className="instructions">
       <li>&#10003; AI checks an image to match breed.</li>
-      <li>&#10003; Mixed it guesses.</li>
+      <li>&#10003; Mixed breed it guesses.</li>
       <li> &#10003; Head shot & nothing in its mouth.</li>
-      &#10003; Portrait pics work best too!
     </ul>
   </div>
 ))
