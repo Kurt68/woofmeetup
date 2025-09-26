@@ -1764,6 +1764,8 @@ span.blink {
 
 .simple-image-upload .upload-actions {
   margin-top: 20px;
+  justify-content: center;
+  display: flex;
 }
 
 .simple-image-upload .image-actions {
