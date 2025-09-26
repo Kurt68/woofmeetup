@@ -8,12 +8,7 @@ const API_URL =
     ? 'http://localhost:8000/api/auth'
     : '/api/auth'
 
-const SimpleImageUpload = ({
-  setShowSecondButton,
-  setHideImageUpload,
-  setImageUploaded,
-  isUserPhoto = false,
-}) => {
+const SimpleImageUpload = ({ setImageUploaded }) => {
   const [cookies] = useCookies(null)
   const [file, setFile] = useState(null)
   const [imageURL, setImageURL] = useState(null)
@@ -37,37 +32,19 @@ const SimpleImageUpload = ({
       formData.append('UserId', cookies.UserId)
       formData.append('image', file)
 
-      // Use different endpoint based on whether it's a user photo or dog photo
-      const endpoint = isUserPhoto ? '/profile-image' : '/image'
-
-      await axios.put(`${API_URL}${endpoint}`, formData, {
+      await axios.put(`${API_URL}/profile-image`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
       setUploadSuccess(true)
       if (setImageUploaded) setImageUploaded(true)
-
-      // Auto-proceed to next step after successful upload (only for dog photos)
-      if (!isUserPhoto) {
-        setTimeout(() => {
-          setShowSecondButton(true)
-          setHideImageUpload(true)
-        }, 1500)
-      }
     } catch (error) {
       console.error('Error uploading image:', error)
       setUploadError('Failed to upload image. Please try again.')
     } finally {
       setIsUploading(false)
     }
-  }, [
-    cookies.UserId,
-    file,
-    setShowSecondButton,
-    setHideImageUpload,
-    setImageUploaded,
-    isUserPhoto,
-  ])
+  }, [cookies.UserId, file, setImageUploaded])
 
   const handleFileSelect = useCallback((e) => {
     const selectedFile = e.target.files[0]
@@ -116,11 +93,6 @@ const SimpleImageUpload = ({
     }
   }, [])
 
-  const proceedToNextStep = useCallback(() => {
-    setShowSecondButton(true)
-    setHideImageUpload(true)
-  }, [setShowSecondButton, setHideImageUpload])
-
   // Cleanup image URL on unmount to prevent memory leaks
   useEffect(() => {
     return () => {
@@ -131,13 +103,12 @@ const SimpleImageUpload = ({
   }, [imageURL])
 
   return (
-    <div className={`simple-image-upload ${isUserPhoto ? 'user-photo' : ''}`}>
+    <div className="simple-image-upload user-photo">
       <div className="upload-container">
-        {!isUserPhoto && <h3>Upload Your Dog's Photo</h3>}
+        <h3>Upload Your Profile Photo</h3>
         <p className="upload-description">
-          {isUserPhoto
-            ? 'Choose a clear photo of yourself to help other dog owners recognize you during meetups.'
-            : 'Choose a clear photo of your dog to help other dog owners recognize them during meetups.'}
+          Choose a clear photo of yourself to help other dog owners recognize
+          you during meetups.
         </p>
 
         {/* Hidden file input */}
@@ -156,13 +127,13 @@ const SimpleImageUpload = ({
             Uploading your photo...
           </div>
         )}
-
+{/* 
         {uploadSuccess && (
           <div className="upload-status success">
             <Check size={20} />
             Photo uploaded successfully!
           </div>
-        )}
+        )} */}
 
         {uploadError && (
           <div className="upload-status error">{uploadError}</div>
@@ -171,10 +142,7 @@ const SimpleImageUpload = ({
         {/* Image Preview */}
         {imageURL && (
           <div className="image-preview">
-            <img
-              src={imageURL}
-              alt={isUserPhoto ? 'Profile preview' : 'Dog preview'}
-            />
+            <img src={imageURL} alt="Profile preview" />
           </div>
         )}
 
@@ -214,17 +182,7 @@ const SimpleImageUpload = ({
                 </>
               )}
 
-              {uploadSuccess && !isUserPhoto && (
-                <button
-                  type="button"
-                  onClick={proceedToNextStep}
-                  className="upload-button primary"
-                >
-                  Continue to Profile Setup
-                </button>
-              )}
-
-              {uploadSuccess && isUserPhoto && (
+              {uploadSuccess && (
                 <div className="upload-status success">
                   <Check size={20} />
                   Profile photo uploaded successfully!
