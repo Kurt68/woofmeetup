@@ -1,7 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import axios from 'axios'
 import { useCookies } from 'react-cookie'
-import { Upload, X, Check } from 'lucide-react'
+import { Upload, X, Check, Loader } from 'lucide-react'
 
 const API_URL =
   import.meta.env.MODE === 'development'
@@ -123,11 +123,11 @@ const SimpleImageUpload = ({ setImageUploaded }) => {
         {/* Upload Status Messages */}
         {isUploading && (
           <div className="upload-status uploading">
-            <div className="spinner"></div>
-            Uploading your photo...
+            <Loader className="spin" size={28} />
+            Uploading your photo
           </div>
         )}
-{/* 
+        {/* 
         {uploadSuccess && (
           <div className="upload-status success">
             <Check size={20} />
