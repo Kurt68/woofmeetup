@@ -98,7 +98,9 @@ const Onboarding = () => {
             {showSecondButton && (
               <form onSubmit={putUser}>
                 <section>
-                  <label htmlFor="dogs_name">Dogs Name</label>
+                  <label htmlFor="dogs_name">
+                    <strong>Dogs Name</strong>
+                  </label>
                   <input
                     type="text"
                     id="dogs_name"
@@ -108,7 +110,9 @@ const Onboarding = () => {
                     value={formData.dogs_name}
                     onChange={handleChange}
                   />
-                  <label htmlFor="age">Age</label>
+                  <label htmlFor="age">
+                    <strong>Age</strong>
+                  </label>
 
                   <input
                     type="number"
@@ -120,7 +124,9 @@ const Onboarding = () => {
                     onChange={handleChange}
                   />
 
-                  <label>Choose a Meetup</label>
+                  <label>
+                    <strong>Choose a Meetup</strong>
+                  </label>
                   <div className="multiple-input-container">
                     <input
                       type="radio"
@@ -154,7 +160,9 @@ const Onboarding = () => {
                       Walk Companion
                     </label>
                   </div>
-                  <label>Show Me</label>
+                  <label>
+                    <strong>Show Me</strong>
+                  </label>
                   <div className="multiple-input-container">
                     <input
                       type="radio"
@@ -201,7 +209,9 @@ const Onboarding = () => {
                       Show all meetup activities
                     </label>
                   </div>
-                  <label htmlFor="about">About Me</label>
+                  <label htmlFor="about">
+                    <strong>About Me</strong>
+                  </label>
                   <input
                     type="text"
                     id="about"
@@ -235,14 +245,11 @@ const Onboarding = () => {
 
                   {/* User Profile Image Upload */}
                   <div className="user-image-section">
-                    <label>Upload Your Profile Photo (Optional)</label>
+                    <label>
+                      <strong>Upload Your Profile Photo (Optional)</strong>
+                    </label>
                     <div className="user-image-upload-container">
-                      <SimpleImageUpload
-                        setShowSecondButton={() => {}} // Don't affect form flow
-                        setHideImageUpload={() => {}} // Don't affect form flow
-                        setImageUploaded={() => {}} // Don't need to track this
-                        isUserPhoto={true}
-                      />
+                      <SimpleImageUpload setImageUploaded={() => {}} />
                     </div>
                   </div>
 
@@ -267,4 +274,5 @@ const Onboarding = () => {
     </>
   )
 }
+
 export default Onboarding

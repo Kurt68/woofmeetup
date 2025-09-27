@@ -1853,12 +1853,9 @@ span.blink {
 .user-image-section label {
   display: block;
   margin-bottom: 10px;
-  font-weight: 500;
 }
 
 .user-image-upload-container {
   border: 1px solid pink;
-  border-radius: 8px;
-  /* padding: 15px; */
   background-color: #f9fafb;
 }
