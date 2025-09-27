@@ -67,6 +67,8 @@ const EditDogProfile = () => {
       }
 
       setUser(userData)
+      console.log('User data loaded:', userData)
+      console.log('Profile image URL:', userData.profileImageUrl)
     } catch (error) {
       console.log(error)
     }

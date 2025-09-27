@@ -25,6 +25,15 @@ const SimpleImageUpload = ({
 
   const fileInputRef = useRef()
 
+  // Debug logging
+  useEffect(() => {
+    console.log('SimpleImageUpload props:', {
+      currentImageUrl,
+      showCurrentImage,
+      showingCurrentImage,
+    })
+  }, [currentImageUrl, showCurrentImage, showingCurrentImage])
+
   const handleImageUpload = useCallback(async () => {
     if (!file) {
       setUploadError('Please select an image first')
