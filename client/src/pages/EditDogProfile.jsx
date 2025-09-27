@@ -59,7 +59,14 @@ const EditDogProfile = () => {
       const response = await axios.get(`${API_URL}/user`, {
         params: { userId },
       })
-      setUser(response.data)
+      const userData = response.data
+
+      // Construct profile image URL if profile_image exists
+      if (userData.profile_image) {
+        userData.profileImageUrl = `https://d36ifi98wv8n1.cloudfront.net/${userData.profile_image}`
+      }
+
+      setUser(userData)
     } catch (error) {
       console.log(error)
     }
@@ -300,7 +307,7 @@ const EditDogProfile = () => {
                     <div className="user-image-upload-container">
                       <SimpleImageUpload
                         setImageUploaded={() => {}}
-                        currentImageUrl={user.imageUrl}
+                        currentImageUrl={user.profileImageUrl}
                         showCurrentImage={true}
                       />
                     </div>
@@ -493,7 +500,7 @@ const EditDogProfile = () => {
                   <div className="user-image-upload-container">
                     <SimpleImageUpload
                       setImageUploaded={() => {}}
-                      currentImageUrl={user.imageUrl}
+                      currentImageUrl={user.profileImageUrl}
                       showCurrentImage={true}
                     />
                   </div>
