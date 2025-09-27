@@ -298,7 +298,11 @@ const EditDogProfile = () => {
                       <strong>Upload Your Profile Photo (Optional)</strong>
                     </label>
                     <div className="user-image-upload-container">
-                      <SimpleImageUpload setImageUploaded={() => {}} />
+                      <SimpleImageUpload
+                        setImageUploaded={() => {}}
+                        currentImageUrl={user.imageUrl}
+                        showCurrentImage={true}
+                      />
                     </div>
                   </div>
 
@@ -487,7 +491,11 @@ const EditDogProfile = () => {
                     <strong>Upload Your Profile Photo (Optional)</strong>
                   </label>
                   <div className="user-image-upload-container">
-                    <SimpleImageUpload setImageUploaded={() => {}} />
+                    <SimpleImageUpload
+                      setImageUploaded={() => {}}
+                      currentImageUrl={user.imageUrl}
+                      showCurrentImage={true}
+                    />
                   </div>
                 </div>
 

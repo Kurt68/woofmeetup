@@ -8,13 +8,20 @@ const API_URL =
     ? 'http://localhost:8000/api/auth'
     : '/api/auth'
 
-const SimpleImageUpload = ({ setImageUploaded }) => {
+const SimpleImageUpload = ({
+  setImageUploaded,
+  currentImageUrl = null,
+  showCurrentImage = false,
+}) => {
   const [cookies] = useCookies(null)
   const [file, setFile] = useState(null)
   const [imageURL, setImageURL] = useState(null)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
   const [uploadSuccess, setUploadSuccess] = useState(false)
+  const [showingCurrentImage, setShowingCurrentImage] = useState(
+    showCurrentImage && currentImageUrl
+  )
 
   const fileInputRef = useRef()
 
@@ -46,38 +53,45 @@ const SimpleImageUpload = ({ setImageUploaded }) => {
     }
   }, [cookies.UserId, file, setImageUploaded])
 
-  const handleFileSelect = useCallback((e) => {
-    const selectedFile = e.target.files[0]
+  const handleFileSelect = useCallback(
+    (e) => {
+      const selectedFile = e.target.files[0]
 
-    if (!selectedFile) {
-      setFile(null)
-      setImageURL(null)
+      if (!selectedFile) {
+        setFile(null)
+        setImageURL(null)
+        setUploadError(null)
+        setUploadSuccess(false)
+        // Show current image again if no new file selected
+        setShowingCurrentImage(showCurrentImage && currentImageUrl)
+        return
+      }
+
+      // Validate file type
+      if (!selectedFile.type.startsWith('image/')) {
+        setUploadError('Please select a valid image file')
+        return
+      }
+
+      // Validate file size (max 10MB)
+      const maxSize = 10 * 1024 * 1024 // 10MB in bytes
+      if (selectedFile.size > maxSize) {
+        setUploadError('Image size must be less than 10MB')
+        return
+      }
+
+      setFile(selectedFile)
       setUploadError(null)
       setUploadSuccess(false)
-      return
-    }
+      // Hide current image when new file is selected
+      setShowingCurrentImage(false)
 
-    // Validate file type
-    if (!selectedFile.type.startsWith('image/')) {
-      setUploadError('Please select a valid image file')
-      return
-    }
-
-    // Validate file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024 // 10MB in bytes
-    if (selectedFile.size > maxSize) {
-      setUploadError('Image size must be less than 10MB')
-      return
-    }
-
-    setFile(selectedFile)
-    setUploadError(null)
-    setUploadSuccess(false)
-
-    // Create client side image URL for preview
-    const url = URL.createObjectURL(selectedFile)
-    setImageURL(url)
-  }, [])
+      // Create client side image URL for preview
+      const url = URL.createObjectURL(selectedFile)
+      setImageURL(url)
+    },
+    [showCurrentImage, currentImageUrl]
+  )
 
   const triggerFileSelect = useCallback(() => {
     fileInputRef.current?.click()
@@ -88,10 +102,12 @@ const SimpleImageUpload = ({ setImageUploaded }) => {
     setImageURL(null)
     setUploadError(null)
     setUploadSuccess(false)
+    // Show current image again when new selection is removed
+    setShowingCurrentImage(showCurrentImage && currentImageUrl)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }, [])
+  }, [showCurrentImage, currentImageUrl])
 
   // Cleanup image URL on unmount to prevent memory leaks
   useEffect(() => {
@@ -123,7 +139,7 @@ const SimpleImageUpload = ({ setImageUploaded }) => {
         {/* Upload Status Messages */}
         {isUploading && (
           <div className="upload-status uploading">
-            <Loader className="spin" size={22} />
+            <Loader className="spin" size={20} />
             Uploading your photo
           </div>
         )}
@@ -140,15 +156,18 @@ const SimpleImageUpload = ({ setImageUploaded }) => {
         )}
 
         {/* Image Preview */}
-        {imageURL && (
+        {(imageURL || showingCurrentImage) && (
           <div className="image-preview">
-            <img src={imageURL} alt="Profile preview" />
+            <img src={imageURL || currentImageUrl} alt="Profile preview" />
+            {showingCurrentImage && !imageURL && (
+              <p className="current-image-label">Current Profile Photo</p>
+            )}
           </div>
         )}
 
         {/* Upload Actions */}
         <div className="upload-actions">
-          {!imageURL ? (
+          {!imageURL && !showingCurrentImage ? (
             <button
               type="button"
               onClick={triggerFileSelect}
@@ -157,6 +176,16 @@ const SimpleImageUpload = ({ setImageUploaded }) => {
             >
               <Upload size={20} />
               Choose Photo
+            </button>
+          ) : showingCurrentImage && !imageURL ? (
+            <button
+              type="button"
+              onClick={triggerFileSelect}
+              disabled={isUploading}
+              className="upload-button primary"
+            >
+              <Upload size={20} />
+              Change Photo
             </button>
           ) : (
             <div className="image-actions">
