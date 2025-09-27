@@ -148,7 +148,7 @@ const SimpleImageUpload = ({
         {/* Upload Status Messages */}
         {isUploading && (
           <div className="upload-status uploading">
-            <Loader className="spin" size={20} />
+            <Loader className="spin" size={18} />
             Uploading your photo
           </div>
         )}

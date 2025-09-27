@@ -61,14 +61,10 @@ const EditDogProfile = () => {
       })
       const userData = response.data
 
-      // Construct profile image URL if profile_image exists
-      if (userData.profile_image) {
-        userData.profileImageUrl = `https://d36ifi98wv8n1.cloudfront.net/${userData.profile_image}`
-      }
-
       setUser(userData)
       console.log('User data loaded:', userData)
-      console.log('Profile image URL:', userData.profileImageUrl)
+      console.log('Profile image filename:', userData.profile_image)
+      console.log('Available user properties:', Object.keys(userData))
     } catch (error) {
       console.log(error)
     }
@@ -309,7 +305,9 @@ const EditDogProfile = () => {
                     <div className="user-image-upload-container">
                       <SimpleImageUpload
                         setImageUploaded={() => {}}
-                        currentImageUrl={user.profileImageUrl}
+                        currentImageUrl={
+                          user.profile_image_url || user.profileImageUrl
+                        }
                         showCurrentImage={true}
                       />
                     </div>
@@ -502,7 +500,9 @@ const EditDogProfile = () => {
                   <div className="user-image-upload-container">
                     <SimpleImageUpload
                       setImageUploaded={() => {}}
-                      currentImageUrl={user.profileImageUrl}
+                      currentImageUrl={
+                        user.profile_image_url || user.profileImageUrl
+                      }
                       showCurrentImage={true}
                     />
                   </div>
