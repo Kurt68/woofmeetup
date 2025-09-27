@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import Nav from '../components/Nav'
 import ImageUpload from './ImageUpload'
-import SimpleImageUpload from '../components/SimpleImageUpload'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
@@ -242,16 +241,6 @@ const Onboarding = () => {
                     value={formData.current_user_search_radius}
                     onChange={handleChange}
                   />
-
-                  {/* User Profile Image Upload */}
-                  <div className="user-image-section">
-                    <label>
-                      <strong>Upload Your Profile Photo (Optional)</strong>
-                    </label>
-                    <div className="user-image-upload-container">
-                      <SimpleImageUpload setImageUploaded={() => {}} />
-                    </div>
-                  </div>
 
                   <br />
                   <button

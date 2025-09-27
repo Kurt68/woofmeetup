@@ -656,48 +656,6 @@ export const uploadImage = async (req, res) => {
   }
 }
 
-// Put user profile photo endpoint
-export const uploadUserProfileImage = async (req, res) => {
-  console.log('uploadUserProfileImage called with UserId:', req.body.UserId)
-
-  // resize image
-  const buffer = await sharp(req.file.buffer)
-    .resize({ height: 1920, width: 1080, fit: 'outside' })
-    .withMetadata()
-    .toBuffer()
-
-  const image_name = randomImageName()
-  console.log('Generated profile image name:', image_name)
-
-  const params = {
-    Bucket: bucketName,
-    Key: image_name,
-    Body: buffer,
-    ContentType: req.file.mimetype,
-  }
-
-  const command = new PutObjectCommand(params)
-  await s3.send(command)
-
-  try {
-    const { UserId } = req.body
-    const query = { user_id: UserId }
-
-    const updateDocument = {
-      $set: {
-        profile_image: image_name,
-      },
-    }
-    const insertedImage = await User.updateOne(query, updateDocument)
-    console.log('Profile image updated in database:', insertedImage)
-
-    res.send(insertedImage)
-  } catch (error) {
-    console.log('Error in putting user profile image ', error)
-    res.status(400).json({ success: false, message: error })
-  }
-}
-
 // Get current user in database (for EditDogProfile.jsx)
 export const getCurrentUserProfile = async (req, res) => {
   const userId = req.query.userId
@@ -706,6 +664,7 @@ export const getCurrentUserProfile = async (req, res) => {
     const query = { user_id: userId }
 
     const currentUserProfile = await User.findOne(query)
+
     res.json(currentUserProfile)
   } catch (error) {
     console.log(

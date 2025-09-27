@@ -14,7 +14,6 @@ import {
   putUser,
   updateMatches,
   uploadImage,
-  uploadUserProfileImage,
   getCurrentUserProfile,
   patchCurrentUserProfile,
   deleteImage,
@@ -66,7 +65,6 @@ router.put('/addcoordinates', getCurrentPosition)
 router.put('/user', putUser)
 router.put('/addmatch', updateMatches)
 router.put('/image', upload.single('image'), uploadImage)
-router.put('/profile-image', upload.single('image'), uploadUserProfileImage)
 router.put('/user-select-distance', putUserSelectDistance)
 
 router.patch('/user', patchCurrentUserProfile)
