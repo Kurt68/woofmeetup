@@ -588,9 +588,9 @@ nav .logo-container {
 .bestGuess {
   display: block;
 }
-.spinner svg {
+/* .spinner svg {
   animation: spin 1s linear infinite;
-}
+} */
 
 /* Model Loading and Ready Status Styles */
 .model-loading-alert {
@@ -1738,28 +1738,25 @@ span.blink {
   border: 1px solid #f87171;
 }
 
-.simple-image-upload .spinner {
+/* .simple-image-upload .spinner {
   width: 16px;
   height: 16px;
   border: 2px solid #fcd34d;
   border-top: 2px solid #92400e;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
+} */
 
 .simple-image-upload .image-preview {
   margin: 20px 0;
   padding: 10px;
-  background-color: #f9fafb;
-  border-radius: 8px;
+  background-color: white;
 }
 
 .simple-image-upload .image-preview img {
   max-width: 100%;
   max-height: 300px;
   object-fit: contain;
-  border-radius: 8px;
-  border: 2px solid #e5e7eb;
 }
 
 .simple-image-upload .upload-actions {
@@ -1813,10 +1810,8 @@ span.blink {
 }
 
 .simple-image-upload.user-photo .upload-button.secondary {
-  background-color: pink;
-  color: white;
-  border: 1px solid pink;
-  opacity: 0.5;
+  background-color: rgb(83 200 160);
+  color: #fff;
 }
 
 .simple-image-upload .upload-button.secondary:hover:not(:disabled) {
