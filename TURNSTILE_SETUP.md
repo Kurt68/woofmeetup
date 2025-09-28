@@ -81,15 +81,9 @@ VITE_TURNSTILE_SITE_KEY=your_site_key_here
 - Make sure to use different site keys for development and production
 - Update environment variables accordingly for each environment
 
-## Rollback Instructions
+## Implementation Notes
 
-If you need to rollback to the custom CAPTCHA system:
-
-1. Uncomment all the commented code in `/server/index.js`
-2. Uncomment the import for `generateMathCaptcha`
-3. Uncomment all custom CAPTCHA code in `AuthModal.jsx`
-4. Comment out or remove the Turnstile-related code
-5. Remove the `TurnstileWidget` import and usage
+The custom CAPTCHA system has been completely removed from the codebase. Cloudflare Turnstile is now the only verification method implemented.
 
 ## Security Notes
 

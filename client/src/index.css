@@ -389,9 +389,9 @@ nav .logo-container {
   margin-left: 0.5rem;
 }
 
-.card svg {
+/* .card svg {
   animation: spin 3s linear infinite;
-}
+} */
 
 @keyframes spin {
   from {
@@ -401,21 +401,11 @@ nav .logo-container {
     transform: rotate(360deg);
   }
 }
-.card {
+/* .card {
   border: 1px solid rgb(8255, 193, 203);
   background-color: rgba(255, 193, 203, 0.3);
   padding-bottom: 0.8rem;
-}
-.captcha-logo {
-  margin-top: 1rem;
-}
-.captcha-challenge {
-  margin-top: 0.5rem;
-}
-.challenge {
-  margin-top: 0.4rem;
-  display: block;
-}
+} */
 
 /*-------- Verify Email -------- */
 .verify-email {
