@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Nav from '../components/Nav'
 import ImageUpload from './ImageUpload'
+import SimpleImageUpload from '../components/SimpleImageUpload'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
@@ -21,6 +22,8 @@ const EditDogProfile = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [aboutError, setAboutError] = useState('')
+  const [profileImageUploaded, setProfileImageUploaded] = useState(false)
+  const [imageSelected, setImageSelected] = useState(false)
 
   const [user, setUser] = useState({})
 
@@ -45,7 +48,7 @@ const EditDogProfile = () => {
       })
       setFormData(data)
     } catch (error) {
-      console.error(error.response.data)
+      console.error('getCurrentUserProfile error:', error.response.data)
     }
   }, [userId])
 
@@ -58,14 +61,9 @@ const EditDogProfile = () => {
       const response = await axios.get(`${API_URL}/user`, {
         params: { userId },
       })
-      const userData = response.data
-
-      setUser(userData)
-      console.log('User data loaded:', userData)
-      console.log('Profile image filename:', userData.profile_image)
-      console.log('Available user properties:', Object.keys(userData))
+      setUser(response.data)
     } catch (error) {
-      console.log(error)
+      // Handle error silently
     }
   }, [userId])
 
@@ -94,7 +92,6 @@ const EditDogProfile = () => {
       const success = response.status === 200
       if (success) navigate('/dashboard')
     } catch (err) {
-      console.log(err)
       setError('Failed to update profile. Please try again.')
     } finally {
       setIsLoading(false)
@@ -127,7 +124,7 @@ const EditDogProfile = () => {
       })
       setRemoveImage(true)
     } catch (err) {
-      console.log(err)
+      // Handle error silently or add proper error handling
     }
   }
 
@@ -279,7 +276,7 @@ const EditDogProfile = () => {
                       {aboutError}
                     </p>
                   )}
-                  <label htmlFor="show-meetup-type">
+                  {/* <label htmlFor="show-meetup-type">
                     Show meetup type on profile
                   </label>
                   <input
@@ -288,7 +285,7 @@ const EditDogProfile = () => {
                     name="show_meetup_type"
                     onChange={handleChange}
                     checked={formData.show_meetup_type}
-                  />
+                  /> */}
                   <input
                     type="hidden"
                     required={true}
@@ -296,10 +293,21 @@ const EditDogProfile = () => {
                     onChange={handleChange}
                   />
 
+                  <SimpleImageUpload
+                    setImageUploaded={setProfileImageUploaded}
+                    setImageSelected={setImageSelected}
+                    currentImageUrl={user.profileImageUrl}
+                    showCurrentImage={true}
+                  />
+
                   <br />
                   <button
                     type="submit"
-                    disabled={isLoading || aboutError.length > 0}
+                    disabled={
+                      isLoading ||
+                      aboutError.length > 0 ||
+                      (imageSelected && !profileImageUploaded)
+                    }
                   >
                     {isLoading ? (
                       <Loader className="spin" size={28} />
@@ -458,7 +466,7 @@ const EditDogProfile = () => {
                     {aboutError}
                   </p>
                 )}
-                <label htmlFor="show-meetup-type">
+                {/* <label htmlFor="show-meetup-type">
                   Show meetup type on profile
                 </label>
                 <input
@@ -467,7 +475,7 @@ const EditDogProfile = () => {
                   name="show_meetup_type"
                   onChange={handleChange}
                   checked={formData.show_meetup_type}
-                />
+                /> */}
                 <input
                   type="hidden"
                   required={true}
@@ -475,10 +483,21 @@ const EditDogProfile = () => {
                   onChange={handleChange}
                 />
 
+                <SimpleImageUpload
+                  setImageUploaded={setProfileImageUploaded}
+                  setImageSelected={setImageSelected}
+                  currentImageUrl={user.profileImageUrl}
+                  showCurrentImage={true}
+                />
+
                 <br />
                 <button
                   type="submit"
-                  disabled={isLoading || aboutError.length > 0}
+                  disabled={
+                    isLoading ||
+                    aboutError.length > 0 ||
+                    (imageSelected && !profileImageUploaded)
+                  }
                 >
                   {isLoading ? <Loader className="spin" size={28} /> : 'Submit'}
                 </button>

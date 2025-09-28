@@ -352,25 +352,40 @@ export const getUser = async (req, res) => {
   try {
     const query = { user_id: userId }
 
-    const user = await User.findOne(query)
+    const userDoc = await User.findOne(query)
 
-    // const getObjectParams = {
-    //   Bucket: bucketName,
-    //   Key: user.image,
-    // }
+    // Convert Mongoose document to plain object so we can add new properties
+    const user = userDoc.toObject()
 
-    // const command = new GetObjectCommand(getObjectParams)
-    // const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
+    console.log(
+      'Retrieved user profile_image from database:',
+      user.profile_image
+    )
 
-    // user.imageUrl = 'https://d36ifi98wv8n1.cloudfront.net/' + user.image
+    // Generate signed URL for dog image if it exists
+    if (user.image) {
+      user.imageUrl = getSignedUrl({
+        url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+        dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+        privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
+        keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+      })
+    }
 
-    user.imageUrl = getSignedUrl({
-      url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
-      dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
-      privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
-      keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
-    })
-
+    // Generate signed URL for profile image if it exists
+    if (user.profile_image) {
+      try {
+        user.profileImageUrl = getSignedUrl({
+          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+          privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
+          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+        })
+      } catch (error) {
+        console.error('Error generating signed URL for profile image:', error)
+        user.profileImageUrl = null
+      }
+    }
     res.send(user)
   } catch (error) {
     console.log('Error in getting current user for display in header ', error)
@@ -623,6 +638,7 @@ export const uploadImage = async (req, res) => {
   // resize image
   const buffer = await sharp(req.file.buffer)
     .resize({ height: 1920, width: 1080, fit: 'outside' })
+    .jpeg({ quality: 80 })
     .withMetadata()
     .toBuffer()
 
@@ -652,6 +668,50 @@ export const uploadImage = async (req, res) => {
     res.send(insertedImage)
   } catch (error) {
     console.log('Error in putting image ', error)
+    res.status(400).json({ success: false, message: error })
+  }
+}
+
+// Upload profile image to S3 and update user profile_image field
+export const uploadProfileImage = async (req, res) => {
+  try {
+    const buffer = await sharp(req.file.buffer)
+      .resize({ height: 1920, width: 1080, fit: 'outside' })
+      .withMetadata()
+      .jpeg({ quality: 80 })
+      .toBuffer()
+
+    const imageName = randomImageName()
+
+    const params = {
+      Bucket: bucketName,
+      Key: imageName,
+      Body: buffer,
+      ContentType: req.file.mimetype,
+    }
+
+    const command = new PutObjectCommand(params)
+    const s3Result = await s3.send(command)
+
+    const query = { user_id: req.body.UserId }
+    const updateDocument = {
+      $set: {
+        profile_image: imageName,
+      },
+    }
+    const insertedImage = await User.updateOne(query, updateDocument)
+
+    // Generate signed URL for immediate response
+    const imageURL = getSignedUrl({
+      url: `https://d36ifi98wv8n1.cloudfront.net/${imageName}`,
+      keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+      privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
+      dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+    })
+
+    res.json({ success: true, imageURL, insertedImage })
+  } catch (error) {
+    console.log('Error in uploading profile image ', error)
     res.status(400).json({ success: false, message: error })
   }
 }

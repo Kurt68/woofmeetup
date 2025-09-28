@@ -10,6 +10,7 @@ const API_URL =
 
 const SimpleImageUpload = ({
   setImageUploaded,
+  setImageSelected,
   currentImageUrl = null,
   showCurrentImage = false,
 }) => {
@@ -24,15 +25,6 @@ const SimpleImageUpload = ({
   )
 
   const fileInputRef = useRef()
-
-  // Debug logging
-  useEffect(() => {
-    console.log('SimpleImageUpload props:', {
-      currentImageUrl,
-      showCurrentImage,
-      showingCurrentImage,
-    })
-  }, [currentImageUrl, showCurrentImage, showingCurrentImage])
 
   const handleImageUpload = useCallback(async () => {
     if (!file) {
@@ -54,6 +46,7 @@ const SimpleImageUpload = ({
 
       setUploadSuccess(true)
       if (setImageUploaded) setImageUploaded(true)
+      if (setImageSelected) setImageSelected(false) // Reset image selected state after successful upload
     } catch (error) {
       console.error('Error uploading image:', error)
       setUploadError('Failed to upload image. Please try again.')
@@ -73,6 +66,8 @@ const SimpleImageUpload = ({
         setUploadSuccess(false)
         // Show current image again if no new file selected
         setShowingCurrentImage(showCurrentImage && currentImageUrl)
+        // Reset image selected state when no file is selected
+        if (setImageSelected) setImageSelected(false)
         return
       }
 
@@ -94,6 +89,8 @@ const SimpleImageUpload = ({
       setUploadSuccess(false)
       // Hide current image when new file is selected
       setShowingCurrentImage(false)
+      // Notify parent that an image has been selected
+      if (setImageSelected) setImageSelected(true)
 
       // Create client side image URL for preview
       const url = URL.createObjectURL(selectedFile)
@@ -113,10 +110,12 @@ const SimpleImageUpload = ({
     setUploadSuccess(false)
     // Show current image again when new selection is removed
     setShowingCurrentImage(showCurrentImage && currentImageUrl)
+    // Reset image selected state when removing image
+    if (setImageSelected) setImageSelected(false)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }, [showCurrentImage, currentImageUrl])
+  }, [showCurrentImage, currentImageUrl, setImageSelected])
 
   // Cleanup image URL on unmount to prevent memory leaks
   useEffect(() => {
@@ -129,13 +128,14 @@ const SimpleImageUpload = ({
 
   return (
     <div className="simple-image-upload user-photo">
+      <label>
+        <strong>Upload Your Profile Photo</strong>
+      </label>
+      <p className="upload-description">
+        (Optional) Choose a clear photo of yourself to help other dog owners
+        recognize you during meetups.
+      </p>
       <div className="upload-container">
-        <h3>Upload Your Profile Photo</h3>
-        <p className="upload-description">
-          Choose a clear photo of yourself to help other dog owners recognize
-          you during meetups.
-        </p>
-
         {/* Hidden file input */}
         <input
           ref={fileInputRef}
@@ -152,13 +152,6 @@ const SimpleImageUpload = ({
             Uploading your photo
           </div>
         )}
-        {/* 
-        {uploadSuccess && (
-          <div className="upload-status success">
-            <Check size={20} />
-            Photo uploaded successfully!
-          </div>
-        )} */}
 
         {uploadError && (
           <div className="upload-status error">{uploadError}</div>

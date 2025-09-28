@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Nav from '../components/Nav'
 import ImageUpload from './ImageUpload'
+import SimpleImageUpload from '../components/SimpleImageUpload'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
@@ -19,6 +20,8 @@ const Onboarding = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [aboutError, setAboutError] = useState('')
+  const [profileImageUploaded, setProfileImageUploaded] = useState(false)
+  const [imageSelected, setImageSelected] = useState(false)
 
   const [formData, setFormData] = useState({
     user_id: cookies.UserId,
@@ -242,10 +245,21 @@ const Onboarding = () => {
                     onChange={handleChange}
                   />
 
+                  <SimpleImageUpload
+                    setImageUploaded={setProfileImageUploaded}
+                    setImageSelected={setImageSelected}
+                    currentImageUrl={null}
+                    showCurrentImage={false}
+                  />
+
                   <br />
                   <button
                     type="submit"
-                    disabled={isLoading || aboutError.length > 0}
+                    disabled={
+                      isLoading ||
+                      aboutError.length > 0 ||
+                      (imageSelected && !profileImageUploaded)
+                    }
                   >
                     {isLoading ? (
                       <Loader className="spin" size={28} />

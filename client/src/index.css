@@ -1678,3 +1678,155 @@ span.blink {
   font-weight: bold;
   z-index: 10;
 }
+
+/* SimpleImageUpload Component Styles */
+
+.simple-image-upload .upload-container {
+  background-color: white;
+  padding: 1rem 1.5rem 0 1.5rem;
+}
+.simple-image-upload {
+  margin-top: 0.2rem;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.simple-image-upload .upload-container h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.simple-image-upload .upload-description {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+.simple-image-upload .upload-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.simple-image-upload .upload-status.uploading {
+  background-color: rgba(83, 200, 160, 0.1);
+  color: #53c8a0;
+}
+
+.simple-image-upload .upload-status.success {
+  background-color: rgba(83, 200, 160, 0.1);
+  color: #53c8a0;
+}
+
+.simple-image-upload .upload-status.error {
+  background-color: rgba(255, 192, 203, 0.3);
+  color: #c62828;
+}
+
+.simple-image-upload .image-preview {
+  margin: 1rem 0;
+  text-align: center;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.simple-image-upload .image-preview img {
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  outline: none;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.simple-image-upload .current-image-label {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: #666;
+  font-style: italic;
+}
+
+.simple-image-upload .upload-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.simple-image-upload .image-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.simple-image-upload .upload-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.simple-image-upload .upload-button.primary {
+  background-color: pink;
+  color: white;
+}
+
+.simple-image-upload .upload-button.primary:hover:not(:disabled) {
+  background-color: #53c8a0;
+  transform: none;
+  box-shadow: none;
+}
+
+.simple-image-upload .upload-button.secondary {
+  background-color: #53c8a0;
+  color: white;
+}
+
+.simple-image-upload .upload-button.secondary:hover:not(:disabled) {
+  background-color: #53c8a0;
+  color: white;
+}
+
+.simple-image-upload .upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.simple-image-upload .spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
