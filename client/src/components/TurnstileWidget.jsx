@@ -7,6 +7,7 @@ const TurnstileWidget = ({ onSuccess, onError, siteKey }) => {
   const [scriptLoaded, setScriptLoaded] = useState(false)
   const [widgetId, setWidgetId] = useState(null)
   const [isRendering, setIsRendering] = useState(false)
+  const [hasSucceeded, setHasSucceeded] = useState(false)
 
   // Callback ref to handle when the DOM element becomes available
   const setWidgetRef = (element) => {
@@ -109,6 +110,7 @@ const TurnstileWidget = ({ onSuccess, onError, siteKey }) => {
           window.turnstile.remove(widgetId)
           setWidgetId(null)
           setIsRendering(false)
+          setHasSucceeded(false)
         } catch (error) {
           console.warn('TurnstileWidget: Error removing widget:', error)
         }
@@ -173,14 +175,45 @@ const TurnstileWidget = ({ onSuccess, onError, siteKey }) => {
             'TurnstileWidget: Verification successful, token received'
           )
           setError(null)
+          setHasSucceeded(true)
           if (onSuccess) onSuccess(token)
         },
         'error-callback': (errorCode) => {
           const errorMsg = `Turnstile verification failed with error code: ${errorCode}`
           console.error('TurnstileWidget:', errorMsg)
-          setError(errorMsg)
-          setIsRendering(false)
-          if (onError) onError(errorCode)
+
+          // Only set error state for critical errors that prevent widget functionality
+          // Also check if the widget has already succeeded - if so, ignore subsequent errors
+          const criticalErrors = [
+            '110100',
+            '110200',
+            '110110',
+            '110400',
+            '110500',
+          ]
+
+          if (hasSucceeded) {
+            console.warn(
+              'TurnstileWidget: Error after success, ignoring:',
+              errorCode
+            )
+            setIsRendering(false)
+            return
+          }
+
+          if (criticalErrors.includes(String(errorCode))) {
+            setError(errorMsg)
+            setIsRendering(false)
+            if (onError) onError(errorCode)
+          } else {
+            // For non-critical errors, just log and continue
+            console.warn(
+              'TurnstileWidget: Non-critical error, widget may still work:',
+              errorCode
+            )
+            setIsRendering(false)
+            // Don't call onError for non-critical errors to prevent unnecessary alerts
+          }
         },
         'expired-callback': () => {
           console.warn('TurnstileWidget: Token expired')
@@ -235,6 +268,7 @@ const TurnstileWidget = ({ onSuccess, onError, siteKey }) => {
     setWidgetId(null)
     setError(null)
     setIsRendering(false)
+    setHasSucceeded(false)
 
     // Clear the container
     if (widgetRef.current) {

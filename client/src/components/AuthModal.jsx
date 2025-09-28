@@ -162,21 +162,35 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
   }
 
   const handleTurnstileError = (errorCode) => {
-    console.error('Turnstile widget failed to load', errorCode)
+    console.error('Turnstile widget error:', errorCode)
 
-    // Provide more specific error messages based on error codes
-    let errorMessage = 'Verification widget failed to load. Please try again.'
+    // Log all errors but don't show alerts since this is non-interactive
+    const criticalErrors = ['110100', '110200', '110110', '110400', '110500']
 
-    if (errorCode === '110200') {
-      errorMessage =
-        'Domain verification failed. Please check your configuration.'
-    } else if (errorCode === '110100') {
-      errorMessage = 'Invalid site key. Please check your configuration.'
-    } else if (errorCode === '110110') {
-      errorMessage = 'Network error. Please check your internet connection.'
+    if (criticalErrors.includes(String(errorCode))) {
+      // Log critical errors with more specific messages
+      let errorMessage = 'Critical Turnstile error'
+
+      if (errorCode === '110200') {
+        errorMessage = 'Domain verification failed - check configuration'
+      } else if (errorCode === '110100') {
+        errorMessage = 'Invalid site key - check configuration'
+      } else if (errorCode === '110110') {
+        errorMessage = 'Network error - check internet connection'
+      } else if (errorCode === '110400') {
+        errorMessage = 'Verification timed out'
+      } else if (errorCode === '110500') {
+        errorMessage = 'Internal Turnstile error'
+      }
+
+      console.error('Critical Turnstile error:', errorMessage)
+    } else {
+      // For non-critical errors, just log them
+      console.warn(
+        'Turnstile non-critical error (widget may still work):',
+        errorCode
+      )
     }
-
-    alert(errorMessage)
   }
 
   return (
