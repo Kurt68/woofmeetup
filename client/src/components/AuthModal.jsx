@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import axios from 'axios'
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid' // COMMENTED OUT: No longer needed for custom captcha
 import { Link, useNavigate } from 'react-router-dom'
 import { checkEmail, checkPassword } from '../utilities/validators'
 import { Loader } from 'lucide-react'
+import TurnstileWidget from './TurnstileWidget'
 
 import { useAuthStore } from '../store/useAuthStore'
 
@@ -43,13 +44,19 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
     }
   }
 
-  const [captchaToken, setCaptchaToken] = useState('')
-  const [captchaChallenge, setCaptchaChallenge] = useState('')
-  const [captchaInput, setCaptchaInput] = useState('')
-  const [validationResult, setValidationResult] = useState('')
+  // COMMENTED OUT: Custom CAPTCHA state - Replaced with Cloudflare Turnstile
+  // const [captchaToken, setCaptchaToken] = useState('')
+  // const [captchaChallenge, setCaptchaChallenge] = useState('')
+  // const [captchaInput, setCaptchaInput] = useState('')
+  // const [validationResult, setValidationResult] = useState('')
 
+  // const [showSignUpForm, setShowSignUpForm] = useState(false)
+  // const [showCardCaptcha, setCardCaptcha] = useState(true)
+
+  // Cloudflare Turnstile state
+  const [turnstileToken, setTurnstileToken] = useState('')
   const [showSignUpForm, setShowSignUpForm] = useState(false)
-  const [showCardCaptcha, setCardCaptcha] = useState(true)
+  const [showTurnstile, setShowTurnstile] = useState(true)
 
   let navigate = useNavigate()
 
@@ -83,58 +90,82 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
     }
   }
 
-  useEffect(() => {
-    if (validationResult) {
-      const messageTimeOut = setTimeout(() => {
-        setShowSignUpForm(true)
-        setCardCaptcha(false)
-      }, 1500)
+  // COMMENTED OUT: Custom CAPTCHA logic - Replaced with Cloudflare Turnstile
+  // useEffect(() => {
+  //   if (validationResult) {
+  //     const messageTimeOut = setTimeout(() => {
+  //       setShowSignUpForm(true)
+  //       setCardCaptcha(false)
+  //     }, 1500)
 
-      return () => clearTimeout(messageTimeOut)
-    }
-  }, [validationResult])
+  //     return () => clearTimeout(messageTimeOut)
+  //   }
+  // }, [validationResult])
 
-  useEffect(() => {
-    generateCaptchaToken()
-  }, [])
+  // useEffect(() => {
+  //   generateCaptchaToken()
+  // }, [])
 
-  const generateCaptchaToken = () => {
-    const newToken = uuidv4()
-    setCaptchaToken(newToken)
+  // const generateCaptchaToken = () => {
+  //   const newToken = uuidv4()
+  //   setCaptchaToken(newToken)
 
-    // Request a new CAPTCHA challenge from the server, including a timestamp
+  //   // Request a new CAPTCHA challenge from the server, including a timestamp
+  //   axios
+  //     .post(`${SERVER_URL}/generate-captcha`, {
+  //       captchaToken: newToken,
+  //       timestamp: Date.now(),
+  //     })
+  //     .then((response) => {
+  //       setCaptchaChallenge(response.data.challenge)
+  //     })
+  //     .catch((serverError) => {
+  //       console.error(serverError)
+  //     })
+  // }
+
+  // const validateCaptcha = () => {
+  //   // Send the CAPTCHA token, user input, and timestamp to the server for validation
+  //   axios
+  //     .post(`${SERVER_URL}/validate-captcha`, {
+  //       captchaToken,
+  //       captchaInput,
+  //       timestamp: Date.now(),
+  //     })
+  //     .then((response) => {
+  //       setValidationResult(response.data.message)
+
+  //       setCaptchaChallenge('')
+  //       setCaptchaInput('')
+  //       generateCaptchaToken()
+  //     })
+  //     .catch((serverError) => {
+  //       alert('Invalid CAPTCHA.\n\nPlease complete the challenge.')
+  //       console.error(serverError)
+  //     })
+  // }
+
+  // Cloudflare Turnstile functions
+  const handleTurnstileSuccess = (token) => {
+    setTurnstileToken(token)
+    // Verify the token with your server
     axios
-      .post(`${SERVER_URL}/generate-captcha`, {
-        captchaToken: newToken,
-        timestamp: Date.now(),
-      })
+      .post(`${SERVER_URL}/verify-turnstile`, { token })
       .then((response) => {
-        setCaptchaChallenge(response.data.challenge)
+        if (response.data.success) {
+          setShowSignUpForm(true)
+          setShowTurnstile(false)
+        }
       })
-      .catch((serverError) => {
-        console.error(serverError)
+      .catch((error) => {
+        console.error('Turnstile verification failed:', error)
+        alert('Verification failed. Please try again.')
       })
   }
 
-  const validateCaptcha = () => {
-    // Send the CAPTCHA token, user input, and timestamp to the server for validation
-    axios
-      .post(`${SERVER_URL}/validate-captcha`, {
-        captchaToken,
-        captchaInput,
-        timestamp: Date.now(),
-      })
-      .then((response) => {
-        setValidationResult(response.data.message)
-
-        setCaptchaChallenge('')
-        setCaptchaInput('')
-        generateCaptchaToken()
-      })
-      .catch((serverError) => {
-        alert('Invalid CAPTCHA.\n\nPlease complete the challenge.')
-        console.error(serverError)
-      })
+  const handleTurnstileError = () => {
+    console.error('Turnstile widget failed to load')
+    alert('Verification widget failed to load. Please refresh the page.')
   }
 
   return (
@@ -150,10 +181,27 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
         Service and Cookie Policy.
       </p>
 
-      {showCardCaptcha && (
+      {showTurnstile && (
         <div className="card">
           <div>
-            {/* <p>CAPTCHA Token: {captchaToken}</p> */}
+            <p className="captcha-challenge">
+              <strong>Security Verification</strong>
+              <br className="challenge" />
+              Please complete the verification below to continue.
+            </p>
+            <TurnstileWidget
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              onSuccess={handleTurnstileSuccess}
+              onError={handleTurnstileError}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* COMMENTED OUT: Custom CAPTCHA UI - Replaced with Cloudflare Turnstile */}
+      {/* {showCardCaptcha && (
+        <div className="card">
+          <div>
             <svg
               className="captcha-logo"
               xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +250,7 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
             <p>{validationResult}</p>
           </div>
         </div>
-      )}
+      )*/} 
 
       {showSignUpForm && (
         <form onSubmit={handleSubmit} className="form">

@@ -357,11 +357,6 @@ export const getUser = async (req, res) => {
     // Convert Mongoose document to plain object so we can add new properties
     const user = userDoc.toObject()
 
-    console.log(
-      'Retrieved user profile_image from database:',
-      user.profile_image
-    )
-
     // Generate signed URL for dog image if it exists
     if (user.image) {
       user.imageUrl = getSignedUrl({

@@ -5,7 +5,7 @@ import cors from 'cors'
 import { connectDB } from './db/connectDB.js'
 import path from 'path'
 import cookieParser from 'cookie-parser'
-import { generateMathCaptcha } from './utilities/generateMathCaptcha.js'
+// import { generateMathCaptcha } from './utilities/generateMathCaptcha.js'
 
 import authRoutes from './routes/auth.route.js'
 import messageRoutes from './routes/message.route.js'
@@ -36,56 +36,101 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-// Store CAPTCHA challenges and their solutions with timestamps
-let captchas = []
+// COMMENTED OUT: Custom CAPTCHA Logic - Replaced with Cloudflare Turnstile
+// // Store CAPTCHA challenges and their solutions with timestamps
+// let captchas = []
 
-const captchaExpirationTime = 300000 // 5 minutes
+// const captchaExpirationTime = 300000 // 5 minutes
 
-// Middleware to verify CAPTCHA token and expiration
-const verifyCaptchaToken = (req, res, next) => {
-  const captchaToken = req.body.captchaToken
-  if (!captchaToken) {
-    return res.status(400).json({ message: 'No CAPTCHA token provided.' })
+// // Middleware to verify CAPTCHA token and expiration
+// const verifyCaptchaToken = (req, res, next) => {
+//   const captchaToken = req.body.captchaToken
+//   if (!captchaToken) {
+//     return res.status(400).json({ message: 'No CAPTCHA token provided.' })
+//   }
+//   const captcha = captchas.find((c) => c.token === captchaToken)
+
+//   if (!captcha) {
+//     return res.status(400).json({ message: 'Invalid CAPTCHA token.' })
+//   }
+//   // Check if the CAPTCHA has expired
+//   const currentTime = new Date()
+//   if (currentTime - captcha.timestamp > captchaExpirationTime) {
+//     captchas = captchas.filter((item) => item.token !== captchaToken)
+//     return res.status(400).json({ message: 'CAPTCHA has expired.' })
+//   }
+//   req.captcha = captcha
+//   next()
+// }
+
+// // Route to generate CAPTCHA challenges and return the CAPTCHA challenge
+// app.post('/generate-captcha', (req, res) => {
+//   const captchaToken = req.body.captchaToken
+//   if (!captchaToken) {
+//     res.status(401).json({ succes: false, message: 'captchaToken is required' })
+//     return
+//   }
+//   const timestamp = req.body.timestamp
+//   // Your CAPTCHA generation logic
+//   const { challenge, solution } = generateMathCaptcha()
+//   captchas.push({ token: captchaToken, solution, timestamp })
+//   res.json({ challenge })
+// })
+
+// // Route to validate CAPTCHA using the CAPTCHA token and timestamp
+// app.post('/validate-captcha', verifyCaptchaToken, (req, res) => {
+//   const userCaptchaInput = req.body.captchaInput
+//   const captchaToken = req.body.captchaToken
+//   const { solution } = req.captcha
+//   if (userCaptchaInput === solution) {
+//     captchas = captchas.filter((item) => item.token !== captchaToken)
+//     res.json({ message: 'CAPTCHA validated successfully!' })
+//   } else {
+//     res.status(400).json({ message: 'CAPTCHA validation failed' })
+//   }
+// })
+
+// Cloudflare Turnstile verification endpoint
+app.post('/verify-turnstile', async (req, res) => {
+  const { token } = req.body
+
+  if (!token) {
+    return res
+      .status(400)
+      .json({ success: false, message: 'No token provided' })
   }
-  const captcha = captchas.find((c) => c.token === captchaToken)
 
-  if (!captcha) {
-    return res.status(400).json({ message: 'Invalid CAPTCHA token.' })
-  }
-  // Check if the CAPTCHA has expired
-  const currentTime = new Date()
-  if (currentTime - captcha.timestamp > captchaExpirationTime) {
-    captchas = captchas.filter((item) => item.token !== captchaToken)
-    return res.status(400).json({ message: 'CAPTCHA has expired.' })
-  }
-  req.captcha = captcha
-  next()
-}
+  try {
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: token,
+        }),
+      }
+    )
 
-// Route to generate CAPTCHA challenges and return the CAPTCHA challenge
-app.post('/generate-captcha', (req, res) => {
-  const captchaToken = req.body.captchaToken
-  if (!captchaToken) {
-    res.status(401).json({ succes: false, message: 'captchaToken is required' })
-    return
-  }
-  const timestamp = req.body.timestamp
-  // Your CAPTCHA generation logic
-  const { challenge, solution } = generateMathCaptcha()
-  captchas.push({ token: captchaToken, solution, timestamp })
-  res.json({ challenge })
-})
+    const data = await response.json()
 
-// Route to validate CAPTCHA using the CAPTCHA token and timestamp
-app.post('/validate-captcha', verifyCaptchaToken, (req, res) => {
-  const userCaptchaInput = req.body.captchaInput
-  const captchaToken = req.body.captchaToken
-  const { solution } = req.captcha
-  if (userCaptchaInput === solution) {
-    captchas = captchas.filter((item) => item.token !== captchaToken)
-    res.json({ message: 'CAPTCHA validated successfully!' })
-  } else {
-    res.status(400).json({ message: 'CAPTCHA validation failed' })
+    if (data.success) {
+      res.json({ success: true, message: 'Turnstile verification successful' })
+    } else {
+      res
+        .status(400)
+        .json({
+          success: false,
+          message: 'Turnstile verification failed',
+          errors: data['error-codes'],
+        })
+    }
+  } catch (error) {
+    console.error('Turnstile verification error:', error)
+    res.status(500).json({ success: false, message: 'Internal server error' })
   }
 })
 

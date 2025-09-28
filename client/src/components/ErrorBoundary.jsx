@@ -20,6 +20,12 @@ class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      // If a fallback prop is provided, use it
+      if (this.props.fallback) {
+        return this.props.fallback
+      }
+
+      // Otherwise, use the default image upload error UI
       return (
         <div className="error-boundary">
           <h2>Something went wrong with the image upload.</h2>
