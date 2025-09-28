@@ -8,8 +8,8 @@ import TurnstileWidget from './TurnstileWidget'
 
 import { useAuthStore } from '../store/useAuthStore'
 
-const SERVER_URL = import.meta.env.MODE === "development" ? "http://localhost:8000" : "";
-
+const SERVER_URL =
+  import.meta.env.MODE === 'development' ? 'http://localhost:8000' : ''
 
 const AuthModal = ({ setShowModal, isSignUp }) => {
   const [email, setEmail] = useState('')
@@ -54,7 +54,6 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
   // const [showCardCaptcha, setCardCaptcha] = useState(true)
 
   // Cloudflare Turnstile state
-  const [turnstileToken, setTurnstileToken] = useState('')
   const [showSignUpForm, setShowSignUpForm] = useState(false)
   const [showTurnstile, setShowTurnstile] = useState(true)
 
@@ -147,7 +146,6 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
 
   // Cloudflare Turnstile functions
   const handleTurnstileSuccess = (token) => {
-    setTurnstileToken(token)
     // Verify the token with your server
     axios
       .post(`${SERVER_URL}/verify-turnstile`, { token })
@@ -250,7 +248,7 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
             <p>{validationResult}</p>
           </div>
         </div>
-      )*/} 
+      )*/}
 
       {showSignUpForm && (
         <form onSubmit={handleSubmit} className="form">
