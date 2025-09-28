@@ -161,9 +161,22 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
       })
   }
 
-  const handleTurnstileError = () => {
-    console.error('Turnstile widget failed to load')
-    alert('Verification widget failed to load. Please refresh the page.')
+  const handleTurnstileError = (errorCode) => {
+    console.error('Turnstile widget failed to load', errorCode)
+
+    // Provide more specific error messages based on error codes
+    let errorMessage = 'Verification widget failed to load. Please try again.'
+
+    if (errorCode === '110200') {
+      errorMessage =
+        'Domain verification failed. Please check your configuration.'
+    } else if (errorCode === '110100') {
+      errorMessage = 'Invalid site key. Please check your configuration.'
+    } else if (errorCode === '110110') {
+      errorMessage = 'Network error. Please check your internet connection.'
+    }
+
+    alert(errorMessage)
   }
 
   return (
