@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import axios from 'axios'
 import { Link, useNavigate } from 'react-router-dom'
 import { checkEmail, checkPassword } from '../utilities/validators'
@@ -81,7 +81,6 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
 
   // Cloudflare Turnstile functions
   const handleTurnstileSuccess = (token) => {
-    // Verify the token with your server
     axios
       .post(`${SERVER_URL}/verify-turnstile`, { token })
       .then((response) => {
@@ -90,42 +89,13 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
           setShowTurnstile(false)
         }
       })
-      .catch((error) => {
-        console.error('Turnstile verification failed:', error)
-        alert('Verification failed. Please try again.')
+      .catch(() => {
+        // Silent fail for non-interactive mode
       })
   }
 
-  const handleTurnstileError = (errorCode) => {
-    console.error('Turnstile widget error:', errorCode)
-
-    // Log all errors but don't show alerts since this is non-interactive
-    const criticalErrors = ['110100', '110200', '110110', '110400', '110500']
-
-    if (criticalErrors.includes(String(errorCode))) {
-      // Log critical errors with more specific messages
-      let errorMessage = 'Critical Turnstile error'
-
-      if (errorCode === '110200') {
-        errorMessage = 'Domain verification failed - check configuration'
-      } else if (errorCode === '110100') {
-        errorMessage = 'Invalid site key - check configuration'
-      } else if (errorCode === '110110') {
-        errorMessage = 'Network error - check internet connection'
-      } else if (errorCode === '110400') {
-        errorMessage = 'Verification timed out'
-      } else if (errorCode === '110500') {
-        errorMessage = 'Internal Turnstile error'
-      }
-
-      console.error('Critical Turnstile error:', errorMessage)
-    } else {
-      // For non-critical errors, just log them
-      console.warn(
-        'Turnstile non-critical error (widget may still work):',
-        errorCode
-      )
-    }
+  const handleTurnstileError = () => {
+    // Silent error handling for non-interactive mode
   }
 
   return (
