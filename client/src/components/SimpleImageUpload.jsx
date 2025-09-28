@@ -53,7 +53,7 @@ const SimpleImageUpload = ({
     } finally {
       setIsUploading(false)
     }
-  }, [cookies.UserId, file, setImageUploaded])
+  }, [cookies.UserId, file, setImageSelected, setImageUploaded])
 
   const handleFileSelect = useCallback(
     (e) => {
@@ -96,7 +96,7 @@ const SimpleImageUpload = ({
       const url = URL.createObjectURL(selectedFile)
       setImageURL(url)
     },
-    [showCurrentImage, currentImageUrl]
+    [setImageSelected, showCurrentImage, currentImageUrl]
   )
 
   const triggerFileSelect = useCallback(() => {
