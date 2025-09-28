@@ -27,9 +27,12 @@ const TurnstileWidget = ({ siteKey, onSuccess, onError }) => {
       document.head.appendChild(script)
     }
 
+    // Capture the current ref value for cleanup
+    const currentWidget = widgetRef.current
+
     return () => {
-      if (window.turnstile && widgetRef.current) {
-        window.turnstile.remove(widgetRef.current)
+      if (window.turnstile && currentWidget) {
+        window.turnstile.remove(currentWidget)
       }
     }
   }, [siteKey, onSuccess, onError])
