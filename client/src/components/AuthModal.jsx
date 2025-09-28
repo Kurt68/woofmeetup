@@ -209,11 +209,6 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
       {showTurnstile && (
         <div className="card">
           <div>
-            <p className="captcha-challenge">
-              <strong>Security Verification</strong>
-              <br className="challenge" />
-              Please complete the verification below to continue.
-            </p>
             <TurnstileWidget
               siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
               onSuccess={handleTurnstileSuccess}
