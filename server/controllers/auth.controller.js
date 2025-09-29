@@ -514,7 +514,6 @@ export const getMeetupTypeUsers = async (req, res) => {
     res.status(500).json({ success: false, message: error.message })
   }
 }
-
 // Set lon lat coordiantes
 export const getCurrentPosition = async (req, res) => {
   const { userId, longitude, latitude } = req.body
@@ -557,9 +556,9 @@ export const putUser = async (req, res) => {
     }
 
     // Only include image_name if it's provided
-    if (formData.image_name) {
-      updateDocument.$set.image_name = formData.image_name
-    }
+    // if (formData.image_name) {
+    //   updateDocument.$set.image_name = formData.image_name
+    // }
 
     const insertedUser = await User.updateOne(query, updateDocument)
     res.json(insertedUser)
