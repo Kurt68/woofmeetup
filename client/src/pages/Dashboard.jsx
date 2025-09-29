@@ -52,7 +52,6 @@ const Dashboard = () => {
   })
   const selectDistance = searchParams.get('selectDistance')
 
-  const [lastDirection, setLastDirection] = useState()
   const [cookies] = useCookies('user')
   const userId = cookies.UserId
 
@@ -146,11 +145,6 @@ const Dashboard = () => {
         icon: '😥',
       })
     }
-    setLastDirection(direction)
-  }
-
-  const outOfFrame = (name) => {
-    console.log(name + ' left the screen!')
   }
 
   const matchedUserIdsandUser = user?.matches // database field
@@ -213,9 +207,6 @@ const Dashboard = () => {
                       key={filteredMeetupTypeUsers.user_id}
                       onSwipe={(dir) =>
                         swiped(dir, filteredMeetupTypeUsers.user_id)
-                      }
-                      onCardLeftScreen={() =>
-                        outOfFrame(filteredMeetupTypeUsers.dogs_name)
                       }
                       preventSwipe={['up', 'down']}
                       user={user}

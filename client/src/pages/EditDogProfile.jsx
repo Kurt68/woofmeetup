@@ -62,8 +62,12 @@ const EditDogProfile = () => {
         params: { userId },
       })
       setUser(response.data)
-    } catch (error) {
-      // Handle error silently
+    } catch (err) {
+      // Add proper error handling
+      console.error('Error gettting user:', err)
+      setError(
+        err.response?.data?.message || 'Failed to get user. Please try again.'
+      )
     }
   }, [userId])
 
@@ -80,6 +84,8 @@ const EditDogProfile = () => {
     if (typeof formData.about === 'string' && formData.about.length > 26) {
       setAboutError('About me must be 26 characters or fewer.')
       return
+    } else {
+      setAboutError('')
     }
 
     try {
@@ -124,7 +130,12 @@ const EditDogProfile = () => {
       })
       setRemoveImage(true)
     } catch (err) {
-      // Handle error silently or add proper error handling
+      // Add proper error handling
+      console.error('Error deleting image:', err)
+      setError(
+        err.response?.data?.message ||
+          'Failed to delete image. Please try again.'
+      )
     }
   }
 
