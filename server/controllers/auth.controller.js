@@ -555,11 +555,6 @@ export const putUser = async (req, res) => {
       },
     }
 
-    // Only include image_name if it's provided
-    // if (formData.image_name) {
-    //   updateDocument.$set.image_name = formData.image_name
-    // }
-
     const insertedUser = await User.updateOne(query, updateDocument)
     res.json(insertedUser)
   } catch (error) {

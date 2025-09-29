@@ -31,7 +31,6 @@ const Onboarding = () => {
     meetup_type: 'Walk Companion',
     meetup_interest: 'Show all meetup activites',
     about: '',
-    // image_name: '',
     matches: [],
     current_user_search_radius: 10,
   })

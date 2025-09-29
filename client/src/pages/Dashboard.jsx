@@ -48,7 +48,7 @@ const Dashboard = () => {
   const [meetupTypeUsers, setMeetupTypeUsers] = useState([])
 
   const [searchParams, setSearchParams] = useSearchParams({
-    // selectDistance: '10',
+    selectDistance: '10',
   })
   const selectDistance = searchParams.get('selectDistance')
 

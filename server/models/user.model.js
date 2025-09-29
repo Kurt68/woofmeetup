@@ -33,10 +33,6 @@ const userSchema = new mongoose.Schema(
     verificationToken: String,
     verificationTokenExpiresAt: Date,
 
-    // image_name: {
-    //   type: String,
-    //   required: false,
-    // },
     imageUrl: {
       type: String,
       required: false,
