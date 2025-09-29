@@ -394,171 +394,127 @@ export const getMeetupTypeUsers = async (req, res) => {
   const overrideRadius = parseInt(selectDistance)
 
   try {
-    // One degree of latitude equals approximately 364,000 feet (69 miles), one minute equals 6,068 feet (1.15 miles),
-    // and one-second equals 101 feet. One-degree of longitude equals 288,200 feet (54.6 miles), one minute equals
-    // 4,800 feet (0.91 mile), and one second equals 80 feet.
+    // First, get the current user to access their location and preferences
+    const currentUser = await User.findOne({ user_id: userId })
+    if (!currentUser) {
+      return res.status(404).json({ success: false, message: 'User not found' })
+    }
 
-    const sameMeetupInterestUsers = [
-      { $match: { user_id: userId } },
+    // Ensure the user has location data
+    if (!currentUser.location || !currentUser.location.coordinates) {
+      return res.status(400).json({
+        success: false,
+        message: 'User location not available. Please update your location.',
+      })
+    }
+
+    // Determine the search radius to use (in miles)
+    const searchRadius =
+      !isNaN(overrideRadius) && overrideRadius > 0
+        ? overrideRadius
+        : currentUser.current_user_search_radius || 10 // Default to 10 miles if not set
+
+    // Convert miles to meters for geoNear (1 mile = 1609.34 meters)
+    const searchRadiusMeters = searchRadius * 1609.34
+
+    // Create the aggregation pipeline with $geoNear
+    const pipeline = [
+      // First, we need to add a 2dsphere index to the location field in the User model
+      // userSchema.index({ "location": "2dsphere" });
+
+      // Stage 1: Use $geoNear for geospatial search
       {
-        $lookup: {
-          from: 'users',
-          let: {
-            current_location: '$location.coordinates',
-            meetup_interest: '$meetup_interest',
-            search_radius: {
-              $cond: {
-                if: {
-                  $and: [
-                    { $ne: [overrideRadius, NaN] },
-                    { $gt: [overrideRadius, 0] },
-                  ],
-                },
-                then: overrideRadius,
-                else: '$current_user_search_radius',
-              },
-            },
+        $geoNear: {
+          near: {
+            type: 'Point',
+            coordinates: currentUser.location.coordinates,
           },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $cond: {
-                    if: {
-                      $eq: ['$$meetup_interest', 'Show all meetup activites'],
-                    },
-                    then: true,
-                    else: {
-                      $eq: ['$meetup_interest', '$$meetup_interest'],
-                    },
-                  },
-                },
-              },
-            },
-            {
-              $addFields: {
-                distance: {
-                  $sqrt: {
-                    $add: [
-                      {
-                        $pow: [
-                          {
-                            $subtract: [
-                              { $arrayElemAt: ['$location.coordinates', 0] },
-                              { $arrayElemAt: ['$$current_location', 0] },
-                            ],
-                          },
-                          2,
-                        ],
-                      },
-                      {
-                        $pow: [
-                          {
-                            $subtract: [
-                              { $arrayElemAt: ['$location.coordinates', 1] },
-                              { $arrayElemAt: ['$$current_location', 1] },
-                            ],
-                          },
-                          2,
-                        ],
-                      },
-                    ],
-                  },
-                },
-              },
-            },
-            {
-              $addFields: {
-                distance_to_other_users: { $multiply: ['$distance', 69] },
-              },
-            },
-            {
-              $addFields: {
-                imageUrl: {
-                  $concat: [
-                    'https://',
-                    {
-                      $let: {
-                        vars: {
-                          // ** s3 code here **
-                          // bucketName: bucketName,
-                          // bucketRegion: bucketRegion,
-                          // accessKey: accessKey,
-                          // secretAccessKey: secretAccessKey,
-                          image: '$image',
-                        },
-                        in: {
-                          $concat: [
-                            // 'bucketName',
-                            // 's3',
-                            // 'bucketRegion',
-                            'd36ifi98wv8n1.cloudfront.net/',
-                            '$$image',
-                          ],
-                        },
-                      },
-                    },
-                  ],
-                },
-              },
-            },
-            {
-              $match: {
-                $expr: {
-                  $lte: ['$distance_to_other_users', '$$search_radius'],
-                },
-              },
-            },
-          ],
-          as: 'meetupTypeUsers',
+          distanceField: 'distance_to_other_users_meters',
+          maxDistance: searchRadiusMeters,
+          spherical: true,
+          query: {
+            // Exclude the current user
+            user_id: { $ne: userId },
+          },
         },
       },
-      { $unwind: '$meetupTypeUsers' },
+
+      // Stage 2: Convert distance from meters to miles and round
+      {
+        $addFields: {
+          distance_to_other_users: {
+            $round: [
+              { $multiply: ['$distance_to_other_users_meters', 0.000621371] },
+            ], // Convert meters to miles
+          },
+        },
+      },
+
+      // Stage 3: Filter by meetup interest
+      {
+        $match: {
+          $expr: {
+            $or: [
+              // If current user wants to see all meetup activities
+              {
+                $eq: [currentUser.meetup_interest, 'Show all meetup activites'],
+              },
+              // Or if the other user has the same meetup interest
+              { $eq: ['$meetup_interest', currentUser.meetup_interest] },
+            ],
+          },
+        },
+      },
+
+      // Stage 4: Add CloudFront URL for images
+      {
+        $addFields: {
+          imageUrl: {
+            $concat: ['https://d36ifi98wv8n1.cloudfront.net/', '$image'],
+          },
+        },
+      },
+
+      // Stage 5: Project only the needed fields
       {
         $project: {
           _id: 0,
-          user_id: '$meetupTypeUsers.user_id',
-          about: '$meetupTypeUsers.about',
-          age: '$meetupTypeUsers.age',
-          meetup_type: '$meetupTypeUsers.meetup_type',
-          dogs_name: '$meetupTypeUsers.dogs_name',
-          show_meetup_type: '$meetupTypeUsers.show_meetup_type',
-          imageUrl: '$meetupTypeUsers.imageUrl',
-          image: '$meetupTypeUsers.image',
-          location: '$meetupTypeUsers.location.coordinates',
-          distance_to_other_users: {
-            $round: ['$meetupTypeUsers.distance_to_other_users'],
-          },
+          user_id: 1,
+          about: 1,
+          age: 1,
+          meetup_type: 1,
+          dogs_name: 1,
+          show_meetup_type: 1,
+          imageUrl: 1,
+          image: 1,
+          location: '$location.coordinates',
+          distance_to_other_users: 1,
         },
       },
     ]
 
-    const foundUsers = await User.aggregate(sameMeetupInterestUsers)
+    // Execute the aggregation pipeline
+    const foundUsers = await User.aggregate(pipeline)
+
+    // Generate signed URLs for images
     for (const user of foundUsers) {
-      // const getObjectParams = {
-      //   Bucket: bucketName,
-      //   Key: user.image,
-      // }
-
-      // const command = new GetObjectCommand(getObjectParams)
-      // const url = await getSignedUrl(s3, command, { expiresIn: 3600 })
-      // user.imageUrl = 'https://d36ifi98wv8n1.cloudfront.net/' + user.image
-
-      // s3 bucket code above. cloudfront cdn code below
-      user.imageUrl = getSignedUrl({
-        url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
-        dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
-        privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
-        keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
-      })
+      if (user.image) {
+        user.imageUrl = getSignedUrl({
+          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+          privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
+          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+        })
+      }
     }
 
     res.json(foundUsers)
   } catch (error) {
-    console.log('Error in getting meetuptype users', error)
-    res.status(400).json({ success: false, message: error.message })
+    console.log('Error in getting meetup type users:', error)
+    res.status(500).json({ success: false, message: error.message })
   }
 }
+
 // Set lon lat coordiantes
 export const getCurrentPosition = async (req, res) => {
   const { userId, longitude, latitude } = req.body
