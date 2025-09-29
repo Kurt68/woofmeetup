@@ -116,7 +116,11 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
         &#x2715;
       </div>
       <h2>{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
-
+      <p className="modal-copy">
+        By clicking {isSignUp ? 'Create Account' : 'Log In'}, you agree to our
+        terms. Learn how we process your data in our Privacy Policy, Terms of
+        Service and Cookie Policy.
+      </p>
       {showTurnstile && (
         <div>
           <TurnstileWidget
@@ -131,11 +135,6 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
           )}
         </div>
       )}
-      <p className="modal-copy">
-        By clicking {isSignUp ? 'Create Account' : 'Log In'}, you agree to our
-        terms. Learn how we process your data in our Privacy Policy, Terms of
-        Service and Cookie Policy.
-      </p>
 
       {showSignUpForm && (
         <form onSubmit={handleSubmit} className="form">
