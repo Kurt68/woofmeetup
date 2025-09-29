@@ -633,7 +633,7 @@ export const uploadImage = async (req, res) => {
   // resize image
   const buffer = await sharp(req.file.buffer)
     .resize({ height: 1920, width: 1080, fit: 'outside' })
-    .jpeg({ quality: 80 })
+    .jpeg({ quality: 60 })
     .withMetadata()
     .toBuffer()
 
@@ -673,7 +673,7 @@ export const uploadProfileImage = async (req, res) => {
     const buffer = await sharp(req.file.buffer)
       .resize({ height: 1920, width: 1080, fit: 'outside' })
       .withMetadata()
-      .jpeg({ quality: 80 })
+      .jpeg({ quality: 60 })
       .toBuffer()
 
     const imageName = randomImageName()

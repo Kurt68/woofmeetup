@@ -111,140 +111,143 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
   }
 
   return (
-    <div className="auth-modal">
-      <div className="close-icon" onClick={handleClick}>
-        &#x2715;
-      </div>
-      <h2>{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
-
-      <p className="modal-copy">
-        By clicking {isSignUp ? 'Create Account' : 'Log In'}, you agree to our
-        terms. Learn how we process your data in our Privacy Policy, Terms of
-        Service and Cookie Policy.
-      </p>
-
+    <>
       {showTurnstile && (
-        <div className="card">
-          <div>
-            <TurnstileWidget
-              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-              onSuccess={handleTurnstileSuccess}
-              onError={handleTurnstileError}
-            />
-            {turnstileError && (
-              <div className="msg" style={{ color: 'red', marginTop: '10px' }}>
-                {turnstileError}
-              </div>
-            )}
-          </div>
+        <div>
+          <TurnstileWidget
+            siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+            onSuccess={handleTurnstileSuccess}
+            onError={handleTurnstileError}
+          />
+          {turnstileError && (
+            <div className="msg" style={{ color: 'red', marginTop: '10px' }}>
+              {turnstileError}
+            </div>
+          )}
         </div>
       )}
+      <div className="auth-modal">
+        <div className="close-icon" onClick={handleClick}>
+          &#x2715;
+        </div>
+        <h2>{isSignUp ? 'Create Account' : 'Welcome Back'}</h2>
 
-      {showSignUpForm && (
-        <form onSubmit={handleSubmit} className="form">
-          <div
-            className={`form-group ${emailErrors.length > 0 ? 'error' : ''}`}
-          >
-            <label className="label" htmlFor="name">
-              Your First Name
-            </label>
-            <input
-              className="input"
-              type="text"
-              id="name"
-              placeholder="First Name"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-            />
-            <label className="label" htmlFor="email">
-              Email
-            </label>
-            <input
-              className="input"
-              type="email"
-              id="email"
-              name="email"
-              placeholder="Email"
-              // required={true}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            {emailErrors.length > 0 && <div className="msg">{emailErrors}</div>}
-          </div>
-          <div
-            className={`form-group ${passwordErrors.length > 0 ? 'error' : ''}`}
-          >
-            <br />
-            <label className="label" htmlFor="password">
-              Password
-            </label>
-            <input
-              className="input"
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Password"
-              // required={true}
-              value={password}
-              onChange={handlePasswordChange}
-            />
+        <p className="modal-copy">
+          By clicking {isSignUp ? 'Create Account' : 'Log In'}, you agree to our
+          terms. Learn how we process your data in our Privacy Policy, Terms of
+          Service and Cookie Policy.
+        </p>
 
-            {passwordErrors.length > 0 && (
-              <div className="msg">{passwordErrors}</div>
-            )}
-          </div>
-          {!isSignUp && (
-            <Link to="/forgot-password" className="forgot-password">
-              Forgot Password
-            </Link>
-          )}
-
-          {isSignUp && (
+        {showSignUpForm && (
+          <form onSubmit={handleSubmit} className="form">
+            <div
+              className={`form-group ${emailErrors.length > 0 ? 'error' : ''}`}
+            >
+              <label className="label" htmlFor="name">
+                Your First Name
+              </label>
+              <input
+                className="input"
+                type="text"
+                id="name"
+                placeholder="First Name"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+              />
+              <label className="label" htmlFor="email">
+                Email
+              </label>
+              <input
+                className="input"
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Email"
+                // required={true}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              {emailErrors.length > 0 && (
+                <div className="msg">{emailErrors}</div>
+              )}
+            </div>
             <div
               className={`form-group ${
-                passwordMatchError || serverError ? 'error' : ''
+                passwordErrors.length > 0 ? 'error' : ''
               }`}
             >
               <br />
-              <label className="label" htmlFor="password-check">
-                Password Confirm
+              <label className="label" htmlFor="password">
+                Password
               </label>
               <input
+                className="input"
                 type="password"
-                id="password-check"
-                name="password-check"
-                placeholder="Confirm Password"
-                value={confirmPassword}
+                id="password"
+                name="password"
+                placeholder="Password"
                 // required={true}
-                onChange={handleConfirmPasswordChange}
+                value={password}
+                onChange={handlePasswordChange}
               />
-              {passwordMatchError && (
-                <div className="msg">{passwordMatchError}</div>
+
+              {passwordErrors.length > 0 && (
+                <div className="msg">{passwordErrors}</div>
               )}
             </div>
-          )}
-          <button
-            className="secondary-button"
-            style={{ height: '3.4rem' }}
-            type="submit"
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader className="spin" size={28} /> : 'Submit'}
-          </button>
-          {/* Server error  */}
-          {typeof serverError === 'string' ? (
-            <p className="server-error">{serverError}</p>
-          ) : null}
+            {!isSignUp && (
+              <Link to="/forgot-password" className="forgot-password">
+                Forgot Password
+              </Link>
+            )}
 
-          <br />
-          {/* authError */}
-          {error && <p className="server-error">{error}</p>}
-        </form>
-      )}
+            {isSignUp && (
+              <div
+                className={`form-group ${
+                  passwordMatchError || serverError ? 'error' : ''
+                }`}
+              >
+                <br />
+                <label className="label" htmlFor="password-check">
+                  Password Confirm
+                </label>
+                <input
+                  type="password"
+                  id="password-check"
+                  name="password-check"
+                  placeholder="Confirm Password"
+                  value={confirmPassword}
+                  // required={true}
+                  onChange={handleConfirmPasswordChange}
+                />
+                {passwordMatchError && (
+                  <div className="msg">{passwordMatchError}</div>
+                )}
+              </div>
+            )}
+            <button
+              className="secondary-button"
+              style={{ height: '3.4rem' }}
+              type="submit"
+              disabled={isLoading}
+            >
+              {isLoading ? <Loader className="spin" size={28} /> : 'Submit'}
+            </button>
+            {/* Server error  */}
+            {typeof serverError === 'string' ? (
+              <p className="server-error">{serverError}</p>
+            ) : null}
 
-      {/* <hr />
+            <br />
+            {/* authError */}
+            {error && <p className="server-error">{error}</p>}
+          </form>
+        )}
+
+        {/* <hr />
       <h2>Get the App</h2> */}
-    </div>
+      </div>
+    </>
   )
 }
 
