@@ -46,6 +46,7 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
   // Cloudflare Turnstile state
   const [showSignUpForm, setShowSignUpForm] = useState(false)
   const [showTurnstile, setShowTurnstile] = useState(true)
+  const [turnstileError, setTurnstileError] = useState('')
 
   let navigate = useNavigate()
 
@@ -81,21 +82,32 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
 
   // Cloudflare Turnstile functions
   const handleTurnstileSuccess = (token) => {
+    // Clear any previous errors
+    setTurnstileError('')
+
     axios
       .post(`${SERVER_URL}/verify-turnstile`, { token })
       .then((response) => {
         if (response.data.success) {
           setShowSignUpForm(true)
           setShowTurnstile(false)
+        } else {
+          setTurnstileError('Verification failed. Please try again.')
         }
       })
-      .catch(() => {
-        // Silent fail for non-interactive mode
+      .catch((error) => {
+        console.error('Turnstile verification error:', error)
+        setTurnstileError(
+          'Unable to verify. Please check your connection and try again.'
+        )
       })
   }
 
-  const handleTurnstileError = () => {
-    // Silent error handling for non-interactive mode
+  const handleTurnstileError = (errorCode) => {
+    console.error('Turnstile widget error:', errorCode)
+    setTurnstileError(
+      'Security verification failed. Please refresh the page and try again.'
+    )
   }
 
   return (
@@ -119,6 +131,11 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
               onSuccess={handleTurnstileSuccess}
               onError={handleTurnstileError}
             />
+            {turnstileError && (
+              <div className="msg" style={{ color: 'red', marginTop: '10px' }}>
+                {turnstileError}
+              </div>
+            )}
           </div>
         </div>
       )}
