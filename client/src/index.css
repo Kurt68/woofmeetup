@@ -816,7 +816,7 @@ summary {
 
 .hamburger-menu {
   position: absolute;
- top: 12px;
+  top: 12px;
   right: 12px;
   background: none;
   border: none;
@@ -909,7 +909,10 @@ summary {
   color: #53c8a0;
   font-size: 18px;
 }
-
+.menu-item svg {
+  margin-right: 8px;
+  min-width: 20px;
+}
 /* Mobile specific adjustments */
 @media screen and (max-width: 767px) {
   .dropdown-menu {
@@ -918,7 +921,7 @@ summary {
   }
 
   .menu-item {
-    /* padding: 18px 20px; */
+    padding: 18px 8px 18px 8px;
     min-height: 52px;
     font-size: 17px;
   }
@@ -932,7 +935,7 @@ summary {
   }
 
   .menu-item {
-    padding: 14px 28px;
+    padding: 14px 8px 14px 8px;
     min-height: 46px;
   }
 }
