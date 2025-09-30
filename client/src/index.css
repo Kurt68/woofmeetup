@@ -816,8 +816,8 @@ summary {
 
 .hamburger-menu {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  right: 10px;
   background: none;
   border: none;
   cursor: pointer;
