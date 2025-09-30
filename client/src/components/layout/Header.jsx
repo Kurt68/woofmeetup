@@ -55,21 +55,24 @@ const Header = ({ user }) => {
               to="/edit-dog-profile"
               onClick={closeMenu}
             >
-             <UserPen />&nbsp;Edit Profile
+              <UserPen />
+              &nbsp;Edit Profile
             </Link>
             <Link
               to="/account-settings"
               className="menu-item account-settings-link"
               onClick={closeMenu}
             >
-             <CircleUser />&nbsp;Account
+              <CircleUser />
+              &nbsp;Account
             </Link>
             <span
               title="Log Out"
               className="menu-item log-out-link"
               onClick={userLogout}
             >
-             <LogOut />&nbsp;Sign Out
+              <LogOut />
+              &nbsp;Sign Out
             </span>
           </div>
         </>
