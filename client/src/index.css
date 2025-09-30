@@ -730,7 +730,7 @@ summary {
 .dropdown-menu .account-settings-link {
   position: static !important;
   background-image: none !important;
-  padding: 16px 24px !important;
+  /* padding: 16px 24px !important; */
   color: #53c8a0 !important;
   right: auto !important;
   top: auto !important;
