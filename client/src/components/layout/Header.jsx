@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
 import { useChatStore } from '../../store/useChatStore'
-import { UserPen, CircleUser, LogOut } from '@phosphor-icons/react'
+import { UserPen, CircleUser, LogOut } from 'lucide-react'
 
 const Header = ({ user }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -55,21 +55,21 @@ const Header = ({ user }) => {
               to="/edit-dog-profile"
               onClick={closeMenu}
             >
-             <UserPen /> Edit Profile
+             <UserPen />&nbsp;Edit Profile
             </Link>
             <Link
               to="/account-settings"
               className="menu-item account-settings-link"
               onClick={closeMenu}
             >
-             <CircleUser /> Account
+             <CircleUser />&nbsp;Account
             </Link>
             <span
               title="Log Out"
               className="menu-item log-out-link"
               onClick={userLogout}
             >
-             <LogOut /> Sign Out
+             <LogOut />&nbsp;Sign Out
             </span>
           </div>
         </>
