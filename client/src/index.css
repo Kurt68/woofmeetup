@@ -450,13 +450,18 @@ nav .logo-container {
   width: auto;
   text-align: start;
 }
-.onboarding form section input {
-  height: 1.9rem;
+.auth-modal.onboarding form section input[type='text'],
+.auth-modal.onboarding form section input[type='number'],
+.auth-modal.onboarding form section .dog-profile-section input[type='text'],
+.auth-modal.onboarding form section .dog-profile-section input[type='number'] {
+  height: 1.9rem !important;
   border-color: pink;
   border-style: solid;
-  border-width: 1.5px;
-  padding-left: 0.6rem;
+  border-width: 1.5px !important;
+  padding: 0 0 0 0.6rem !important;
+  margin: 0 0 10px 0 !important;
   outline: none;
+  font-size: 17px;
 }
 #dogs_name,
 #about,
@@ -530,6 +535,35 @@ nav .logo-container {
   border: none;
   color: white;
 }
+
+/* Dog Profile Section Alignment */
+.dog-profile-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.dog-profile-section label {
+  margin: 5px 0;
+  line-height: 1.4rem;
+  text-align: start;
+}
+
+.dog-profile-section input {
+  height: 1.9rem !important;
+  border-color: pink;
+  border-style: solid;
+  border-width: 1.5px !important;
+  padding: 0 0 0 0.6rem !important;
+  outline: none;
+  margin: 0 0 10px 0 !important;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 17px;
+}
+
 .onboarding form .photo-container img {
   width: 100%;
 }
@@ -691,6 +725,16 @@ summary {
   right: 0.5rem;
   top: 0.5rem;
 }
+
+/* Override account-settings-link styles when used in dropdown menu */
+.dropdown-menu .account-settings-link {
+  position: static !important;
+  background-image: none !important;
+  padding: 16px 24px !important;
+  color: #53c8a0 !important;
+  right: auto !important;
+  top: auto !important;
+}
 .privacy-policy ul,
 .terms-conditions ul {
   padding-left: 1rem;
@@ -764,6 +808,135 @@ summary {
   color: rgb(255, 255, 255);
   text-decoration: none;
 }
+
+/* Hamburger Menu Styles - Works on both desktop and mobile */
+.profile {
+  position: relative;
+}
+
+.hamburger-menu {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.hamburger-menu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger-menu span {
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: white;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.hamburger-menu.open span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-menu.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 70px;
+  right: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: 220px;
+  padding: 8px 0;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  margin: 4px 0;
+  color: #53c8a0 !important;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 16px;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background-color: #f8f9fa;
+}
+
+.menu-item .edit-icon,
+.menu-item .account-icon {
+  margin-right: 12px;
+  color: #53c8a0;
+  font-size: 18px;
+}
+
+/* Mobile specific adjustments */
+@media screen and (max-width: 767px) {
+  .dropdown-menu {
+    width: 200px;
+    padding: 12px 0;
+  }
+
+  .menu-item {
+    padding: 18px 20px;
+    min-height: 52px;
+    font-size: 17px;
+  }
+}
+
+/* Desktop specific adjustments */
+@media screen and (min-width: 768px) {
+  .dropdown-menu {
+    width: 240px;
+    padding: 16px 0;
+  }
+
+  .menu-item {
+    padding: 14px 28px;
+    min-height: 46px;
+  }
+}
+
 .select-distance {
   margin-top: -1rem;
   z-index: 1;
@@ -1462,6 +1635,20 @@ span.blink {
   margin-top: 2rem;
   max-width: 710px;
 }
+
+/* Edit Profile Input Styling - Match Onboarding */
+.edit .auth-modal input[type='text'],
+.edit .auth-modal input[type='number'] {
+  height: 1.9rem;
+  border-color: pink;
+  border-style: solid;
+  border-width: 1.5px;
+  padding-left: 0.6rem;
+  outline: none;
+  margin: 0 0 10px 0;
+  font-size: 17px;
+}
+
 .background-color-edit {
   background-color: #53c8a0;
   padding-top: 3rem;
