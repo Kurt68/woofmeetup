@@ -6,6 +6,7 @@ import { UserPen, CircleUser, LogOut } from 'lucide-react'
 
 const Header = ({ user }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  // Remove the selectDistance state
   const { logout } = useAuthStore()
   const { setSelectedUser } = useChatStore()
 
@@ -23,6 +24,8 @@ const Header = ({ user }) => {
     setIsMenuOpen(false)
   }
 
+  // Remove the handleDistanceChange function
+
   return (
     <div className="header">
       <div className="profile">
@@ -32,6 +35,7 @@ const Header = ({ user }) => {
           alt={'photo of ' + user.dogs_name}
         />
         <h4>{user.dogs_name}</h4>
+        {/* Remove the DistanceSelector component */}
       </div>
 
       {/* Hamburger Menu Button */}
