@@ -1,5 +1,5 @@
-import whiteLogo from '../images/woofmeetup_logo_pink.svg'
-import pinkLogo from '../images/color-logo-woofmeetup.svg'
+import whiteLogo from '../../images/woofmeetup_logo_pink.svg'
+import pinkLogo from '../../images/color-logo-woofmeetup.svg'
 import { Link } from 'react-router-dom'
 
 const Nav = ({ authToken, minimal, setShowModal, showModal, setIsSignUp }) => {

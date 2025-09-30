@@ -1,5 +1,5 @@
-import { useChatStore } from '../store/useChatStore'
-import { useAuthStore } from '../store/useAuthStore'
+import { useChatStore } from '../../store/useChatStore'
+import { useAuthStore } from '../../store/useAuthStore'
 
 const ChatSidebar = (clickedUser) => {
   const { selectedUser, setSelectedUser } = useChatStore()

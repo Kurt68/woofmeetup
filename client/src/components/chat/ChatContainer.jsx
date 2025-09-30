@@ -1,10 +1,10 @@
-import { useChatStore } from '../store/useChatStore'
-import Header from './Header'
+import { useChatStore } from '../../store/useChatStore'
+import { Header } from '../layout'
 import ChatWindow from './ChatWindow'
 import ChatModal from './ChatModal'
 import ChatSidebar from './ChatSidebar'
 import MatchesDisplay from './MatchesDisplay'
-import useIsMobile from '../hooks/useIsMobile'
+import useIsMobile from '../../hooks/useIsMobile'
 import { useState } from 'react'
 
 const ChatContainer = ({ user }) => {

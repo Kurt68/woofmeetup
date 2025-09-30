@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/useAuthStore'
 import { useEffect } from 'react'
-import LoadingSpinner from './components/LoadingSpinner'
+import { LoadingSpinner } from './components/ui'
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {

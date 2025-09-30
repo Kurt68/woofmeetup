@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { useCookies } from 'react-cookie'
 import { useAuthStore } from '../store/useAuthStore'
-import Nav from '../components/Nav'
+import { Nav } from '../components/layout'
 
 const API_URL =
   import.meta.env.MODE === 'development'

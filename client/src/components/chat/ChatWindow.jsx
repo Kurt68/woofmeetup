@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
-import { useChatStore } from '../store/useChatStore'
+import { useChatStore } from '../../store/useChatStore'
 import ChatHeader from './ChatHeader'
 import MessageInput from './MessageInput'
-import MessageSkeleton from './skeletons/MessageSkeleton'
-import { formatMessageTime } from '../utilities/formatTime'
+import { MessageSkeleton } from '../skeletons'
+import { formatMessageTime } from '../../utilities/formatTime'
 
 const ChatWindow = ({ user }) => {
   const {

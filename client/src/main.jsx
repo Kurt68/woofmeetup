@@ -2,8 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
-import ErrorBoundary from './components/ErrorBoundary.jsx'
-import ErrorComponent from './components/ErrorComponent.jsx'
+import { ErrorBoundary, ErrorComponent } from './components/ui'
 
 // Register service worker for caching optimization
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

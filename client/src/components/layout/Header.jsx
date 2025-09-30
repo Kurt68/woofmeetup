@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
-import { useAuthStore } from '../store/useAuthStore'
-import { useChatStore } from '../store/useChatStore'
+import { useAuthStore } from '../../store/useAuthStore'
+import { useChatStore } from '../../store/useChatStore'
 
 const Header = ({ user }) => {
   const { logout } = useAuthStore()

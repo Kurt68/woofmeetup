@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useState, useCallback, useEffect } from 'react'
 import { useCookies } from 'react-cookie'
-import SidebarSkeleton from './skeletons/SidebarSkeleton'
+import { SidebarSkeleton } from '../skeletons'
 
 const API_URL =
   import.meta.env.MODE === 'development'

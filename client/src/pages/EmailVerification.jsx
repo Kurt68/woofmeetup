@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
-import Nav from '../components/Nav'
+import { Nav } from '../components/layout'
 
 const EmailVerification = () => {
   const [code, setCode] = useState(['', '', '', '', '', ''])

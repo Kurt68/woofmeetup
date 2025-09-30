@@ -1,4 +1,4 @@
-import { useChatStore } from '../store/useChatStore'
+import { useChatStore } from '../../store/useChatStore'
 
 const ChatHeader = () => {
   const { setSelectedUser } = useChatStore()
