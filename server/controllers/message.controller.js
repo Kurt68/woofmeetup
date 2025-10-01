@@ -4,7 +4,7 @@ import cloudinary from '../lib/cloudinary.js'
 import { getReceiverSocketId, io } from '../lib/socket.js'
 
 // Get messages
-export const getMessages =  async (req, res) => {
+export const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params
     const myId = req._id
@@ -34,7 +34,19 @@ export const sendMessage = async (req, res) => {
     let imageUrl
     if (image) {
       // Upload base64 image to cloudinary
-      const uploadResponse = await cloudinary.uploader.upload(image)
+      const uploadResponse = await cloudinary.uploader.upload(
+        image,
+        {
+          quality: 'auto:eco',
+          format: 'webp',
+          width: 800,
+          crop: 'limit',
+        },
+        (error, result) => {
+          if (error) console.error(error)
+          else console.log(result.imageUrl)
+        }
+      )
       imageUrl = uploadResponse.secure_url
     }
 
