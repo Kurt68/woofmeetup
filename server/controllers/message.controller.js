@@ -44,7 +44,7 @@ export const sendMessage = async (req, res) => {
         },
         (error, result) => {
           if (error) console.error(error)
-          else console.log(result.imageUrl)
+          else console.log(result.secure_url)
         }
       )
       imageUrl = uploadResponse.secure_url

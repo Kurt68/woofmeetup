@@ -2,13 +2,8 @@
 const CACHE_NAME = 'woof-meetup-v1'
 const TENSORFLOW_CACHE = 'tensorflow-cache-v1'
 
-// Cache TensorFlow.js resources with longer TTL
-const TENSORFLOW_URLS = [
-  // These will be dynamically imported, so we cache them when they're fetched
-]
-
 // Install event
-self.addEventListener('install', (event) => {
+self.addEventListener('install', () => {
   console.log('Service Worker installing...')
   self.skipWaiting()
 })
