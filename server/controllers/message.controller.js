@@ -39,7 +39,7 @@ export const sendMessage = async (req, res) => {
         {
           quality: 'auto:eco',
           format: 'webp',
-          width: 800,
+          width: 400,
           crop: 'limit',
         },
         (error, result) => {
