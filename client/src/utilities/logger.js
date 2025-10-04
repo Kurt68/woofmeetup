@@ -78,6 +78,18 @@ export const logger = {
               ...metadata,
             },
           })
+
+          // Also capture as a message so it shows up in Sentry
+          Sentry.captureMessage(`Performance: ${operation}`, 'info', {
+            extra: {
+              duration,
+              ...metadata,
+            },
+            tags: {
+              component: 'woof-meetup',
+              type: 'performance',
+            },
+          })
         }
       } catch (sentryError) {
         // Sentry not available, continue without monitoring

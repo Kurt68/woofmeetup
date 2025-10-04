@@ -53,8 +53,8 @@ const SentryTestButtons = () => {
     }
 
     const endTime = performance.now()
-    logger.performance('Heavy computation completed', {
-      duration: endTime - startTime,
+    const duration = endTime - startTime
+    logger.performance('Heavy computation completed', duration, {
       iterations: 1000000,
       result: result,
     })
