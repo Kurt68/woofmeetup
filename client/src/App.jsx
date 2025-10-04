@@ -133,7 +133,7 @@ const App = () => {
             },
           }}
         />
-        <SentryTestButtons />
+        {/* <SentryTestButtons /> */}
       </BrowserRouter>
     </>
   )
