@@ -1,4 +1,4 @@
-// Production-safe logging utility
+// Production-safe logging utility with Sentry integration
 const isDevelopment = import.meta.env.MODE === 'development'
 
 export const logger = {
@@ -15,18 +15,96 @@ export const logger = {
   },
 
   error: (...args) => {
-    // Always log errors, but in production send to monitoring service
+    // Always log errors to console
     console.error(...args)
 
     if (!isDevelopment) {
-      // In production, you might want to send to error monitoring
-      // Example: Sentry, LogRocket, etc.
+      // Send to Sentry in production with context
+      try {
+        const Sentry = window.Sentry
+        if (Sentry) {
+          const [message, ...context] = args
+
+          if (message instanceof Error) {
+            // Handle Error objects
+            Sentry.captureException(message, {
+              extra: { context },
+              tags: {
+                component: 'woof-meetup',
+                type: 'application-error',
+              },
+            })
+          } else {
+            // Handle string messages with context
+            Sentry.captureMessage(String(message), 'error', {
+              extra: { context },
+              tags: {
+                component: 'woof-meetup',
+                type: 'application-error',
+              },
+            })
+          }
+        }
+      } catch (sentryError) {
+        // Sentry not available, continue without monitoring
+        console.warn('Sentry monitoring unavailable:', sentryError)
+      }
     }
   },
 
   info: (...args) => {
     if (isDevelopment) {
       console.info(...args)
+    }
+  },
+
+  // Track ML performance
+  performance: (operation, duration, metadata = {}) => {
+    if (isDevelopment) {
+      console.log(`⏱️ ${operation}: ${duration}ms`, metadata)
+    }
+
+    if (!isDevelopment) {
+      try {
+        const Sentry = window.Sentry
+        if (Sentry) {
+          // Track performance metrics in production
+          Sentry.addBreadcrumb({
+            category: 'performance',
+            message: `${operation} completed`,
+            level: 'info',
+            data: {
+              duration,
+              ...metadata,
+            },
+          })
+        }
+      } catch (sentryError) {
+        // Sentry not available, continue without monitoring
+      }
+    }
+  },
+
+  // Track user actions for debugging context
+  userAction: (action, data = {}) => {
+    if (isDevelopment) {
+      console.log(`👤 User action: ${action}`, data)
+    }
+
+    if (!isDevelopment) {
+      try {
+        const Sentry = window.Sentry
+        if (Sentry) {
+          Sentry.addBreadcrumb({
+            category: 'user',
+            message: action,
+            level: 'info',
+            data,
+          })
+        }
+      } catch (sentryError) {
+        // Sentry not available, continue without monitoring
+      }
     }
   },
 }

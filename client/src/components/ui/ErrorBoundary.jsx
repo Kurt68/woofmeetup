@@ -12,9 +12,27 @@ class ErrorBoundary extends Component {
 
   componentDidCatch(error, errorInfo) {
     // Log error to monitoring service in production
+    console.error('ErrorBoundary caught an error:', error, errorInfo)
+
     if (import.meta.env.PROD) {
-      // Replace with your error monitoring service
-      console.error('ErrorBoundary caught an error:', error, errorInfo)
+      try {
+        const Sentry = window.Sentry
+        if (Sentry) {
+          Sentry.captureException(error, {
+            contexts: {
+              react: {
+                componentStack: errorInfo.componentStack,
+              },
+            },
+            tags: {
+              component: 'ErrorBoundary',
+              type: 'react-error',
+            },
+          })
+        }
+      } catch (sentryError) {
+        console.warn('Sentry monitoring unavailable:', sentryError)
+      }
     }
   }
 
@@ -25,10 +43,10 @@ class ErrorBoundary extends Component {
         return this.props.fallback
       }
 
-      // Otherwise, use the default image upload error UI
+      // Otherwise, use the default error UI
       return (
         <div className="error-boundary">
-          <h2>Something went wrong with the image upload.</h2>
+          <h2>Something went wrong.</h2>
           <p>Please refresh the page and try again.</p>
           <button
             onClick={() => this.setState({ hasError: false, error: null })}

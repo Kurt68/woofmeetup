@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@react-spring/web": "^9.5.5",
+    "@sentry/browser": "^10.17.0",
+    "@sentry/react": "^10.17.0",
     "@tensorflow-models/mobilenet": "^2.1.1",
     "@tensorflow/tfjs": "^4.10.0",
     "@tensorflow/tfjs-backend-cpu": "^4.10.0",
