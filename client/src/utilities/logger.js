@@ -80,7 +80,8 @@ export const logger = {
           })
 
           // Also capture as a message so it shows up in Sentry
-          Sentry.captureMessage(`Performance: ${operation}`, 'info', {
+          // Using 'warning' level to ensure it appears in the feed
+          Sentry.captureMessage(`Performance: ${operation}`, 'warning', {
             extra: {
               duration,
               ...metadata,
