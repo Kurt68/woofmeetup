@@ -51,7 +51,8 @@
   border: 1px solid var(--color-primary);
 }
 
-.auth-modal input[type='text'] {
+.auth-modal input[type='text'],
+.auth-modal input[type='number'] {
   padding: var(--spacing-md-lg) !important;
 }
 
