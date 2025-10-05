@@ -53,7 +53,7 @@
 
 .auth-modal.onboarding input[type='text'],
 .auth-modal.onboarding input[type='number'] {
-  padding: var(--spacing-lg) !important;
+  padding: var(--spacing-xl) !important;
 }
 
 .auth-modal.onboarding input[type='text'],
