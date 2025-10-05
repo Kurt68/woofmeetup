@@ -32,6 +32,7 @@
   outline: none;
   margin: 0 0 10px 0;
   font-size: var(--font-size-lg);
+  border-radius: 0;
 }
 #dogs_name,
 #about,
@@ -132,6 +133,7 @@
   width: 100%;
   box-sizing: border-box;
   font-size: var(--font-size-lg);
+  border-radius: 0;
 }
 
 .onboarding form .photo-container img {
