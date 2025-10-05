@@ -14,7 +14,8 @@ const ChatModal = ({ user }) => {
     unsubscribeFromMessages,
     setSelectedUser,
   } = useChatStore()
-
+  // console.log(messages)
+  console.log('selectedUser:', selectedUser)
   const messageEndRef = useRef(null)
 
   const handleClose = () => {

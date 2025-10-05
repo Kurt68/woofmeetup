@@ -335,6 +335,16 @@ export const getMatches = async (req, res) => {
         privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
         keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
       })
+
+      // Generate signed URL for profile image if it exists
+      if (user.profile_image) {
+        user.profile_image = getSignedUrl({
+          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+          privateKey: process.env.CLOUDFRONT_PRIVATE_KEY,
+          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+        })
+      }
     }
 
     res.json(foundUsers)
