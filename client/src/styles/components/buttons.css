@@ -80,6 +80,7 @@
   position: absolute;
   height: var(--spacing-sm);
   left: var(--spacing-md);
+  margin-left: -1.5px;
   border-radius: 50%;
   top: 28px;
   z-index: var(--z-base);
