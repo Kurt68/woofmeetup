@@ -1,5 +1,89 @@
 @import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@200;300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Poor+Story&display=swap');
+
+/* ========================================
+   CSS Custom Properties (Variables)
+   ======================================== */
+:root {
+  /* Colors - Primary Palette */
+  --color-primary: #ffc0cb; /* pink */
+  --color-primary-rgb: 255, 192, 203;
+  --color-secondary: #53c8a0; /* teal */
+  --color-secondary-rgb: 83, 200, 160;
+  --color-accent: #b51010; /* red */
+
+  /* Neutral Colors */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-light: #f8f9fa;
+  --color-gray-border: #f0f0f0;
+  --color-gray-skeleton: whitesmoke;
+  --color-gray-divider: #eee;
+  --color-gray-text: #666;
+  --color-text-dark: #333;
+
+  /* Semantic Colors */
+  --color-error: hsl(0, 100%, 70%);
+  --color-error-dark: #c62828;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #92400e;
+  --color-success: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+
+  /* Pink Variations */
+  --color-pink-light: rgba(255, 193, 203, 0.3);
+  --color-pink-border: rgb(255, 193, 203);
+  --color-pink-disabled: rgba(255, 192, 203, 0.85);
+  --color-pink-bubble: rgb(255, 241, 243);
+
+  /* Spacing Scale */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Typography */
+  --font-primary: 'Readex Pro', sans-serif;
+  --font-secondary: 'Poor Story', system-ui;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-md: 16px;
+  --font-size-lg: 17px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 60px;
+  --font-size-warning: 4rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 25px;
+  --radius-xl: 30px;
+  --radius-2xl: 40px;
+  --radius-full: 50px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+  --shadow-modal: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+
+  /* Z-index Scale */
+  --z-base: 1;
+  --z-dropdown: 999;
+  --z-overlay: 1000;
+  --z-modal: 1001;
+  --z-tooltip: 9999;
+}
+
 html,
 body {
   margin: 0;
@@ -9,41 +93,26 @@ body {
   animation: hide-scroll 7s;
 }
 
-a:link {
-  color: black;
+/* Link Styles */
+a {
+  color: var(--color-black);
   background-color: transparent;
   text-decoration: none;
-}
-
-a:visited {
-  color: black;
-  background-color: transparent;
-  text-decoration: none;
-}
-
-a:hover {
-  color: black;
-  background-color: transparent;
-}
-
-a:active {
-  color: black;
-  background-color: transparent;
 }
 
 .error-background {
-  padding-top: 3rem;
-  background-color: pink;
+  padding-top: var(--spacing-2xl);
+  background-color: var(--color-primary);
   width: 100vw;
   height: 100vh;
-  color: white;
+  color: var(--color-white);
 }
 .error-background h3 {
   margin: 0;
   margin-top: -1rem;
 }
 .warning {
-  font-size: 4rem;
+  font-size: var(--font-size-warning);
 }
 
 h2 {
@@ -51,34 +120,35 @@ h2 {
 }
 
 * {
-  font-family: 'Readex Pro', sans-serif;
+  font-family: var(--font-primary);
 }
+
 .primary-title {
-  font-size: 60px;
-  color: rgb(255, 255, 255);
+  font-size: var(--font-size-2xl);
+  color: var(--color-white);
   margin: 10px;
 }
 
 .primary-button {
-  color: rgb(255, 255, 255);
+  color: var(--color-white);
   text-transform: uppercase;
-  font-size: 15px;
-  background: linear-gradient(45deg, rgb(181, 16, 16), rgb(181, 16, 16));
+  font-size: var(--font-size-base);
+  background: linear-gradient(45deg, var(--color-accent), var(--color-accent));
   padding: 12px 30px;
-  border-radius: 30px;
+  border-radius: var(--radius-xl);
   border: none;
   cursor: pointer;
 }
 
 .secondary-button,
 .edit-button {
-  color: white;
-  background-color: pink;
+  color: var(--color-white);
+  background-color: var(--color-primary);
   font-weight: 500;
-  font-size: 15px;
+  font-size: var(--font-size-base);
   text-transform: uppercase;
   padding: 12px 30px;
-  border-radius: 30px;
+  border-radius: var(--radius-xl);
   border: none;
   margin: 6px;
   cursor: pointer;
@@ -88,24 +158,17 @@ h2 {
   text-transform: none;
 }
 .secondary-button:hover {
-  color: white;
-  background-color: rgb(83 200 160);
+  color: var(--color-white);
+  background-color: var(--color-secondary);
 }
 .edit-button:hover {
-  color: white;
-  background-color: pink !important;
+  color: var(--color-white);
+  background-color: var(--color-primary);
 }
 .spin {
   animation: spin 1s linear infinite;
 }
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+
 /*-------- Navbar --------*/
 
 nav {
@@ -117,17 +180,17 @@ nav {
 }
 nav .nav-button {
   margin: 10px;
-  padding: 12px 15px !important;
+  padding: 12px 15px;
 }
 nav .nav-button,
 .allow-geo-location {
-  color: white;
-  background-color: pink;
-  font-size: 16px;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  font-size: var(--font-size-md);
   padding: 5px 30px;
-  border-radius: 40px;
+  border-radius: var(--radius-2xl);
   border: none;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-xl);
   cursor: pointer;
   position: relative;
 }
@@ -138,7 +201,7 @@ nav .nav-button,
 }
 .allow-geo-location p:after {
   content: '';
-  background: rgb(255, 255, 255);
+  background: var(--color-white);
   width: 20px;
   height: 20px;
   position: absolute;
@@ -148,24 +211,24 @@ nav .nav-button,
 }
 .allow-geo-location p:before {
   content: '';
-  background: pink;
+  background: var(--color-primary);
   width: 8px;
   position: absolute;
   height: 8px;
   left: 16px;
   border-radius: 50%;
   top: 28px;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 .allow-geo-location {
-  box-shadow: 0 0 0 0 rgba(255, 192, 203, 0.4);
+  box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4);
   animation: pulse 1.5s infinite;
 }
 
 @media only screen and (max-width: 639px) {
   .account-settings {
-    top: 5.2rem !important;
+    top: 5.2rem;
   }
 
   /* Mobile nav layout */
@@ -176,8 +239,8 @@ nav .nav-button,
   }
 
   nav .logo-container {
-    margin: 15px 10px 0 10px !important;
-    height: auto !important;
+    margin: 15px 10px 0 10px;
+    height: auto;
   }
 
   nav .logo-container .logo {
@@ -185,25 +248,25 @@ nav .nav-button,
   }
 
   .header-chat-container .header {
-    background: #53c8a0 !important;
+    background: var(--color-secondary);
   }
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(255, 192, 203, 1);
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 1);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(255, 192, 203, 0.3);
+    box-shadow: 0 0 0 10px rgba(var(--color-primary-rgb), 0.3);
   }
   100% {
-    box-shadow: 0 0 0 50px rgba(255, 192, 203, 0.1);
+    box-shadow: 0 0 0 50px rgba(var(--color-primary-rgb), 0.1);
   }
 }
 
 nav .nav-button:disabled {
-  background-color: rgba(255, 192, 203, 0.85);
-  color: white;
+  background-color: var(--color-pink-disabled);
+  color: var(--color-white);
 }
 
 nav .logo-container {
@@ -212,7 +275,7 @@ nav .logo-container {
 
 /*-------- Home page --------*/
 .background-color {
-  background-color: #53c8a0;
+  background-color: var(--color-secondary);
   padding-top: 6.9rem;
 }
 .overlay {
@@ -253,11 +316,10 @@ nav .logo-container {
   margin-right: auto;
   max-width: 360px;
   height: auto;
-  background-color: rgb(255, 255, 255);
-  border-radius: 10px;
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
   padding: 20px;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
-    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  box-shadow: var(--shadow-modal);
 }
 .auth-modal.onboarding {
   max-width: 700px;
@@ -265,26 +327,26 @@ nav .logo-container {
 
 .auth-modal .close-icon {
   position: absolute;
-  top: 0.5rem;
-  right: 1rem;
+  top: var(--spacing-sm);
+  right: var(--spacing-md);
   cursor: pointer;
   font-size: 1.7rem;
-  color: pink;
+  color: var(--color-primary);
   font-weight: bolder;
 }
 .container .close-icon {
   cursor: pointer;
   font-size: 1.7rem;
-  color: pink;
+  color: var(--color-primary);
   font-weight: bolder;
 }
 .auth-modal form,
 .forgot-password-message {
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(255, 193, 203);
-  background-color: rgba(255, 193, 203, 0.3);
-  padding: 1.5rem 0.3em 1.5rem 0.3rem;
+  border: 1px solid var(--color-pink-border);
+  background-color: var(--color-pink-light);
+  padding: var(--spacing-lg) 0.3em var(--spacing-lg) 0.3rem;
 }
 
 .edit form {
@@ -292,7 +354,7 @@ nav .logo-container {
 }
 .auth-modal form.image-submit {
   border: none;
-  background-color: white;
+  background-color: var(--color-white);
 }
 
 .forgot-password-message {
@@ -301,10 +363,10 @@ nav .logo-container {
 .auth-modal .form-verify-email {
   display: flex;
   flex-direction: row;
-  border: 1px solid rgb(255, 193, 203);
-  background-color: rgba(255, 193, 203, 0.3);
+  border: 1px solid var(--color-pink-border);
+  background-color: var(--color-pink-light);
   justify-content: space-between;
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 var(--spacing-sm) 0;
 }
 .auth-modal .form-verify-email input {
   text-align: center;
@@ -322,8 +384,8 @@ nav .logo-container {
 .auth-modal input[type='number'] {
   padding: 8px;
   margin: 8px;
-  font-size: 17px;
-  border: 1px solid pink;
+  font-size: var(--font-size-lg);
+  border: 1px solid var(--color-primary);
 }
 .auth-modal.onboarding input[type='text'],
 .auth-modal.onboarding input[type='number'] {
@@ -331,20 +393,20 @@ nav .logo-container {
 }
 .forgot-password {
   text-align: left;
-  color: pink !important;
+  color: var(--color-primary);
   font-size: 14px;
-  text-decoration: underline !important;
+  text-decoration: underline;
   padding-left: 10px;
-  margin: 1rem 0;
+  margin: var(--spacing-md) 0;
 }
 .forgot-password-text {
-  color: rgb(0, 0, 0);
+  color: var(--color-black);
   text-align: left;
   padding-left: 10px;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   text-decoration: none;
   font-style: italic;
-  margin: -0.2rem 0 2rem 0;
+  margin: -0.2rem 0 var(--spacing-xl) 0;
 }
 
 /*--------- Client Side Form Validation --------------*/
@@ -358,8 +420,8 @@ nav .logo-container {
   gap: 0.25rem;
 }
 .form-group.error .input {
-  border-color: hsl(0, 100%, 70%);
-  color: hsl(0, 100%, 70%);
+  border-color: var(--color-error);
+  color: var(--color-error);
 }
 
 .auth-modal .input:focus {
@@ -374,8 +436,8 @@ nav .logo-container {
 .server-error,
 .auth-error {
   font-size: 0.9em;
-  margin-left: 1rem;
-  color: hsl(0, 100%, 70%);
+  margin-left: var(--spacing-md);
+  color: var(--color-error);
   text-align: left;
   white-space: pre-line;
   line-height: 1.4rem;
@@ -386,16 +448,7 @@ nav .logo-container {
 }
 .auth-modal .form-group label {
   text-align: left;
-  margin-left: 0.5rem;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  margin-left: var(--spacing-sm);
 }
 
 /*-------- Verify Email -------- */
@@ -408,22 +461,22 @@ nav .logo-container {
   margin-right: auto;
   max-width: 360px;
   height: auto;
-  background-color: rgb(255, 255, 255);
-  border-radius: 10px;
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
   padding: 40px;
 }
 .verify-email form {
-  border: 1px solid rgb(8255, 193, 203);
-  background-color: rgba(255, 193, 203, 0.3);
+  border: 1px solid var(--color-pink-border);
+  background-color: var(--color-pink-light);
   margin: 8px;
-  padding: 1.5rem;
+  padding: var(--spacing-lg);
 }
 
 .verify-email input {
   padding: 4px;
   margin: 4px;
-  font-size: 17px;
-  border: 1px solid pink;
+  font-size: var(--font-size-lg);
+  border: 1px solid var(--color-primary);
   max-width: 1rem;
   text-align: center;
 }
@@ -454,14 +507,14 @@ nav .logo-container {
 .auth-modal.onboarding form section input[type='number'],
 .auth-modal.onboarding form section .dog-profile-section input[type='text'],
 .auth-modal.onboarding form section .dog-profile-section input[type='number'] {
-  height: 1.9rem !important;
-  border-color: pink;
+  height: 1.9rem;
+  border-color: var(--color-primary);
   border-style: solid;
-  border-width: 1.5px !important;
-  padding: 0 0 0 0.6rem !important;
-  margin: 0 0 10px 0 !important;
+  border-width: 1.5px;
+  padding: 0 0 0 0.6rem;
+  margin: 0 0 10px 0;
   outline: none;
-  font-size: 17px;
+  font-size: var(--font-size-lg);
 }
 #dogs_name,
 #about,
@@ -472,9 +525,9 @@ nav .logo-container {
 .image-identification button {
   padding: 15px 30px;
   margin: 10px 0;
-  font-size: 15px;
-  border: solid 2px rgb(83 200 160);
-  border-radius: 10px;
+  font-size: var(--font-size-base);
+  border: solid 2px var(--color-secondary);
+  border-radius: var(--radius-md);
 }
 .image-identification form {
   padding: 0;
@@ -505,8 +558,8 @@ nav .logo-container {
 
 .onboarding form .multiple-input-container label {
   padding: 10px;
-  border: solid 2px white;
-  transition: all 0.3s;
+  border: solid 2px var(--color-white);
+  transition: var(--transition-normal);
   margin-right: 10px;
   cursor: pointer;
 }
@@ -514,26 +567,26 @@ nav .logo-container {
   display: none;
 }
 .onboarding form input[type='radio']:checked + label {
-  border: solid 2px pink;
-  background-color: pink;
-  color: white;
+  border: solid 2px var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-white);
   border-radius: 0;
 }
 .onboarding form button[type='submit'],
 .image-identification button {
-  background-color: pink;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   border: none;
   cursor: pointer;
 }
 .onboarding form button[type='submit']:hover {
-  background-color: rgb(83 200 160);
+  background-color: var(--color-secondary);
   cursor: pointer;
 }
 .onboarding form button[type='submit']:active {
-  background-color: rgb(83 200 160);
+  background-color: var(--color-secondary);
   border: none;
-  color: white;
+  color: var(--color-white);
 }
 
 /* Dog Profile Section Alignment */
@@ -552,16 +605,16 @@ nav .logo-container {
 }
 
 .dog-profile-section input {
-  height: 1.9rem !important;
-  border-color: pink;
+  height: 1.9rem;
+  border-color: var(--color-primary);
   border-style: solid;
-  border-width: 1.5px !important;
-  padding: 0 0 0 0.6rem !important;
+  border-width: 1.5px;
+  padding: 0 0 0 0.6rem;
   outline: none;
-  margin: 0 0 10px 0 !important;
+  margin: 0 0 10px 0;
   width: 100%;
   box-sizing: border-box;
-  font-size: 17px;
+  font-size: var(--font-size-lg);
 }
 
 .onboarding form .photo-container img {
@@ -609,19 +662,19 @@ nav .logo-container {
 
 /* Model Loading and Ready Status Styles */
 .model-loading-alert {
-  background-color: #fef3c7;
-  border: 1px solid #f59e0b;
-  color: #92400e;
+  background-color: var(--color-warning-bg);
+  border: 1px solid var(--color-warning);
+  color: var(--color-warning-text);
   padding: 16px;
-  margin-bottom: 3rem;
+  margin-bottom: var(--spacing-2xl);
   text-align: center;
   line-height: 1.4;
 }
 
 .model-ready-alert {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success);
   padding: 16px;
   margin-bottom: 0;
   text-align: center;
@@ -671,7 +724,7 @@ nav .logo-container {
   align-items: center;
   min-height: 100dvh;
   position: relative;
-  background-color: rgb(83 200 160);
+  background-color: var(--color-secondary);
 }
 
 .account-settings {
@@ -690,7 +743,7 @@ nav .logo-container {
   margin: 0 3rem 1rem 3rem;
 }
 .account-settings a {
-  color: rgb(255, 255, 255) !important;
+  color: var(--color-white);
   line-height: 0;
 }
 .account-settings .delete-button {
@@ -701,12 +754,12 @@ nav .logo-container {
   top: 4rem;
 }
 main {
-  background-color: white;
+  background-color: var(--color-white);
   opacity: 0.93;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
 }
 summary {
-  font-size: 16px !important;
+  font-size: var(--font-size-md);
 }
 
 .account-settings .nav-button {
@@ -718,22 +771,22 @@ summary {
   background-repeat: no-repeat;
   border: none;
   padding: 0 0 0 1.6rem;
-  color: white !important;
-  font-size: 15px;
-  text-decoration: none !important;
+  color: var(--color-white);
+  font-size: var(--font-size-base);
+  text-decoration: none;
   position: absolute;
-  right: 0.5rem;
-  top: 0.5rem;
+  right: var(--spacing-sm);
+  top: var(--spacing-sm);
 }
 
 /* Override account-settings-link styles when used in dropdown menu */
 .dropdown-menu .account-settings-link {
-  position: static !important;
-  background-image: none !important;
-  /* padding: 16px 24px !important; */
-  color: black !important;
-  right: auto !important;
-  top: auto !important;
+  position: static;
+  background-image: none;
+  /* padding: 16px 24px; */
+  color: var(--color-black);
+  right: auto;
+  top: auto;
 }
 .privacy-policy ul,
 .terms-conditions ul {
@@ -764,14 +817,14 @@ summary {
 /*-------- Chat Container --------*/
 
 .header-chat-container {
-  background-color: rgb(255, 255, 255);
+  background-color: var(--color-white);
   flex: 1.3;
   text-align: left;
-  z-index: 1;
+  z-index: var(--z-base);
 }
 
 .header-chat-container .header {
-  background: pink;
+  background: var(--color-primary);
   height: auto;
   display: flex;
   justify-content: space-evenly;
@@ -781,9 +834,9 @@ summary {
 
 .header-chat-container .option {
   border: none;
-  background-color: rgb(255, 255, 255);
-  border-bottom: solid 3px rgb(83 200 160);
-  font-size: 18px;
+  background-color: var(--color-white);
+  border-bottom: solid 3px var(--color-secondary);
+  font-size: var(--font-size-xl);
   margin: 2px;
   cursor: pointer;
 }
@@ -793,8 +846,8 @@ summary {
 }
 
 .header-chat-container .option:not(:disabled) {
-  border-bottom: solid 3px black;
-  color: black;
+  border-bottom: solid 3px var(--color-black);
+  color: var(--color-black);
 }
 
 .header-chat-container .profile,
@@ -805,7 +858,7 @@ summary {
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  color: rgb(255, 255, 255);
+  color: var(--color-white);
   text-decoration: none;
 }
 
@@ -840,9 +893,9 @@ summary {
   display: block;
   height: 4px;
   width: 100%;
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 2px;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
 }
 
 .hamburger-menu.open span:nth-child(1) {
@@ -871,10 +924,10 @@ summary {
   position: absolute;
   top: 70px;
   right: 20px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  background-color: var(--color-white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-overlay);
   width: 220px;
   padding: 8px 0;
   overflow: hidden;
@@ -885,12 +938,12 @@ summary {
   align-items: center;
   /* padding: 16px 24px; */
   margin: 4px 0;
-  color: black !important;
+  color: var(--color-black);
   text-decoration: none;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--color-gray-border);
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-size: 16px;
+  transition: var(--transition-fast);
+  font-size: var(--font-size-md);
   min-height: 48px;
   box-sizing: border-box;
 }
@@ -900,14 +953,14 @@ summary {
 }
 
 .menu-item:hover {
-  background-color: #f8f9fa;
+  background-color: var(--color-gray-light);
 }
 
 .menu-item .edit-icon,
 .menu-item .account-icon {
   margin-right: 12px;
-  color: #53c8a0;
-  font-size: 18px;
+  color: var(--color-secondary);
+  font-size: var(--font-size-xl);
 }
 .menu-item svg {
   margin-right: 8px;
@@ -945,22 +998,22 @@ summary {
   /* z-index: 1; */
 }
 .select-distance label {
-  color: white;
+  color: var(--color-white);
   font-size: 1.1rem;
   text-align: left;
   text-indent: 1rem;
 }
 
 .edit-dog-profile {
-  font-size: 15px;
+  font-size: var(--font-size-base);
   cursor: pointer;
   text-decoration: none;
 }
 .log-out-icon {
   position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
-  font-size: 15px;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  font-size: var(--font-size-base);
 }
 .log-out-icon:hover {
   cursor: pointer;
@@ -995,10 +1048,10 @@ summary {
   display: inline-block;
   position: relative;
   height: auto;
-  background-color: rgb(255 241 243);
+  background-color: var(--color-pink-bubble);
 }
 .round {
-  border-radius: 25px;
+  border-radius: var(--radius-lg);
 }
 .tri-right.btm-left:after {
   content: ' ';
@@ -1010,7 +1063,7 @@ summary {
   top: auto;
   bottom: -20px;
   border: 28px solid;
-  border-color: transparent transparent transparent rgb(255 241 243);
+  border-color: transparent transparent transparent var(--color-pink-bubble);
 }
 .talktext {
   padding: 1em;
@@ -1029,7 +1082,7 @@ summary {
   padding: 8px 20px 0 20px;
   max-height: 12rem;
   overflow-y: auto;
-  scrollbar-color: pink white;
+  scrollbar-color: var(--color-primary) var(--color-white);
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
@@ -1053,8 +1106,8 @@ summary {
   flex-direction: column;
 }
 .chat-input textarea {
-  border-color: pink !important;
-  margin-bottom: 2rem;
+  border-color: var(--color-primary);
+  margin-bottom: var(--spacing-xl);
 }
 
 /*-------- Select Distance Input --------*/
@@ -1063,26 +1116,26 @@ form label {
 }
 
 select {
-  margin: 0.5rem 1rem;
+  margin: var(--spacing-sm) var(--spacing-md);
   font-size: 14px;
   appearance: none;
-  color: black;
+  color: var(--color-black);
   outline: none;
-  background-color: white;
+  background-color: var(--color-white);
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="35" height="30" viewBox="0 0 43.874 37.268"><g id="noun-puppy-2778283" transform="matrix(0.914, 0.407, -0.407, 0.914, 9.848, 0)"><path id="Path_24" data-name="Path 24" d="M4.08,9.61C6.307,6.66,7.909,5.088,9.064,4.619A12.2,12.2,0,0,1,28.537,5.1,5.606,5.606,0,0,1,30,6.161,20.646,20.646,0,0,1,33.163,9.61c3.352,4.433,4.961,8.858,3.6,9.878-1.1.819-3.777-.8-6.526-3.77a12.187,12.187,0,0,1-23.213.045C4.207,18.87,1.592,20.315.489,19.488-.882,18.468.728,14.043,4.08,9.61ZM18.622,23.25a11.206,11.206,0,0,0,10.854-8.388c-.119-.134-.238-.276-.35-.417-2.391,1.6-6.66,1.646-8.5-.6C18.234,10.914,20.395,7.4,22.8,5.6a5.423,5.423,0,0,1,4.068-1.028,11.23,11.23,0,0,0-16.538.037,1.226,1.226,0,0,1,.164.1c1.371,1.013-.246,6.913-1.49,8.6-.417.566-.834,1.1-1.244,1.587A11.239,11.239,0,0,0,18.622,23.25Zm6.228-12.337A1.691,1.691,0,1,0,23.158,12.6,1.688,1.688,0,0,0,24.849,10.914Z" transform="translate(0)" fill="%23674d24"/><ellipse id="Ellipse_1" data-name="Ellipse 1" cx="0.484" cy="0.477" rx="0.484" ry="0.477" transform="translate(23.158 9.878)"/><path id="Path_25" data-name="Path 25" d="M1.691,0A1.684,1.684,0,1,1,0,1.684,1.688,1.688,0,0,1,1.691,0Zm.38,1.6a.477.477,0,1,0-.484-.477A.492.492,0,0,0,2.071,1.6Z" transform="translate(12.394 9.23)"/><path id="Path_26" data-name="Path 26" d="M.8,3.431A1.5,1.5,0,0,0,3.306,2.38V2.373c-.521-.305-1.289-.864-1.289-1.5,0-.976.76-.864,1.743-.864s1.8-.112,1.8.864c0,.641-.767,1.2-1.289,1.5h0a1.5,1.5,0,0,0,1.5,1.438,1.548,1.548,0,0,0,1.013-.387.491.491,0,0,1,.685.03.482.482,0,0,1-.03.678,2.442,2.442,0,0,1-1.661.641A2.469,2.469,0,0,1,3.8,3.781a2.476,2.476,0,0,1-3.643.35.482.482,0,0,1-.03-.678A.472.472,0,0,1,.8,3.431Z" transform="translate(14.839 15.841)"/></g></svg>');
   background-position: right;
   background-repeat: no-repeat;
   border: none;
   padding: 0.7rem 7rem 0.7rem 0.6rem;
   cursor: pointer;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
 }
 
 .submit {
-  color: white;
-  background-color: pink;
-  border-radius: 40px;
-  font-size: 16px;
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  border-radius: var(--radius-2xl);
+  font-size: var(--font-size-md);
   border: none;
   padding: 10px 25px;
   cursor: pointer;
@@ -1091,7 +1144,7 @@ select {
 /*-------- Polaroid --------*/
 
 .polaroid {
-  background: #fff;
+  background: var(--color-white);
   padding: 1.3rem 1.3rem 5.5rem 1.3rem;
   max-width: 330px;
 }
@@ -1114,20 +1167,20 @@ select {
   font-size: 1.4rem;
   line-height: 1.1;
   text-align: center;
-  font-family: 'Poor Story', system-ui !important;
+  font-family: var(--font-secondary);
   font-weight: 600;
   font-style: normal;
 }
 .profile .avatar,
 .match-button .img-container {
-  border: 4px solid white;
+  border: 4px solid var(--color-white);
   width: 5rem;
   height: 5rem;
 }
 @media screen and (min-width: 768px) {
   .profile .avatar,
   .match-button .img-container {
-    border: 4px solid white;
+    border: 4px solid var(--color-white);
     width: 8rem;
     height: 8rem;
   }
@@ -1137,7 +1190,7 @@ select {
     height: 400px;
   }
   .polaroid {
-    background: #fff;
+    background: var(--color-white);
     padding: 1.3rem 1.3rem 6rem 1.3rem;
     max-width: 500px;
   }
@@ -1215,7 +1268,7 @@ select {
 }
 
 .swipe-info p {
-  color: white;
+  color: var(--color-white);
   font-size: 1.7rem;
   text-align: center;
 }
@@ -1280,14 +1333,14 @@ select {
   justify-content: center;
   width: 100%;
   border: none;
-  color: white;
-  background: rgb(83 200 160);
+  color: var(--color-white);
+  background: var(--color-secondary);
   cursor: pointer;
-  border-radius: 50px;
+  border-radius: var(--radius-full);
   box-shadow: rgba(0, 0, 0, 0.2) -4px 9px 15px -6px;
 }
 .background-button .avatar {
-  border: 4px solid white;
+  border: 4px solid var(--color-white);
 }
 .offline-online {
   margin: 0;
@@ -1295,7 +1348,7 @@ select {
   text-align: center;
 }
 .background-button-selected {
-  background-color: rgba(255, 192, 203, 1);
+  background-color: var(--color-primary);
 }
 
 .avatar {
@@ -1303,7 +1356,7 @@ select {
   border-radius: 9999px;
   width: 5rem;
   height: 5rem;
-  border: 4px solid pink;
+  border: 4px solid var(--color-primary);
 }
 .online-users {
   position: absolute;
@@ -1311,14 +1364,14 @@ select {
   bottom: 2.5rem;
   width: 10px;
   height: 10px;
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 50%;
 }
 span.blink {
   display: block;
   width: 10px;
   height: 10px;
-  background-color: white;
+  background-color: var(--color-white);
   opacity: 0.7;
   border-radius: 50%;
   animation: blink 1s linear infinite;
@@ -1344,8 +1397,8 @@ span.blink {
   line-height: 1.25rem;
 }
 .no-online-users {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+  padding-top: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
   text-align: center;
   color: lightgray;
 }
@@ -1354,7 +1407,7 @@ span.blink {
 .chat-scroll {
   max-height: 24rem;
   overflow-y: auto;
-  scrollbar-color: pink white;
+  scrollbar-color: var(--color-primary) var(--color-white);
 }
 .padding {
   overflow-y: auto;
@@ -1451,11 +1504,11 @@ span.blink {
   position: relative;
   display: block;
   width: fit-content;
-  border-radius: 10px;
-  background-color: rgba(255, 192, 203, 1);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
   padding-inline: calc(0.25rem * 4);
   padding-block: calc(0.5rem * 2);
-  color: white;
+  color: var(--color-white);
   grid-row-end: 3;
   min-height: 2rem;
   min-width: 2.5rem;
@@ -1507,8 +1560,8 @@ span.blink {
   width: 1.25rem;
   height: 1.25rem;
   cursor: pointer;
-  background-color: pink;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 .container-form {
   display: flex;
@@ -1529,10 +1582,10 @@ span.blink {
   max-width: 100%;
 }
 .container-form input {
-  border: 2px solid pink;
+  border: 2px solid var(--color-primary);
 }
 .text-buttons {
-  color: pink;
+  color: var(--color-primary);
   background: none;
   border: none;
   padding: 0;
@@ -1555,7 +1608,7 @@ span.blink {
   width: 10px;
   height: 10px;
   border-radius: 9999px;
-  background-color: pink;
+  background-color: var(--color-primary);
   opacity: 0.7;
   animation: sending-bounce 1.2s infinite ease-in-out both;
 }
@@ -1609,15 +1662,15 @@ span.blink {
   margin-top: -0.45rem;
 }
 .avatar.gray {
-  background-color: whitesmoke;
-  border-color: whitesmoke;
+  background-color: var(--color-gray-skeleton);
+  border-color: var(--color-gray-skeleton);
 }
 .chat-bubble.gray {
-  background-color: whitesmoke;
+  background-color: var(--color-gray-skeleton);
 }
 .chat-header.gray {
-  background-color: whitesmoke;
-  color: whitesmoke;
+  background-color: var(--color-gray-skeleton);
+  color: var(--color-gray-skeleton);
 }
 
 /* Sidebar Skeleton */
@@ -1643,30 +1696,31 @@ span.blink {
 .edit .auth-modal input[type='text'],
 .edit .auth-modal input[type='number'] {
   height: 1.9rem;
-  border-color: pink;
+  border-color: var(--color-primary);
   border-style: solid;
   border-width: 1.5px;
   padding-left: 0.6rem;
   outline: none;
   margin: 0 0 10px 0;
-  font-size: 17px;
+  font-size: var(--font-size-lg);
 }
 
 .background-color-edit {
-  background-color: #53c8a0;
-  padding-top: 3rem;
+  background-color: var(--color-secondary);
+  padding-top: var(--spacing-2xl);
   height: 250vh;
 }
 .instructions {
-  background-color: rgba(255, 192, 203, 0.3);
-  padding: 1rem 0.5rem 1rem 0.5rem;
+  background-color: var(--color-pink-light);
+  padding: var(--spacing-md) var(--spacing-sm) var(--spacing-md)
+    var(--spacing-sm);
   list-style-type: none;
   line-height: 1.7;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 .instructions p {
-  padding: 1rem;
-  border-radius: 30px;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-xl);
 }
 
 /*-------- Chat Modal --------*/
@@ -1692,10 +1746,9 @@ span.blink {
   max-width: 500px;
   height: 100%;
   max-height: 100%;
-  background-color: white;
+  background-color: var(--color-white);
   border-radius: 20px;
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
-    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+  box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -1703,14 +1756,14 @@ span.blink {
 
 .chat-modal .close-icon {
   position: absolute;
-  top: 0.5rem;
-  right: 1rem;
+  top: var(--spacing-sm);
+  right: var(--spacing-md);
   cursor: pointer;
   font-size: 1.7rem;
-  color: pink;
+  color: var(--color-primary);
   font-weight: bolder;
-  z-index: 1001;
-  background-color: white;
+  z-index: var(--z-modal);
+  background-color: var(--color-white);
   border-radius: 50%;
   width: 30px;
   height: 30px;
@@ -1724,15 +1777,15 @@ span.blink {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
-  border-bottom: 1px solid #eee;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-gray-divider);
   border-radius: 20px 20px 0 0;
 }
 
 .chat-modal-header h4 {
   margin: 0;
   font-size: 1.2rem;
-  color: #333;
+  color: var(--color-text-dark);
   margin-top: -6px;
 }
 
@@ -1740,14 +1793,14 @@ span.blink {
 .chat-modal .chat-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem;
+  padding: var(--spacing-md);
   min-height: 0; /* Important for flex scrolling */
 }
 
 .chat-modal .message-input-container {
   flex-shrink: 0; /* Prevent shrinking */
-  border-top: 1px solid #eee;
-  background-color: white;
+  border-top: 1px solid var(--color-gray-divider);
+  background-color: var(--color-white);
   border-radius: 0 0 20px 20px;
   min-height: 80px; /* Ensure minimum height for input area */
   margin: 0;
@@ -1779,9 +1832,9 @@ span.blink {
   flex: 1;
   min-height: 32px;
   padding: 2px 12px;
-  border: 2px solid pink;
-  border-radius: 0.5rem;
-  font-size: 16px;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-md);
   line-height: 1.2;
 }
 
@@ -1792,7 +1845,7 @@ span.blink {
   justify-content: center;
   min-width: 40px;
   min-height: 40px;
-  color: pink;
+  color: var(--color-primary);
   background: none;
   border: none;
   padding: 0;
@@ -1839,8 +1892,8 @@ span.blink {
   width: 1.5rem;
   height: 1.5rem;
   border-radius: 50%;
-  background-color: pink;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1853,8 +1906,8 @@ span.blink {
 /* SimpleImageUpload Component Styles */
 
 .simple-image-upload .upload-container {
-  background-color: white;
-  padding: 1rem 1.5rem 0 1.5rem;
+  background-color: var(--color-white);
+  padding: var(--spacing-md) var(--spacing-lg) 0 var(--spacing-lg);
 }
 .simple-image-upload {
   margin-top: 0.2rem;
@@ -1867,14 +1920,14 @@ span.blink {
 .simple-image-upload .upload-container h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.1rem;
-  color: #333;
+  color: var(--color-text-dark);
   font-weight: 600;
 }
 
 .simple-image-upload .upload-description {
-  margin: 0 0 1rem 0;
+  margin: 0 0 var(--spacing-md) 0;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--color-gray-text);
   line-height: 1.4;
 }
 
@@ -1890,18 +1943,18 @@ span.blink {
 }
 
 .simple-image-upload .upload-status.uploading {
-  background-color: rgba(83, 200, 160, 0.1);
-  color: #53c8a0;
+  background-color: rgba(var(--color-secondary-rgb), 0.1);
+  color: var(--color-secondary);
 }
 
 .simple-image-upload .upload-status.success {
-  background-color: rgba(83, 200, 160, 0.1);
-  color: #53c8a0;
+  background-color: rgba(var(--color-secondary-rgb), 0.1);
+  color: var(--color-secondary);
 }
 
 .simple-image-upload .upload-status.error {
-  background-color: rgba(255, 192, 203, 0.3);
-  color: #c62828;
+  background-color: var(--color-pink-light);
+  color: var(--color-error-dark);
 }
 
 .simple-image-upload .image-preview {
@@ -1928,9 +1981,9 @@ span.blink {
 }
 
 .simple-image-upload .current-image-label {
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-sm);
   font-size: 0.8rem;
-  color: #666;
+  color: var(--color-gray-text);
   font-style: italic;
 }
 
@@ -1950,37 +2003,37 @@ span.blink {
 .simple-image-upload .upload-button {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   padding: 12px 30px;
   border: none;
-  border-radius: 30px;
-  font-size: 15px;
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-base);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-normal);
   text-decoration: none;
   text-transform: uppercase;
 }
 
 .simple-image-upload .upload-button.primary {
-  background-color: pink;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-white);
 }
 
 .simple-image-upload .upload-button.primary:hover:not(:disabled) {
-  background-color: #53c8a0;
+  background-color: var(--color-secondary);
   transform: none;
   box-shadow: none;
 }
 
 .simple-image-upload .upload-button.secondary {
-  background-color: #53c8a0;
-  color: white;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
 }
 
 .simple-image-upload .upload-button.secondary:hover:not(:disabled) {
-  background-color: #53c8a0;
-  color: white;
+  background-color: var(--color-secondary);
+  color: var(--color-white);
 }
 
 .simple-image-upload .upload-button:disabled {
