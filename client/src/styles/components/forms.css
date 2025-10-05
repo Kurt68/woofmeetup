@@ -54,6 +54,8 @@
 .auth-modal.onboarding input[type='text'],
 .auth-modal.onboarding input[type='number'] {
   margin: 0;
+  padding: 0;
+  padding-left: 0.6rem;
 }
 
 .forgot-password {
