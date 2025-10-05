@@ -1,0 +1,518 @@
+/* ========================================
+   Modals Component
+   ======================================== */
+
+/* Auth Modal */
+.auth-modal {
+  position: absolute;
+  left: var(--spacing-md-lg);
+  right: var(--spacing-md-lg);
+  top: 80px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 360px;
+  height: auto;
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md-lg);
+  box-shadow: var(--shadow-modal);
+}
+
+.auth-modal.onboarding {
+  max-width: 700px;
+}
+
+.auth-modal .close-icon {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-md);
+  cursor: pointer;
+  font-size: 1.7rem;
+  color: var(--color-primary);
+  font-weight: bolder;
+}
+
+.container .close-icon {
+  cursor: pointer;
+  font-size: 1.7rem;
+  color: var(--color-primary);
+  font-weight: bolder;
+}
+
+.auth-modal .modal-copy {
+  line-height: 1.4rem;
+  text-align: left;
+}
+
+/* Chat Modal */
+.chat-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1002;
+  padding: 2rem 1rem;
+  padding-top: max(2rem, env(safe-area-inset-top, 0px) + 1rem);
+  padding-bottom: max(2rem, env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+.chat-modal {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  max-height: 100%;
+  background-color: var(--color-white);
+  border-radius: var(--spacing-md-lg);
+  box-shadow: var(--shadow-modal);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-modal .close-icon {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-md);
+  cursor: pointer;
+  font-size: 1.7rem;
+  color: var(--color-primary);
+  font-weight: bolder;
+  z-index: var(--z-modal);
+  background-color: var(--color-white);
+  border-radius: 50%;
+  width: var(--spacing-button-h);
+  height: var(--spacing-button-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Chat Modal Header */
+.chat-modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-gray-divider);
+  border-radius: var(--spacing-md-lg) var(--spacing-md-lg) 0 0;
+}
+
+.chat-modal-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-text-dark);
+  margin-top: -6px;
+}
+
+/* Chat Window in Modal */
+.chat-modal .chat-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-md);
+  min-height: 0; /* Important for flex scrolling */
+}
+
+.chat-modal .message-input-container {
+  flex-shrink: 0; /* Prevent shrinking */
+  border-top: 1px solid var(--color-gray-divider);
+  background-color: var(--color-white);
+  border-radius: 0 0 var(--spacing-md-lg) var(--spacing-md-lg);
+  min-height: 80px; /* Ensure minimum height for input area */
+  margin: 0;
+  padding: 0;
+}
+
+/* Fix input layout in modal */
+.chat-modal .container-input {
+  padding: 0.75rem;
+  box-sizing: border-box;
+}
+
+.chat-modal .container-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  width: 100%;
+}
+
+.chat-modal .row {
+  display: flex;
+  flex: 1;
+  gap: 0.25rem;
+  align-items: center;
+  width: 100%;
+}
+
+.chat-modal .border-form {
+  flex: 1;
+  min-height: 32px;
+  padding: 2px 12px;
+  border: 2px solid var(--color-primary);
+  border-radius: var(--spacing-sm);
+  font-size: var(--font-size-md);
+  line-height: 1.2;
+}
+
+.chat-modal .text-buttons {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.chat-modal .text-buttons svg {
+  width: 38px;
+  height: 38px;
+  stroke-width: 1.5;
+}
+
+/* Ensure buttons are always visible */
+.chat-modal .text-buttons:last-child {
+  margin-right: 0;
+}
+
+/* Add some spacing to prevent button cutoff */
+.chat-modal .container-form {
+  padding-right: var(--spacing-3xs);
+}
+
+/* Override any conflicting styles for modal buttons */
+.chat-modal .container-form .text-buttons {
+  flex-shrink: 0 !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure the row container doesn't overflow */
+.chat-modal .container-form .row {
+  overflow: visible !important;
+  min-height: var(--spacing-button-h);
+}
+
+/* Fix image preview close icon positioning in modal */
+.chat-modal .input-absolute {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* SimpleImageUpload Component Styles */
+.simple-image-upload .upload-container {
+  background-color: var(--color-white);
+  padding: var(--spacing-md) var(--spacing-lg) 0 var(--spacing-lg);
+}
+
+.simple-image-upload {
+  margin-top: 0.2rem;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.simple-image-upload .upload-container h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  color: var(--color-text-dark);
+  font-weight: 600;
+}
+
+.simple-image-upload .upload-description {
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 0.9rem;
+  color: var(--color-gray-text);
+  line-height: 1.4;
+}
+
+.simple-image-upload .upload-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.simple-image-upload .upload-status.uploading {
+  background-color: rgba(var(--color-secondary-rgb), 0.1);
+  color: var(--color-secondary);
+}
+
+.simple-image-upload .upload-status.success {
+  background-color: rgba(var(--color-secondary-rgb), 0.1);
+  color: var(--color-secondary);
+}
+
+.simple-image-upload .upload-status.error {
+  background-color: var(--color-pink-light);
+  color: var(--color-error-dark);
+}
+
+.simple-image-upload .image-preview {
+  margin: 1rem 0;
+  text-align: center;
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.simple-image-upload .image-preview img {
+  width: 100%;
+  height: auto;
+  max-width: none;
+  max-height: none;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  outline: none;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.simple-image-upload .current-image-label {
+  margin-top: var(--spacing-sm);
+  font-size: 0.8rem;
+  color: var(--color-gray-text);
+  font-style: italic;
+}
+
+.simple-image-upload .upload-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.simple-image-upload .image-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.simple-image-upload .upload-button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-button-v) var(--spacing-button-h);
+  border: none;
+  border-radius: var(--radius-xl);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition-normal);
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.simple-image-upload .upload-button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+}
+
+.simple-image-upload .upload-button.primary:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+  transform: none;
+  box-shadow: none;
+}
+
+.simple-image-upload .upload-button.secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.simple-image-upload .upload-button.secondary:hover:not(:disabled) {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+}
+
+.simple-image-upload .upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.simple-image-upload .spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hamburger Menu Styles - Works on both desktop and mobile */
+.profile {
+  position: relative;
+}
+
+.hamburger-menu {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 56px;
+  height: 56px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.hamburger-menu:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger-menu span {
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: var(--color-white);
+  border-radius: 2px;
+  transition: var(--transition-normal);
+}
+
+.hamburger-menu.open span:nth-child(1) {
+  transform: rotate(45deg) translate(8px, 8px);
+}
+
+.hamburger-menu.open span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger-menu.open span:nth-child(3) {
+  transform: rotate(-45deg) translate(8px, -8px);
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 70px;
+  right: var(--spacing-md-lg);
+  background-color: var(--color-white);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  z-index: var(--z-overlay);
+  width: 220px;
+  padding: var(--spacing-sm) 0;
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  /* padding: 16px 24px; */
+  margin: 4px 0;
+  color: var(--color-black);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-gray-border);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  font-size: var(--font-size-md);
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+
+.menu-item:hover {
+  background-color: var(--color-gray-light);
+}
+
+.menu-item .edit-icon,
+.menu-item .account-icon {
+  margin-right: var(--spacing-button-v);
+  color: var(--color-secondary);
+  font-size: var(--font-size-xl);
+}
+.menu-item svg {
+  margin-right: var(--spacing-sm);
+  min-width: var(--spacing-md-lg);
+}
+.edit-dog-profile {
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  text-decoration: none;
+}
+.log-out-icon {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  font-size: var(--font-size-base);
+}
+.log-out-icon:hover {
+  cursor: pointer;
+}
+.edit-icon {
+  transform: rotateZ(90deg);
+  display: inline-block;
+  margin-top: 0.2rem;
+}
+/* Mobile specific adjustments */
+@media screen and (max-width: 767px) {
+  .dropdown-menu {
+    width: 200px;
+    padding: var(--spacing-button-v) 0;
+  }
+
+  .menu-item {
+    padding: 18px var(--spacing-sm) 18px var(--spacing-sm);
+    min-height: 52px;
+    font-size: 17px;
+  }
+}
+
+/* Desktop specific adjustments */
+@media screen and (min-width: 768px) {
+  .dropdown-menu {
+    width: 240px;
+    padding: var(--spacing-md) 0;
+  }
+
+  .menu-item {
+    padding: 14px var(--spacing-sm) 14px var(--spacing-sm);
+    min-height: 46px;
+  }
+}

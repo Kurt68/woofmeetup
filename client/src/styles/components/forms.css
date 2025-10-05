@@ -1,0 +1,165 @@
+/* ========================================
+   Forms Component
+   ======================================== */
+
+/* Auth Modal Forms */
+.auth-modal form,
+.forgot-password-message {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-pink-border);
+  background-color: var(--color-pink-light);
+  padding: var(--spacing-lg) 0.3em var(--spacing-lg) 0.3rem;
+}
+
+.edit form {
+  flex-direction: column;
+}
+
+.auth-modal form.image-submit {
+  border: none;
+  background-color: var(--color-white);
+}
+
+.forgot-password-message {
+  text-align: left;
+}
+
+.auth-modal .form-verify-email {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid var(--color-pink-border);
+  background-color: var(--color-pink-light);
+  justify-content: space-between;
+  margin: 0 0 var(--spacing-sm) 0;
+}
+
+.auth-modal .form-verify-email input {
+  text-align: center;
+  max-width: 14px;
+  max-height: 14px;
+}
+
+/* Form Inputs */
+.auth-modal input[type='password'],
+.auth-modal input[type='email'],
+.auth-modal input[type='text'],
+.auth-modal input[type='number'] {
+  padding: var(--spacing-sm);
+  margin: var(--spacing-sm);
+  font-size: var(--font-size-lg);
+  border: 1px solid var(--color-primary);
+}
+
+.auth-modal.onboarding input[type='text'],
+.auth-modal.onboarding input[type='number'] {
+  margin: 0;
+}
+
+.forgot-password {
+  text-align: left;
+  color: var(--color-primary);
+  font-size: 14px;
+  text-decoration: underline;
+  padding-left: var(--spacing-sm);
+  margin: var(--spacing-md) 0;
+}
+
+.forgot-password-text {
+  color: var(--color-black);
+  text-align: left;
+  padding-left: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  text-decoration: none;
+  font-style: italic;
+  margin: -0.2rem 0 var(--spacing-xl) 0;
+}
+
+/* Client Side Form Validation */
+.auth-modal h2 {
+  margin: 0;
+}
+
+.auth-modal .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group.error .input {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+
+.auth-modal .input:focus {
+  border-color: hsl(200, 100%, 50%);
+}
+
+.auth-modal .btn:focus {
+  outline: auto;
+}
+
+.form-group.error .msg,
+.server-error,
+.auth-error {
+  font-size: 0.9em;
+  margin-left: var(--spacing-md);
+  color: var(--color-error);
+  text-align: left;
+  white-space: pre-line;
+  line-height: 1.4rem;
+  position: relative;
+}
+
+.auth-error {
+  text-align: center;
+}
+
+.auth-modal .form-group label {
+  text-align: left;
+  margin-left: var(--spacing-sm);
+}
+
+/* Verify Email Form */
+.verify-email {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100px;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 360px;
+  height: auto;
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2-5xl);
+}
+
+.verify-email form {
+  border: 1px solid var(--color-pink-border);
+  background-color: var(--color-pink-light);
+  margin: var(--spacing-sm);
+  padding: var(--spacing-lg);
+}
+
+.verify-email input {
+  padding: var(--spacing-xs);
+  margin: var(--spacing-xs);
+  font-size: var(--font-size-lg);
+  border: 1px solid var(--color-primary);
+  max-width: 1rem;
+  text-align: center;
+}
+.select-distance {
+  margin-top: -1rem;
+}
+.select-distance label {
+  color: var(--color-white);
+  font-size: 1.1rem;
+  text-align: left;
+  text-indent: 1rem;
+}
+.keep-delete .secondary-button {
+  text-transform: unset;
+  margin: 0.8rem 0;
+}

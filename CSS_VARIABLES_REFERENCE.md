@@ -87,13 +87,28 @@
 
 ## 📏 Spacing Scale
 
+### Base Spacing Scale
+
 ```css
---spacing-xs: 0.25rem; /* 4px */
---spacing-sm: 0.5rem; /* 8px */
---spacing-md: 1rem; /* 16px */
---spacing-lg: 1.5rem; /* 24px */
---spacing-xl: 2rem; /* 32px */
---spacing-2xl: 3rem; /* 48px */
+--spacing-xxs: 0.125rem; /* 2px - micro spacing */
+--spacing-3xs: 0.3125rem; /* 5px - extra small spacing */
+--spacing-xs: 0.25rem; /* 4px - tight spacing */
+--spacing-sm: 0.5rem; /* 8px - compact spacing */
+--spacing-md: 1rem; /* 16px - standard spacing */
+--spacing-md-lg: 1.25rem; /* 20px - medium-large spacing */
+--spacing-lg: 1.5rem; /* 24px - comfortable spacing */
+--spacing-xl: 2rem; /* 32px - section spacing */
+--spacing-2xl: 3rem; /* 48px - major section breaks */
+--spacing-2-5xl: 2.5rem; /* 40px - large section spacing */
+```
+
+### Button-Specific Spacing
+
+```css
+--spacing-button-v: 0.75rem; /* 12px - vertical button padding */
+--spacing-button-h: 1.875rem; /* 30px - horizontal button padding */
+--spacing-button-sm-v: 0.625rem; /* 10px - small button vertical */
+--spacing-button-sm-h: 0.9375rem; /* 15px - small button horizontal */
 ```
 
 **Usage:**
@@ -105,18 +120,25 @@
 }
 
 .button {
-  padding: var(--spacing-sm) var(--spacing-lg);
+  padding: var(--spacing-button-v) var(--spacing-button-h);
+}
+
+.compact-button {
+  padding: var(--spacing-button-sm-v) var(--spacing-button-sm-h);
 }
 ```
 
 **Guidelines:**
 
+- Use `xxs` and `3xs` for micro spacing (2px, 5px)
 - Use `xs` for tight spacing (icon gaps, small padding)
-- Use `sm` for compact layouts
-- Use `md` for standard spacing (default)
-- Use `lg` for comfortable spacing
-- Use `xl` for section spacing
-- Use `2xl` for major section breaks
+- Use `sm` for compact layouts (8px)
+- Use `md` for standard spacing (16px - default)
+- Use `md-lg` for medium-large spacing (20px)
+- Use `lg` for comfortable spacing (24px)
+- Use `xl` for section spacing (32px)
+- Use `2xl` for major section breaks (48px)
+- Use button-specific variables for consistent button padding
 
 ---
 
@@ -272,6 +294,51 @@ h1 {
 
 ---
 
+## ♿ Accessibility - Focus Styles
+
+### Focus Variables
+
+```css
+--focus-outline-color: hsl(200, 100%, 50%); /* Blue outline for visibility */
+--focus-outline-width: 2px; /* Standard outline thickness */
+--focus-outline-offset: 2px; /* Space between element and outline */
+--focus-ring: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3); /* Pink glow effect */
+```
+
+**Usage:**
+
+```css
+/* Universal focus-visible for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Enhanced button focus with ring */
+.primary-button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: var(--focus-outline-width) solid var(--color-white);
+}
+
+/* Form input focus */
+input[type='text']:focus-visible {
+  border-color: var(--focus-outline-color);
+  box-shadow: var(--focus-ring);
+}
+```
+
+**Guidelines:**
+
+- Use `:focus-visible` instead of `:focus` for better UX (only shows on keyboard navigation)
+- Focus indicators are WCAG 2.1 Level AA compliant
+- Blue outline provides high contrast for visibility
+- Pink ring maintains brand consistency
+- Never remove focus indicators without providing an alternative
+
+---
+
 ## 💡 Common Patterns
 
 ### Button Styles
@@ -281,13 +348,18 @@ h1 {
   color: var(--color-white);
   background-color: var(--color-primary);
   border-radius: var(--radius-xl);
-  padding: var(--spacing-sm) var(--spacing-lg);
+  padding: var(--spacing-button-v) var(--spacing-button-h);
   font-size: var(--font-size-base);
   transition: background-color var(--transition-normal);
 }
 
 .primary-button:hover {
   background-color: var(--color-secondary);
+}
+
+.primary-button:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: var(--focus-outline-width) solid var(--color-white);
 }
 ```
 
@@ -401,7 +473,7 @@ h1 {
   color: var(--color-white);
   background-color: var(--color-primary);
   border-radius: var(--radius-xl);
-  padding: 12px 30px; /* Keep specific button padding */
+  padding: var(--spacing-button-v) var(--spacing-button-h);
   font-size: var(--font-size-base);
 }
 ```

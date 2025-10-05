@@ -39,12 +39,22 @@
   --color-pink-bubble: rgb(255, 241, 243);
 
   /* Spacing Scale */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 3rem;
+  --spacing-xxs: 0.125rem; /* 2px */
+  --spacing-3xs: 0.3125rem; /* 5px */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-md-lg: 1.25rem; /* 20px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-2-5xl: 2.5rem; /* 40px */
+
+  /* Button Spacing */
+  --spacing-button-v: 0.75rem; /* 12px - vertical button padding */
+  --spacing-button-h: 1.875rem; /* 30px - horizontal button padding */
+  --spacing-button-sm-v: 0.625rem; /* 10px */
+  --spacing-button-sm-h: 0.9375rem; /* 15px */
 
   /* Typography */
   --font-primary: 'Readex Pro', sans-serif;
@@ -76,6 +86,12 @@
   --shadow-modal: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 
+  /* Focus Styles */
+  --focus-outline-color: hsl(200, 100%, 50%);
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 2px;
+  --focus-ring: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+
   /* Z-index Scale */
   --z-base: 1;
   --z-dropdown: 999;
@@ -91,6 +107,43 @@ body {
   text-align: center;
   overflow-x: hidden;
   animation: hide-scroll 7s;
+}
+
+/* ========================================
+   Accessibility - Focus Styles
+   ======================================== */
+
+/* Focus-visible for better keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Enhanced focus for buttons */
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.edit-button:focus-visible,
+nav .nav-button:focus-visible,
+.allow-geo-location:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: var(--focus-outline-width) solid var(--color-white);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Focus for form inputs */
+input[type='text']:focus-visible,
+input[type='email']:focus-visible,
+input[type='password']:focus-visible,
+input[type='number']:focus-visible,
+textarea:focus-visible {
+  border-color: var(--focus-outline-color);
+  box-shadow: var(--focus-ring);
 }
 
 /* Link Styles */
@@ -126,7 +179,7 @@ h2 {
 .primary-title {
   font-size: var(--font-size-2xl);
   color: var(--color-white);
-  margin: 10px;
+  margin: var(--spacing-sm);
 }
 
 .primary-button {
@@ -134,7 +187,7 @@ h2 {
   text-transform: uppercase;
   font-size: var(--font-size-base);
   background: linear-gradient(45deg, var(--color-accent), var(--color-accent));
-  padding: 12px 30px;
+  padding: var(--spacing-button-v) var(--spacing-button-h);
   border-radius: var(--radius-xl);
   border: none;
   cursor: pointer;
@@ -147,10 +200,10 @@ h2 {
   font-weight: 500;
   font-size: var(--font-size-base);
   text-transform: uppercase;
-  padding: 12px 30px;
+  padding: var(--spacing-button-v) var(--spacing-button-h);
   border-radius: var(--radius-xl);
   border: none;
-  margin: 6px;
+  margin: var(--spacing-xs);
   cursor: pointer;
   outline: none;
 }
@@ -179,15 +232,15 @@ nav {
   top: 0;
 }
 nav .nav-button {
-  margin: 10px;
-  padding: 12px 15px;
+  margin: var(--spacing-sm);
+  padding: var(--spacing-button-v) var(--spacing-button-sm-h);
 }
 nav .nav-button,
 .allow-geo-location {
   color: var(--color-white);
   background-color: var(--color-primary);
   font-size: var(--font-size-md);
-  padding: 5px 30px;
+  padding: var(--spacing-3xs) var(--spacing-button-h);
   border-radius: var(--radius-2xl);
   border: none;
   margin-bottom: var(--spacing-xl);
@@ -197,25 +250,25 @@ nav .nav-button,
 
 .allow-geo-location p {
   display: inline-block;
-  padding-left: 5px;
+  padding-left: var(--spacing-3xs);
 }
 .allow-geo-location p:after {
   content: '';
   background: var(--color-white);
-  width: 20px;
-  height: 20px;
+  width: var(--spacing-md-lg);
+  height: var(--spacing-md-lg);
   position: absolute;
-  left: 10px;
+  left: var(--spacing-sm);
   border-radius: 50% 50% 50% 0%;
   transform: rotate(-49deg);
 }
 .allow-geo-location p:before {
   content: '';
   background: var(--color-primary);
-  width: 8px;
+  width: var(--spacing-sm);
   position: absolute;
-  height: 8px;
-  left: 16px;
+  height: var(--spacing-sm);
+  left: var(--spacing-md);
   border-radius: 50%;
   top: 28px;
   z-index: var(--z-base);
@@ -239,7 +292,7 @@ nav .nav-button,
   }
 
   nav .logo-container {
-    margin: 15px 10px 0 10px;
+    margin: var(--spacing-button-sm-v) var(--spacing-sm) 0 var(--spacing-sm);
     height: auto;
   }
 
@@ -257,7 +310,7 @@ nav .nav-button,
     box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 1);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(var(--color-primary-rgb), 0.3);
+    box-shadow: 0 0 0 var(--spacing-sm) rgba(var(--color-primary-rgb), 0.3);
   }
   100% {
     box-shadow: 0 0 0 50px rgba(var(--color-primary-rgb), 0.1);
@@ -270,7 +323,7 @@ nav .nav-button:disabled {
 }
 
 nav .logo-container {
-  margin: 15px 0 0 0;
+  margin: var(--spacing-button-sm-v) 0 0 0;
 }
 
 /*-------- Home page --------*/
@@ -309,8 +362,8 @@ nav .logo-container {
 /*-------- Auth Modal --------*/
 .auth-modal {
   position: absolute;
-  left: 20px;
-  right: 20px;
+  left: var(--spacing-md-lg);
+  right: var(--spacing-md-lg);
   top: 80px;
   margin-left: auto;
   margin-right: auto;
@@ -318,7 +371,7 @@ nav .logo-container {
   height: auto;
   background-color: var(--color-white);
   border-radius: var(--radius-md);
-  padding: 20px;
+  padding: var(--spacing-md-lg);
   box-shadow: var(--shadow-modal);
 }
 .auth-modal.onboarding {
@@ -382,8 +435,8 @@ nav .logo-container {
 .auth-modal input[type='email'],
 .auth-modal input[type='text'],
 .auth-modal input[type='number'] {
-  padding: 8px;
-  margin: 8px;
+  padding: var(--spacing-sm);
+  margin: var(--spacing-sm);
   font-size: var(--font-size-lg);
   border: 1px solid var(--color-primary);
 }
@@ -396,13 +449,13 @@ nav .logo-container {
   color: var(--color-primary);
   font-size: 14px;
   text-decoration: underline;
-  padding-left: 10px;
+  padding-left: var(--spacing-sm);
   margin: var(--spacing-md) 0;
 }
 .forgot-password-text {
   color: var(--color-black);
   text-align: left;
-  padding-left: 10px;
+  padding-left: var(--spacing-sm);
   font-size: var(--font-size-sm);
   text-decoration: none;
   font-style: italic;
@@ -463,18 +516,18 @@ nav .logo-container {
   height: auto;
   background-color: var(--color-white);
   border-radius: var(--radius-md);
-  padding: 40px;
+  padding: var(--spacing-2-5xl);
 }
 .verify-email form {
   border: 1px solid var(--color-pink-border);
   background-color: var(--color-pink-light);
-  margin: 8px;
+  margin: var(--spacing-sm);
   padding: var(--spacing-lg);
 }
 
 .verify-email input {
-  padding: 4px;
-  margin: 4px;
+  padding: var(--spacing-xs);
+  margin: var(--spacing-xs);
   font-size: var(--font-size-lg);
   border: 1px solid var(--color-primary);
   max-width: 1rem;
@@ -499,7 +552,7 @@ nav .logo-container {
 .onboarding form section {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: var(--spacing-md-lg);
   width: auto;
   text-align: start;
 }
@@ -512,7 +565,7 @@ nav .logo-container {
   border-style: solid;
   border-width: 1.5px;
   padding: 0 0 0 0.6rem;
-  margin: 0 0 10px 0;
+  margin: 0 0 var(--spacing-sm) 0;
   outline: none;
   font-size: var(--font-size-lg);
 }
@@ -523,8 +576,8 @@ nav .logo-container {
 }
 .onboarding form button,
 .image-identification button {
-  padding: 15px 30px;
-  margin: 10px 0;
+  padding: var(--spacing-button-sm-v) var(--spacing-button-h);
+  margin: var(--spacing-sm) 0;
   font-size: var(--font-size-base);
   border: solid 2px var(--color-secondary);
   border-radius: var(--radius-md);
@@ -539,7 +592,7 @@ nav .logo-container {
   left: -3px;
 }
 .onboarding form label {
-  margin: 5px 0;
+  margin: var(--spacing-3xs) 0;
   line-height: 1.4rem;
 }
 .onboarding form .multiple-input-container {
@@ -553,14 +606,14 @@ nav .logo-container {
   margin: 0;
 }
 .onboarding form .multiple-input-container input {
-  margin-right: 10px;
+  margin-right: var(--spacing-sm);
 }
 
 .onboarding form .multiple-input-container label {
-  padding: 10px;
+  padding: var(--spacing-sm);
   border: solid 2px var(--color-white);
   transition: var(--transition-normal);
-  margin-right: 10px;
+  margin-right: var(--spacing-sm);
   cursor: pointer;
 }
 .onboarding form input[type='radio'] {
@@ -599,7 +652,7 @@ nav .logo-container {
 }
 
 .dog-profile-section label {
-  margin: 5px 0;
+  margin: var(--spacing-3xs) 0;
   line-height: 1.4rem;
   text-align: start;
 }
@@ -611,7 +664,7 @@ nav .logo-container {
   border-width: 1.5px;
   padding: 0 0 0 0.6rem;
   outline: none;
-  margin: 0 0 10px 0;
+  margin: 0 0 var(--spacing-sm) 0;
   width: 100%;
   box-sizing: border-box;
   font-size: var(--font-size-lg);
@@ -665,7 +718,7 @@ nav .logo-container {
   background-color: var(--color-warning-bg);
   border: 1px solid var(--color-warning);
   color: var(--color-warning-text);
-  padding: 16px;
+  padding: var(--spacing-md);
   margin-bottom: var(--spacing-2xl);
   text-align: center;
   line-height: 1.4;
@@ -675,7 +728,7 @@ nav .logo-container {
   background-color: var(--color-success-bg);
   border: 1px solid var(--color-success-border);
   color: var(--color-success);
-  padding: 16px;
+  padding: var(--spacing-md);
   margin-bottom: 0;
   text-align: center;
   line-height: 1.4;
@@ -731,7 +784,7 @@ nav .logo-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 30px;
+  gap: var(--spacing-button-h);
   flex-wrap: wrap;
   font-weight: 500;
   position: absolute;
@@ -797,7 +850,7 @@ summary {
 .privacy-policy,
 .terms-conditions {
   text-align: left;
-  padding: 20px;
+  padding: var(--spacing-md-lg);
 }
 
 @media screen and (min-width: 1024px) {
@@ -869,12 +922,12 @@ summary {
 
 .hamburger-menu {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: var(--spacing-sm);
   z-index: 1001;
   display: flex;
   flex-direction: column;
@@ -923,13 +976,13 @@ summary {
 .dropdown-menu {
   position: absolute;
   top: 70px;
-  right: 20px;
+  right: var(--spacing-md-lg);
   background-color: var(--color-white);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-sm);
   z-index: var(--z-overlay);
   width: 220px;
-  padding: 8px 0;
+  padding: var(--spacing-sm) 0;
   overflow: hidden;
 }
 
@@ -958,23 +1011,23 @@ summary {
 
 .menu-item .edit-icon,
 .menu-item .account-icon {
-  margin-right: 12px;
+  margin-right: var(--spacing-button-v);
   color: var(--color-secondary);
   font-size: var(--font-size-xl);
 }
 .menu-item svg {
-  margin-right: 8px;
-  min-width: 20px;
+  margin-right: var(--spacing-sm);
+  min-width: var(--spacing-md-lg);
 }
 /* Mobile specific adjustments */
 @media screen and (max-width: 767px) {
   .dropdown-menu {
     width: 200px;
-    padding: 12px 0;
+    padding: var(--spacing-button-v) 0;
   }
 
   .menu-item {
-    padding: 18px 8px 18px 8px;
+    padding: 18px var(--spacing-sm) 18px var(--spacing-sm);
     min-height: 52px;
     font-size: 17px;
   }
@@ -984,11 +1037,11 @@ summary {
 @media screen and (min-width: 768px) {
   .dropdown-menu {
     width: 240px;
-    padding: 16px 0;
+    padding: var(--spacing-md) 0;
   }
 
   .menu-item {
-    padding: 14px 8px 14px 8px;
+    padding: 14px var(--spacing-sm) 14px var(--spacing-sm);
     min-height: 46px;
   }
 }
@@ -1079,7 +1132,7 @@ summary {
 /*-------- Chat Display --------*/
 .chat-display,
 .matches-display {
-  padding: 8px 20px 0 20px;
+  padding: var(--spacing-sm) var(--spacing-md-lg) 0 var(--spacing-md-lg);
   max-height: 12rem;
   overflow-y: auto;
   scrollbar-color: var(--color-primary) var(--color-white);
@@ -1101,7 +1154,7 @@ summary {
 
 /*-------- Chat Input --------*/
 .chat-input {
-  padding: 20px;
+  padding: var(--spacing-md-lg);
   display: flex;
   flex-direction: column;
 }
@@ -1137,7 +1190,7 @@ select {
   border-radius: var(--radius-2xl);
   font-size: var(--font-size-md);
   border: none;
-  padding: 10px 25px;
+  padding: var(--spacing-button-sm-v) 25px;
   cursor: pointer;
 }
 
@@ -1273,17 +1326,17 @@ select {
   text-align: center;
 }
 .age {
-  font-style: italic !important;
+  font-style: italic;
 }
 
 /* Chat Head */
 .padding-border {
   padding: 0.2rem 0.8rem 0.2rem 0;
-  margin-top: 0.5rem;
+  margin-top: var(--spacing-sm);
   background: linear-gradient(
     to bottom,
-    rgba(255, 192, 203, 0.25) 0%,
-    rgba(255, 192, 203, 0.005) 100%
+    rgba(var(--color-primary-rgb), 0.25) 0%,
+    rgba(var(--color-primary-rgb), 0.005) 100%
   );
 }
 
@@ -1600,7 +1653,7 @@ span.blink {
 .sending-indicator {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--spacing-sm);
   margin-left: 0.5rem;
   height: 1.25rem;
 }
@@ -1747,7 +1800,7 @@ span.blink {
   height: 100%;
   max-height: 100%;
   background-color: var(--color-white);
-  border-radius: 20px;
+  border-radius: var(--spacing-md-lg);
   box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
@@ -1765,8 +1818,8 @@ span.blink {
   z-index: var(--z-modal);
   background-color: var(--color-white);
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: var(--spacing-button-h);
+  height: var(--spacing-button-h);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1779,7 +1832,7 @@ span.blink {
   align-items: center;
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-gray-divider);
-  border-radius: 20px 20px 0 0;
+  border-radius: var(--spacing-md-lg) var(--spacing-md-lg) 0 0;
 }
 
 .chat-modal-header h4 {
@@ -1801,7 +1854,7 @@ span.blink {
   flex-shrink: 0; /* Prevent shrinking */
   border-top: 1px solid var(--color-gray-divider);
   background-color: var(--color-white);
-  border-radius: 0 0 20px 20px;
+  border-radius: 0 0 var(--spacing-md-lg) var(--spacing-md-lg);
   min-height: 80px; /* Ensure minimum height for input area */
   margin: 0;
   padding: 0;
@@ -1865,7 +1918,7 @@ span.blink {
 
 /* Add some spacing to prevent button cutoff */
 .chat-modal .container-form {
-  padding-right: 5px;
+  padding-right: var(--spacing-3xs);
 }
 
 /* Override any conflicting styles for modal buttons */
@@ -1881,7 +1934,7 @@ span.blink {
 /* Ensure the row container doesn't overflow */
 .chat-modal .container-form .row {
   overflow: visible !important;
-  min-height: 30px;
+  min-height: var(--spacing-button-h);
 }
 
 /* Fix image preview close icon positioning in modal */
@@ -2004,7 +2057,7 @@ span.blink {
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: 12px 30px;
+  padding: var(--spacing-button-v) var(--spacing-button-h);
   border: none;
   border-radius: var(--radius-xl);
   font-size: var(--font-size-base);

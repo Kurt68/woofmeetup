@@ -1,0 +1,60 @@
+/* ========================================
+   Navigation Component
+   ======================================== */
+
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+}
+
+nav .nav-button {
+  margin: var(--spacing-sm);
+  padding: var(--spacing-button-v) var(--spacing-button-sm-h);
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  font-size: var(--font-size-md);
+  padding: var(--spacing-3xs) var(--spacing-button-h);
+  border-radius: var(--radius-2xl);
+  border: none;
+  margin-bottom: var(--spacing-xl);
+  cursor: pointer;
+  position: relative;
+}
+
+nav .nav-button:disabled {
+  background-color: var(--color-pink-disabled);
+  color: var(--color-white);
+}
+
+nav .logo-container {
+  margin: var(--spacing-button-sm-v) 0 0 0;
+}
+
+/* Mobile Navigation */
+@media only screen and (max-width: 639px) {
+  .account-settings {
+    top: 5.2rem;
+  }
+
+  nav {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  nav .logo-container {
+    margin: var(--spacing-button-sm-v) var(--spacing-sm) 0 var(--spacing-sm);
+    height: auto;
+  }
+
+  nav .logo-container .logo {
+    width: 100%;
+  }
+
+  .header-chat-container .header {
+    background: var(--color-secondary);
+  }
+}

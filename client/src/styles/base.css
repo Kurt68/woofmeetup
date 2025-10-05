@@ -1,0 +1,57 @@
+/* ========================================
+   Base Styles - Global Resets & Typography
+   ======================================== */
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  overflow-x: hidden;
+  animation: hide-scroll 7s;
+}
+
+* {
+  font-family: var(--font-primary);
+}
+
+/* Link Styles */
+a {
+  color: var(--color-black);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+/* Typography */
+h2 {
+  font-style: italic;
+}
+
+.primary-title {
+  font-size: var(--font-size-2xl);
+  color: var(--color-white);
+  margin: var(--spacing-sm);
+}
+
+/* Error Page */
+.error-background {
+  padding-top: var(--spacing-2xl);
+  background-color: var(--color-primary);
+  width: 100vw;
+  height: 100vh;
+  color: var(--color-white);
+}
+
+.error-background h3 {
+  margin: 0;
+  margin-top: -1rem;
+}
+
+.warning {
+  font-size: var(--font-size-warning);
+}
+
+/* Utility Classes */
+.spin {
+  animation: spin 1s linear infinite;
+}

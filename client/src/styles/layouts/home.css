@@ -1,0 +1,32 @@
+/*-------- Home page --------*/
+.background-color {
+  background-color: var(--color-secondary);
+  padding-top: 6.9rem;
+}
+.overlay {
+  width: 100vw;
+  height: 100vh;
+  background-image: url(/src/images/bg-homepg-polaroids.svg);
+  overflow-y: hidden;
+}
+.overlay-onboarding {
+  height: 200vh;
+  background: url(/src/images/bg-polaroids.svg);
+  background-repeat: repeat-y;
+}
+.overlay-account-settings {
+  height: 800vh;
+  background: url(/src/images/bg-polaroids.svg);
+  background-repeat: repeat-y;
+}
+
+.home {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 108%;
+}
+.home h1 {
+  display: none;
+}

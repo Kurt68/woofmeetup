@@ -1,0 +1,36 @@
+/* ========================================
+   Accessibility - Focus Styles
+   ======================================== */
+
+/* Focus-visible for better keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role='button']:focus-visible,
+[tabindex]:focus-visible {
+  outline: var(--focus-outline-width) solid var(--focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Enhanced focus for buttons */
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.edit-button:focus-visible,
+nav .nav-button:focus-visible,
+.allow-geo-location:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: var(--focus-outline-width) solid var(--color-white);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Focus for form inputs */
+input[type='text']:focus-visible,
+input[type='email']:focus-visible,
+input[type='password']:focus-visible,
+input[type='number']:focus-visible,
+textarea:focus-visible {
+  border-color: var(--focus-outline-color);
+  box-shadow: var(--focus-ring);
+}
