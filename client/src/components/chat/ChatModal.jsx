@@ -62,6 +62,11 @@ const ChatModal = ({ user }) => {
     <div className="chat-modal-overlay">
       <div className="chat-modal">
         <div className="chat-modal-header">
+          <img
+            src={user.profile_image || '/avatar.png'}
+            alt={user.userName}
+            className="avatar"
+          />
           <h4>{selectedUser?.userName}</h4>
           <div className="close-icon" onClick={handleClose}>
             &#x2715;
