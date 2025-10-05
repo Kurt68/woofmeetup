@@ -223,6 +223,11 @@
   font-weight: bold;
   z-index: 10;
 }
+.chat-modal .chat-scroll {
+  max-height: unset;
+  overflow-y: auto;
+  scrollbar-color: var(--color-primary) var(--color-white);
+}
 
 /* SimpleImageUpload Component Styles */
 .simple-image-upload .upload-container {
