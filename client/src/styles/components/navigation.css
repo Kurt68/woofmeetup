@@ -16,7 +16,6 @@ nav .nav-button {
   color: var(--color-white);
   background-color: var(--color-primary);
   font-size: var(--font-size-md);
-  padding: var(--spacing-3xs) var(--spacing-button-h);
   border-radius: var(--radius-2xl);
   border: none;
   margin-bottom: var(--spacing-xl);
