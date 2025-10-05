@@ -174,7 +174,7 @@ span.blink {
 
 /* Chat Windwow  */
 .chat-scroll {
-  max-height: 24rem;
+  max-height: 30rem;
   overflow-y: auto;
   scrollbar-color: var(--color-primary) var(--color-white);
 }
