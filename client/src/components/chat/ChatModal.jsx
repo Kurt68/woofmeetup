@@ -129,8 +129,8 @@ const ChatModal = ({ user }) => {
                     className="avatar"
                     src={
                       message.senderId === user._id
-                        ? user.imageUrl || '/avatar.png'
-                        : selectedUser.imageUrl || '/avatar.png'
+                        ? user.imageUrl || '/spinner.svg'
+                        : selectedUser.imageUrl || '/spinner.svg'
                     }
                     alt="profile pic"
                   />
