@@ -67,7 +67,7 @@ const ChatModal = ({ user }) => {
             src={selectedUser?.profile_image || '/avatar.png'}
             alt={selectedUser?.userName}
             className="avatar"
-          />
+          />&nbsp;
           <h4>{selectedUser?.userName}</h4>
           <div className="close-icon" onClick={handleClose}>
             &#x2715;
