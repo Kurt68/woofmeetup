@@ -70,3 +70,26 @@ export const sendMessage = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' })
   }
 }
+
+// Delete messages between two users
+export const deleteMessages = async (req, res) => {
+  try {
+    const { id: userToChatId } = req.params
+    const myId = req._id
+
+    const result = await Message.deleteMany({
+      $or: [
+        { senderId: myId, receiverId: userToChatId },
+        { senderId: userToChatId, receiverId: myId },
+      ],
+    })
+
+    res.status(200).json({
+      message: 'Messages cleared successfully',
+      deletedCount: result.deletedCount,
+    })
+  } catch (error) {
+    console.log('Error in deleteMessages: ', error.message)
+    res.status(500).json({ message: 'Internal server error' })
+  }
+}

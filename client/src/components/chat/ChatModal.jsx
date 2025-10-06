@@ -13,6 +13,7 @@ const ChatModal = ({ user }) => {
     subscribeToMessages,
     unsubscribeFromMessages,
     setSelectedUser,
+    clearMessages,
   } = useChatStore()
   // console.log(messages)
   console.log('selectedUser:', selectedUser)
@@ -20,6 +21,16 @@ const ChatModal = ({ user }) => {
 
   const handleClose = () => {
     setSelectedUser(null)
+  }
+
+  const handleClearChat = () => {
+    if (
+      window.confirm(
+        'Are you sure you want to clear this chat? This action cannot be undone.'
+      )
+    ) {
+      clearMessages()
+    }
   }
 
   useEffect(() => {
@@ -46,6 +57,9 @@ const ChatModal = ({ user }) => {
         <div className="chat-modal">
           <div className="chat-modal-header">
             <h4>{selectedUser?.userName}</h4>
+            <button className="clear-chat-btn" onClick={handleClearChat}>
+              Clear Chat
+            </button>
             <div className="close-icon" onClick={handleClose}>
               &#x2715;
             </div>
@@ -67,8 +81,12 @@ const ChatModal = ({ user }) => {
             src={selectedUser?.profile_image || '/avatar.png'}
             alt={selectedUser?.userName}
             className="avatar"
-          />&nbsp;
+          />
+          &nbsp;
           <h4>{selectedUser?.userName}</h4>
+          <button className="clear-chat-btn" onClick={handleClearChat}>
+            Clear Chat
+          </button>
           <div className="close-icon" onClick={handleClose}>
             &#x2715;
           </div>

@@ -61,6 +61,7 @@
   justify-content: flex-end;
   align-items: center;
   position: relative;
+  gap: var(--spacing-sm);
 }
 .position {
   display: flex;
