@@ -90,7 +90,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--spacing-md);
+  padding: var(--spacing-lg);
   border-bottom: 1px solid var(--color-gray-divider);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -156,7 +156,7 @@
   .padding-border .clear-chat-btn {
     top: -0.7rem;
     position: relative;
-    margin-top: 1.2rem; /* Mobile default */
+    margin-top: 1.4rem; /* Mobile default */
   }
 }
 
