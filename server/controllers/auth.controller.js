@@ -588,6 +588,31 @@ export const updateMatches = async (req, res) => {
     res.status(400).json({ success: false, message: error.message })
   }
 }
+// Remove a match (unmatch)
+export const removeMatch = async (req, res) => {
+  const { userId, matchedUserId } = req.body
+
+  try {
+    // Remove the match from both users
+    const query = { user_id: userId }
+    const updateDocument = {
+      $pull: { matches: { user_id: matchedUserId } },
+    }
+    await User.updateOne(query, updateDocument)
+
+    // Also remove from the other user's matches
+    const otherUserQuery = { user_id: matchedUserId }
+    const otherUserUpdateDocument = {
+      $pull: { matches: { user_id: userId } },
+    }
+    await User.updateOne(otherUserQuery, otherUserUpdateDocument)
+
+    res.json({ success: true, message: 'Match removed successfully' })
+  } catch (error) {
+    console.log('Error in removing match ', error)
+    res.status(400).json({ success: false, message: error.message })
+  }
+}
 // Put photo endpoint
 export const uploadImage = async (req, res) => {
   // resize image

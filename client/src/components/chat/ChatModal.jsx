@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { useChatStore } from '../../store/useChatStore'
+import { useAuthStore } from '../../store/useAuthStore'
 import MessageInput from './MessageInput'
 import { MessageSkeleton } from '../skeletons'
 import { formatMessageTime } from '../../utilities/formatTime'
+import toast from 'react-hot-toast'
 
 const ChatModal = ({ user }) => {
   const {
@@ -15,6 +17,7 @@ const ChatModal = ({ user }) => {
     setSelectedUser,
     clearMessages,
   } = useChatStore()
+  const { unmatchUser } = useAuthStore()
   // console.log(messages)
   console.log('selectedUser:', selectedUser)
   const messageEndRef = useRef(null)
@@ -30,6 +33,22 @@ const ChatModal = ({ user }) => {
       )
     ) {
       clearMessages()
+    }
+  }
+
+  const handleUnmatch = async () => {
+    if (
+      window.confirm(
+        `Are you sure you want to unmatch with ${selectedUser?.userName}? You will be able to match again if you swipe right on each other and your message chats will be preserved.`
+      )
+    ) {
+      try {
+        await unmatchUser(selectedUser.user_id)
+        toast.success(`Unmatched with ${selectedUser?.userName}`)
+        setSelectedUser(null)
+      } catch (error) {
+        toast.error('Failed to unmatch. Please try again.')
+      }
     }
   }
 
@@ -57,6 +76,9 @@ const ChatModal = ({ user }) => {
         <div className="chat-modal">
           <div className="chat-modal-header">
             <h4>{selectedUser?.userName}</h4>
+            <button className="unmatch-btn" onClick={handleUnmatch}>
+              Unmatch
+            </button>
             <button className="clear-chat-btn" onClick={handleClearChat}>
               Clear Chat
             </button>
@@ -84,6 +106,9 @@ const ChatModal = ({ user }) => {
           />
           &nbsp;
           <h4>{selectedUser?.userName}</h4>
+          <button className="unmatch-btn" onClick={handleUnmatch}>
+            Unmatch
+          </button>
           <button className="clear-chat-btn" onClick={handleClearChat}>
             Clear Chat
           </button>

@@ -47,7 +47,7 @@
 }
 /* Chat Head */
 .padding-border {
-  padding: 0.2rem 0.8rem 0.2rem 0;
+  padding: 0.2rem 0.8rem 0.2rem 0.8rem;
   margin-top: var(--spacing-sm);
   background: linear-gradient(
     to bottom,
@@ -58,8 +58,7 @@
 
 .container {
   display: flex;
-  justify-content: flex-end;
-  align-items: center;
+  justify-content: flex-start;
   position: relative;
   gap: var(--spacing-sm);
 }

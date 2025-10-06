@@ -157,4 +157,30 @@ export const useAuthStore = create((set, get) => ({
   disconnectSocket: () => {
     if (get().socket?.connected) get().socket.disconnect()
   },
+
+  unmatchUser: async (matchedUserId) => {
+    try {
+      const { user } = get()
+      await axios.put(`${API_URL}/removematch`, {
+        userId: user.user_id,
+        matchedUserId: matchedUserId,
+      })
+
+      // Update local user state to remove the match
+      const updatedMatches = user.matches.filter(
+        (match) => match.user_id !== matchedUserId
+      )
+      set({
+        user: {
+          ...user,
+          matches: updatedMatches,
+        },
+      })
+
+      return { success: true }
+    } catch (error) {
+      console.error('Error unmatching user:', error)
+      throw error
+    }
+  },
 }))

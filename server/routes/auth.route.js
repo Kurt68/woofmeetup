@@ -13,6 +13,7 @@ import {
   getCurrentPosition,
   putUser,
   updateMatches,
+  removeMatch,
   uploadImage,
   uploadProfileImage,
   getCurrentUserProfile,
@@ -65,6 +66,7 @@ router.post('/reset-password/:token', resetPassword)
 router.put('/addcoordinates', getCurrentPosition)
 router.put('/user', putUser)
 router.put('/addmatch', updateMatches)
+router.put('/removematch', removeMatch)
 router.put('/image', upload.single('image'), uploadImage)
 router.put('/profile-image', upload.single('image'), uploadProfileImage)
 router.put('/user-select-distance', putUserSelectDistance)
