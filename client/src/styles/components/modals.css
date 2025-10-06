@@ -98,11 +98,8 @@
 }
 
 .chat-modal-header h4 {
-  margin: 0;
   font-size: 1.2rem;
   color: var(--color-text-dark);
-  margin-top: -6px;
-  flex: 1;
 }
 
 /* Unmatch Button */

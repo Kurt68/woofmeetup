@@ -104,7 +104,7 @@ const ChatModal = ({ user }) => {
             alt={selectedUser?.userName}
             className="avatar"
           />
-          &nbsp;
+
           <h4>{selectedUser?.userName}</h4>
           <button className="unmatch-btn" onClick={handleUnmatch}>
             Unmatch
