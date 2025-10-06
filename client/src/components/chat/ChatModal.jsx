@@ -39,7 +39,7 @@ const ChatModal = ({ user }) => {
   const handleUnmatch = async () => {
     if (
       window.confirm(
-        `Are you sure you want to unmatch with ${selectedUser?.userName}? Clear the chat first if you want to permenantly delete all of your conversations with them. This action cannot be undone. /n You will be able to match again if you swipe right on each other.`
+        `Are you sure you want to unmatch with ${selectedUser?.userName}? Clear the chat first if you want to permenantly delete all of your conversations with them. This action cannot be undone.\n\nYou will be able to match again if you swipe right on each other.`
       )
     ) {
       try {
