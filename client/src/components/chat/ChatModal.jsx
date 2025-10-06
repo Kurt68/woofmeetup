@@ -98,7 +98,7 @@ const ChatModal = ({ user }) => {
       <div className="chat-modal">
         <div className="chat-modal-header">
           <img
-            src={selectedUser?.profile_image || '../..images/spinner.svg'}
+            src={selectedUser?.profile_image || '/spinner.svg'}
             alt={selectedUser?.userName}
             className="avatar"
           />
