@@ -18,8 +18,6 @@ const ChatModal = ({ user }) => {
     clearMessages,
   } = useChatStore()
   const { unmatchUser } = useAuthStore()
-  // console.log(messages)
-  console.log('selectedUser:', selectedUser)
   const messageEndRef = useRef(null)
 
   const handleClose = () => {
@@ -100,7 +98,7 @@ const ChatModal = ({ user }) => {
       <div className="chat-modal">
         <div className="chat-modal-header">
           <img
-            src={selectedUser?.profile_image || '/avatar.png'}
+            src={selectedUser?.profile_image || '../..images/spinner.svg'}
             alt={selectedUser?.userName}
             className="avatar"
           />
