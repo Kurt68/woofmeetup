@@ -115,7 +115,7 @@
   transition: var(--transition-normal);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 1.5rem; /* Mobile default */
+  /* margin-top: 1.5rem;  */
 }
 
 .unmatch-btn:hover {
@@ -140,8 +140,7 @@
   transition: var(--transition-normal);
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 1.5rem; /* Mobile default */
-}
+  /* margin-top: 1.5rem;  */
 
 .clear-chat-btn:hover {
   background-color: var(--color-secondary);
