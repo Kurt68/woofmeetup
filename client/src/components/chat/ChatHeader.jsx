@@ -19,7 +19,7 @@ const ChatHeader = () => {
   const handleUnmatch = async () => {
     if (
       window.confirm(
-        `Are you sure you want to unmatch with ${selectedUser?.userName}? You will be able to match again if you swipe right on each other.`
+        `Are you sure you want to unmatch with ${selectedUser?.userName}?\n\n Clear the chat first if you want to PERMANENTLY delete your conversations with them. Then unmatch.\n\n You will be able to match again if you swipe right on each other.`
       )
     ) {
       try {
