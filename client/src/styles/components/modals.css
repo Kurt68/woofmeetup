@@ -157,7 +157,7 @@
   .padding-border .clear-chat-btn {
     top: -0.7rem;
     position: relative;
-    margin-top: 1.4rem; /* Mobile default */
+    margin-top: 1.4rem; 
   }
 }
 

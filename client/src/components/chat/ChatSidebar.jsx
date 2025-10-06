@@ -7,7 +7,6 @@ const ChatSidebar = (clickedUser) => {
   const { onlineUsers } = useAuthStore()
 
   const currentClickedUser = [...Object.values(clickedUser)]
-
   return (
     <aside className="online">
       {currentClickedUser.map((user) => (
@@ -24,7 +23,7 @@ const ChatSidebar = (clickedUser) => {
             `}
         >
           <img
-            src={user.imageUrl || '/avatar.png'}
+            src={user.profile_image || '/avatar.png'}
             alt={user.userName}
             className="avatar"
           />
