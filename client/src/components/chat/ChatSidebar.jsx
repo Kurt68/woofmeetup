@@ -30,8 +30,7 @@ const ChatSidebar = (clickedUser) => {
               !user.profile_image
                 ? {
                     background: 'white',
-                    border: 'none',
-                    'border-radius': 'unset',
+                    'object-fit': 'none',
                   }
                 : {}
             }
