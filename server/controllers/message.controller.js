@@ -6,13 +6,13 @@ import { getReceiverSocketId, io } from '../lib/socket.js'
 // Get messages
 export const getMessages = async (req, res) => {
   try {
-    const { id: userToChatId } = req.params
+    const { id: userChattingWithId } = req.params
     const myId = req._id
 
     const messages = await Message.find({
       $or: [
-        { senderId: myId, receiverId: userToChatId },
-        { senderId: userToChatId, receiverId: myId },
+        { senderId: myId, receiverId: userChattingWithId },
+        { senderId: userChattingWithId, receiverId: myId },
       ],
     })
 
@@ -74,13 +74,13 @@ export const sendMessage = async (req, res) => {
 // Delete messages between two users
 export const deleteMessages = async (req, res) => {
   try {
-    const { id: userToChatId } = req.params
+    const { id: userChattingWithId } = req.params
     const myId = req._id
 
     const result = await Message.deleteMany({
       $or: [
-        { senderId: myId, receiverId: userToChatId },
-        { senderId: userToChatId, receiverId: myId },
+        { senderId: myId, receiverId: userChattingWithId },
+        { senderId: userChattingWithId, receiverId: myId },
       ],
     })
 
