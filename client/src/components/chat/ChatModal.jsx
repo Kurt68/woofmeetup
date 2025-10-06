@@ -5,7 +5,6 @@ import MessageInput from './MessageInput'
 import { MessageSkeleton } from '../skeletons'
 import { formatMessageTime } from '../../utilities/formatTime'
 import toast from 'react-hot-toast'
-import spinner from '../../images/spinner.svg'
 
 const ChatModal = ({ user }) => {
   const {
@@ -99,7 +98,7 @@ const ChatModal = ({ user }) => {
       <div className="chat-modal">
         <div className="chat-modal-header">
           <img
-            src={selectedUser?.profile_image || spinner}
+            src={selectedUser?.profile_image || '/spinner.svg'}
             alt={selectedUser?.userName}
             className="avatar"
           />

@@ -23,7 +23,7 @@ const ChatSidebar = (clickedUser) => {
             `}
         >
           <img
-            src={user.profile_image || '/avatar.png'}
+            src={user.profile_image || '/spinner.svg'}
             alt={user.userName}
             className="avatar"
           />
