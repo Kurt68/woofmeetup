@@ -100,9 +100,11 @@ const ChatModal = ({ user }) => {
           <img
             src={selectedUser?.profile_image || '/spinner.svg'}
             alt={selectedUser?.userName}
-           className="avatar"
+            className="avatar"
             style={
-              !selectedUser?.profile_image ? { border: 'none' } : {}
+              !selectedUser?.profile_image
+                ? { border: 'none', 'border-radius': 'unset' }
+                : {}
             }
           />
 
