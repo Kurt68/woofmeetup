@@ -27,7 +27,13 @@ const ChatSidebar = (clickedUser) => {
             alt={user.userName}
             className="avatar"
             style={
-              !user.profile_image ? { background: 'white' } : {}
+              !user.profile_image
+                ? {
+                    background: 'white',
+                    border: 'none',
+                    'border-radius': 'unset',
+                  }
+                : {}
             }
           />
 
