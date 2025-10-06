@@ -26,6 +26,9 @@ const ChatSidebar = (clickedUser) => {
             src={user.profile_image || '/spinner.svg'}
             alt={user.userName}
             className="avatar"
+            style={
+              !user.profile_image ? { filter: 'brightness(0) invert(1)' } : {}
+            }
           />
 
           <div className="status">
