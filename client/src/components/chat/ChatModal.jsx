@@ -102,7 +102,7 @@ const ChatModal = ({ user }) => {
             alt={selectedUser?.userName}
            className="avatar"
             style={
-              !user.profile_image ? { border: 'none' } : {}
+              !selectedUser?.profile_image ? { border: 'none' } : {}
             }
           />
 
