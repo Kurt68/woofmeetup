@@ -141,6 +141,7 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   /* margin-top: 1.5rem;  */
+}
 
 .clear-chat-btn:hover {
   background-color: var(--color-secondary);
