@@ -98,9 +98,17 @@
   margin-top: 1rem;
 }
 
+.chat-modal-header .header-user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .chat-modal-header h4 {
   font-size: 1.2rem;
   color: var(--color-text-dark);
+  margin:0;
+
 }
 
 /* Unmatch Button */
@@ -157,7 +165,7 @@
   .padding-border .clear-chat-btn {
     top: -0.7rem;
     position: relative;
-    margin-top: 1.4rem; 
+    margin-top: 1.4rem;
   }
 }
 

@@ -97,18 +97,19 @@ const ChatModal = ({ user }) => {
     <div className="chat-modal-overlay">
       <div className="chat-modal">
         <div className="chat-modal-header">
-          <img
-            src={selectedUser?.profile_image || '/spinner.svg'}
-            alt={selectedUser?.userName}
-            className="avatar"
-            style={
-              !selectedUser?.profile_image
-                ? { background: 'white', 'object-fit': 'none' }
-                : {}
-            }
-          />
-
-          <h4>{selectedUser?.userName}</h4>
+          <div className="header-user-info">
+            <img
+              src={selectedUser?.profile_image || '/spinner.svg'}
+              alt={selectedUser?.userName}
+              className="avatar"
+              style={
+                !selectedUser?.profile_image
+                  ? { background: 'white', 'object-fit': 'none' }
+                  : {}
+              }
+            />
+            <h4>{selectedUser?.userName}</h4>
+          </div>
           <button className="unmatch-btn" onClick={handleUnmatch}>
             Unmatch
           </button>
