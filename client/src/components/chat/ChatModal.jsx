@@ -97,6 +97,9 @@ const ChatModal = ({ user }) => {
     <div className="chat-modal-overlay">
       <div className="chat-modal">
         <div className="chat-modal-header">
+          <div className="close-icon" onClick={handleClose}>
+            &#x2715;
+          </div>
           <div className="header-user-info">
             <img
               src={selectedUser?.profile_image || '/spinner.svg'}
@@ -110,14 +113,13 @@ const ChatModal = ({ user }) => {
             />
             <h4>{selectedUser?.userName}</h4>
           </div>
-          <button className="unmatch-btn" onClick={handleUnmatch}>
-            Unmatch
-          </button>
-          <button className="clear-chat-btn" onClick={handleClearChat}>
-            Clear Chat
-          </button>
-          <div className="close-icon" onClick={handleClose}>
-            &#x2715;
+          <div className="header-actions">
+            <button className="unmatch-btn" onClick={handleUnmatch}>
+              Unmatch
+            </button>
+            <button className="clear-chat-btn" onClick={handleClearChat}>
+              Clear Chat
+            </button>
           </div>
         </div>
         <div className="chat-scroll padding">

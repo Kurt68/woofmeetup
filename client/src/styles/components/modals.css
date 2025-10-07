@@ -77,25 +77,27 @@
 
 .chat-modal .close-icon {
   position: absolute;
-  top: var(--spacing-sm);
+  top: var(--spacing-xxs);
   right: var(--spacing-md);
   cursor: pointer;
   font-size: 1.7rem;
   color: var(--color-primary);
   font-weight: bolder;
+  z-index: 10;
 }
 
 /* Chat Modal Header */
 .chat-modal-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--color-gray-divider);
   border-radius: var(--radius-md) var(--radius-md) 0 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   gap: var(--spacing-sm);
   margin-top: 1rem;
+  position: relative;
 }
 
 .chat-modal-header .header-user-info {
@@ -104,11 +106,16 @@
   align-items: center;
 }
 
+.chat-modal-header .header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
 .chat-modal-header h4 {
   font-size: 1.2rem;
   color: var(--color-text-dark);
-  margin:0;
-
+  margin: 0;
 }
 
 /* Unmatch Button */
