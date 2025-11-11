@@ -422,6 +422,8 @@ span.blink {
 .avatar.gray {
   background-color: var(--color-gray-skeleton);
   border-color: var(--color-gray-skeleton);
+  width: 3.5rem;
+  height: 3.5rem;
 }
 .chat-bubble.gray {
   background-color: var(--color-gray-skeleton);
