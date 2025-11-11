@@ -435,15 +435,24 @@ span.blink {
 
 /* Sidebar Skeleton */
 .sidebar {
+  padding: var(--spacing-sm) var(--spacing-md-lg) 0 var(--spacing-md-lg);
+  max-height: 12rem;
+  overflow-x: auto;
+  overflow-y: hidden;
   display: flex;
-  margin: 0.5rem 0 0 0.8rem;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
 }
 
 .sidebar-render {
+  cursor: pointer;
   display: flex;
-  flex-direction: row;
-  padding: 0.5rem;
-  align-items: start;
+  align-items: center;
+  flex-direction: column;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  position: relative;
+  overflow: visible;
 }
 
 /* Edit Profile */
