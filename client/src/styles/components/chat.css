@@ -182,7 +182,7 @@ span.blink {
   grid-row: span 2 / span 2;
   align-self: flex-end;
 }
-.avatar {
+.chat-image .avatar {
   position: relative;
   display: inline-flex;
   vertical-align: middle;
