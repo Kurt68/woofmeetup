@@ -1,0 +1,245 @@
+/* ========================================
+   Container Queries - Context-Based Responsive Design
+   
+   Container queries allow components to respond to their 
+   container's size rather than the viewport size.
+   This enables true component-level responsiveness.
+   ======================================== */
+
+:root {
+  /* Container Size Thresholds */
+  --container-xs: 280px; /* Extra small containers */
+  --container-sm: 400px; /* Small containers */
+  --container-md: 600px; /* Medium containers */
+  --container-lg: 800px; /* Large containers */
+  --container-xl: 1000px; /* Extra large containers */
+}
+
+/* ========================================
+   Card Containers
+   Responds to its own width, not viewport
+   ======================================== */
+
+.card-container {
+  container-type: inline-size;
+}
+
+/* Extra small cards (mobile-optimized) */
+@container (max-width: 320px) {
+  .card {
+    padding: var(--spacing-sm);
+  }
+
+  .card-image {
+    aspect-ratio: 1;
+  }
+
+  .card-content {
+    gap: var(--spacing-xs);
+  }
+
+  .card-title {
+    font-size: var(--font-size-base);
+  }
+
+  .card-meta {
+    font-size: var(--font-size-xs);
+  }
+}
+
+/* Small containers (tablet-ready) */
+@container (min-width: 321px) and (max-width: 399px) {
+  .card {
+    padding: var(--spacing-md);
+  }
+
+  .card-title {
+    font-size: var(--font-size-lg);
+  }
+}
+
+/* Medium containers (multi-column layouts) */
+@container (min-width: 400px) {
+  .card {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+  }
+
+  .card-image {
+    width: 80px;
+    aspect-ratio: 1;
+  }
+
+  .card-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* Large containers (desktop-ready) */
+@container (min-width: 600px) {
+  .card {
+    grid-template-columns: 1fr auto;
+    padding: var(--spacing-xl);
+  }
+
+  .card-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-end;
+  }
+}
+
+/* ========================================
+   Chat Message Containers
+   ======================================== */
+
+.chat-message-container {
+  container-type: inline-size;
+}
+
+@container (min-width: 600px) {
+  .chat-message {
+    max-width: 75%;
+  }
+
+  .message-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+  }
+}
+
+/* ========================================
+   Form Containers
+   ======================================== */
+
+.form-container {
+  container-type: inline-size;
+}
+
+/* Single column on small containers */
+@container (max-width: 399px) {
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Two columns on medium+ containers */
+@container (min-width: 400px) {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .form-row.full {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   Grid Layouts in Containers
+   ======================================== */
+
+.grid-container {
+  container-type: inline-size;
+}
+
+/* Single column on mobile */
+@container (max-width: 399px) {
+  .grid-auto {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+}
+
+/* Two columns on tablets */
+@container (min-width: 400px) and (max-width: 799px) {
+  .grid-auto {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Three columns on desktop */
+@container (min-width: 800px) {
+  .grid-auto {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Four columns on ultra-wide */
+@container (min-width: 1200px) {
+  .grid-auto {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ========================================
+   Navigation Containers
+   ======================================== */
+
+.nav-container {
+  container-type: inline-size;
+}
+
+@container (max-width: 399px) {
+  .nav-items {
+    flex-direction: column;
+  }
+
+  .nav-item {
+    width: 100%;
+    padding: var(--spacing-sm);
+  }
+}
+
+@container (min-width: 400px) {
+  .nav-items {
+    flex-direction: row;
+    gap: var(--spacing-md);
+  }
+}
+
+/* ========================================
+   Modal/Dialog Containers
+   ======================================== */
+
+.modal-container {
+  container-type: inline-size;
+}
+
+@container (max-width: 399px) {
+  .modal-content {
+    padding: var(--spacing-md);
+    border-radius: var(--radius-sm);
+  }
+
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@container (min-width: 400px) {
+  .modal-content {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+  }
+
+  .modal-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

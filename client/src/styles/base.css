@@ -1,0 +1,168 @@
+/* ========================================
+   Base Styles - Global Resets & Typography
+   ======================================== */
+
+/* HTML - Base font size (mobile-first) */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive font size scaling for tablet+ */
+@media (min-width: 640px) {
+  html {
+    font-size: 16px; /* Maintain base, use relative scaling via rem */
+  }
+}
+
+/* Body element */
+body {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  overflow-x: hidden;
+  background-color: var(--color-white);
+  color: var(--color-text-dark);
+  line-height: var(--line-height-normal);
+  font-size: var(--font-size-base);
+  /* animation: hide-scroll 7s; */
+}
+
+/* Universal reset */
+* {
+  font-family: var(--font-primary);
+  box-sizing: border-box;
+}
+
+/* Link Styles */
+a {
+  color: var(--color-black);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+/* Typography - Headings */
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-extrabold);
+  line-height: var(--line-height-tight);
+  margin: var(--spacing-md) 0;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  font-style: italic;
+  margin: var(--spacing-md) 0;
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-normal);
+  margin: var(--spacing-sm) 0;
+}
+
+h4,
+h5,
+h6 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-normal);
+  margin: var(--spacing-sm) 0;
+}
+
+p {
+  font-size: var(--font-size-body-fluid);
+  line-height: var(--line-height-relaxed);
+  margin: var(--spacing-md) 0;
+}
+
+/* Primary Title - Hero/Brand */
+.primary-title {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  margin: var(--spacing-sm);
+  line-height: var(--line-height-tight);
+}
+
+/* Error Page */
+.error-background {
+  padding-top: var(--spacing-2xl);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+  background-color: var(--color-primary);
+  width: 100%;
+  min-height: 100dvh;
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-background h3 {
+  margin: 0;
+  margin-top: calc(var(--spacing-md) * -1);
+}
+
+/* Warning/Alert Text */
+.warning {
+  font-size: var(--font-size-warning);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Utility Classes */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Screen Reader Only Text (A11y) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Loading Spinner - Responsive */
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: var(--spacing-xl);
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+}
+
+.spinner svg {
+  animation: spin 1s linear infinite;
+  width: 10rem;
+  height: 10rem;
+}
+
+/* Container sizing utilities */
+.container {
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-md);
+  padding-right: var(--spacing-md);
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
+  }
+}

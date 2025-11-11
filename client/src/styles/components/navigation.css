@@ -1,0 +1,76 @@
+/* ========================================
+   Navigation Component
+   ======================================== */
+
+nav {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  position: absolute;
+  top: 0;
+}
+
+nav .nav-button {
+  padding: var(--spacing-button-v) var(--spacing-button-h);
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-2xl);
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: var(--spacing-button-sm-v);
+  right: var(--spacing-sm);
+}
+
+nav .nav-button:disabled {
+  background-color: var(--color-pink-disabled);
+  color: var(--color-white);
+}
+
+nav .logo-container {
+  margin: var(--spacing-button-sm-v) 0 0 0;
+}
+
+/* Constrain button size on larger viewports */
+@media only screen and (min-width: 640px) {
+  nav .nav-button {
+    max-width: 620px;
+  }
+}
+
+/* Mobile Navigation */
+@media only screen and (max-width: 639px) {
+  .account-settings {
+    top: 5.2rem;
+  }
+
+  /* Using mobile breakpoint: max-width: calc(var(--breakpoint-sm) - 1px) */
+
+  nav {
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  nav .logo-container {
+    margin: var(--spacing-button-sm-v) var(--spacing-sm) 0 var(--spacing-sm);
+    height: auto;
+  }
+
+  nav .logo-container .logo {
+    width: 100%;
+  }
+
+  nav .nav-button {
+    position: static;
+    margin: var(--spacing-button-sm-v) var(--spacing-sm) var(--spacing-xl)
+      var(--spacing-sm);
+  }
+
+  .header-chat-container .header {
+    background: var(--color-secondary);
+  }
+}

@@ -1,0 +1,150 @@
+/* ========================================
+   CSS Custom Properties (Variables)
+   
+   Standardized Units:
+   - rem: For scalable sizing (1rem = 16px by default)
+   - px: For borders, hairlines, fine details only
+   - %: For flexible/container-relative sizing
+   - vh/vw: For viewport-relative sizing (use cautiously)
+   
+   All spacing, typography, and border-radius use rem for
+   accessibility and responsive design flexibility.
+   ======================================== */
+:root {
+  /* HTML Base Font Size - Used as reference for rem calculations */
+  font-size: 16px; /* Ensures 1rem = 16px base */
+  /* Colors - Primary Palette */
+  --color-primary: #ffc0cb; /* pink */
+  --color-primary-rgb: 255, 192, 203;
+  --color-secondary: #53c8a0; /* teal */
+  --color-secondary-rgb: 83, 200, 160;
+  --color-accent: #b51010; /* red */
+
+  /* Neutral Colors */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray-light: #f8f9fa;
+  --color-gray-border: #f0f0f0;
+  --color-gray-skeleton: whitesmoke;
+  --color-gray-divider: #eee;
+  --color-gray-text: #666;
+  --color-text-dark: #333;
+
+  /* Semantic Colors */
+  --color-error: hsl(0, 100%, 70%);
+  --color-error-dark: #c62828;
+  --color-warning: #f59e0b;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #92400e;
+  --color-success: #15803d;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+
+  /* Pink Variations */
+  --color-pink-light: rgba(255, 193, 203, 0.3);
+  --color-pink-border: rgb(255, 193, 203);
+  --color-pink-disabled: rgba(255, 192, 203, 0.85);
+  --color-pink-bubble: rgb(255, 241, 243);
+
+  /* Spacing Scale */
+  --spacing-xxs: 0.125rem; /* 2px */
+  --spacing-3xs: 0.3125rem; /* 5px */
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 16px */
+  --spacing-md-lg: 1.25rem; /* 20px */
+  --spacing-lg: 1.5rem; /* 24px */
+  --spacing-xl: 2rem; /* 32px */
+  --spacing-2xl: 3rem; /* 48px */
+  --spacing-2-5xl: 2.5rem; /* 40px */
+
+  /* Button Spacing */
+  --spacing-button-v: 0.75rem; /* 12px - vertical button padding */
+  --spacing-button-h: 1.875rem; /* 30px - horizontal button padding */
+  --spacing-button-sm-v: 0.625rem; /* 10px */
+  --spacing-button-sm-h: 0.9375rem; /* 15px */
+
+  /* Typography */
+  --font-primary: 'Readex Pro', sans-serif;
+  --font-secondary: 'Poor Story', system-ui;
+
+  /* Font Sizes - Standardized to rem (1rem = 16px) */
+  --font-size-xs: 0.75rem; /* 12px */
+  --font-size-sm: 0.8125rem; /* 13px */
+  --font-size-base: 0.9375rem; /* 15px */
+  --font-size-md: 1rem; /* 16px */
+  --font-size-lg: 1.0625rem; /* 17px */
+  --font-size-xl: 1.125rem; /* 18px */
+  --font-size-2xl: 3.75rem; /* 60px */
+  --font-size-warning: 4rem; /* 64px */
+
+  /* Heading Sizes - Fluid Typography for Responsiveness */
+  --font-size-h1: clamp(
+    1.875rem,
+    5vw,
+    3.75rem
+  ); /* Scales between 30px - 60px */
+  --font-size-h2: clamp(1.5rem, 4vw, 2.5rem); /* Scales between 24px - 40px */
+  --font-size-h3: clamp(1.25rem, 3vw, 2rem); /* Scales between 20px - 32px */
+  --font-size-h4: clamp(
+    1.125rem,
+    2.5vw,
+    1.75rem
+  ); /* Scales between 18px - 28px */
+  --font-size-h5: clamp(1rem, 2vw, 1.5rem); /* Scales between 16px - 24px */
+
+  /* Display/Body Text - Fluid */
+  --font-size-display: clamp(1rem, 1.5vw, 1.25rem); /* Display text scales */
+  --font-size-body-fluid: clamp(0.9375rem, 1.2vw, 1.125rem); /* Body text */
+
+  /* Line Heights */
+  --line-height-tight: 1.25; /* For headings */
+  --line-height-extra-tight: 1.05; /* For compact text layouts */
+  --line-height-normal: 1.5; /* For body text */
+  --line-height-relaxed: 1.75; /* For accessibility */
+  --line-height-loose: 2; /* For special cases */
+
+  /* Font Weights */
+  --font-weight-light: 200;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Border Radius - Standardized to rem */
+  --radius-sm: 0.5rem; /* 8px */
+  --radius-md: 0.625rem; /* 10px */
+  --radius-lg: 1.5625rem; /* 25px */
+  --radius-xl: 1.875rem; /* 30px */
+  --radius-2xl: 2.5rem; /* 40px */
+  --radius-full: 50%; /* Fully rounded */
+
+  /* Border Width */
+  --border-width-thin: 1px;
+  --border-width-normal: 2px;
+  --border-width-thick: 3px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+
+  /* Shadows */
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 1rem 2rem rgba(0, 0, 0, 0.3);
+  --shadow-modal: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+    rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+
+  /* Focus Styles */
+  --focus-outline-color: hsl(200, 100%, 50%);
+  --focus-outline-width: 2px;
+  --focus-outline-offset: 2px;
+  --focus-ring: 0 0 0 3px rgba(var(--color-primary-rgb), 0.3);
+
+  /* Z-index Scale */
+  --z-base: 1;
+  --z-dropdown: 999;
+  --z-overlay: 1000;
+  --z-modal: 1001;
+  --z-tooltip: 9999;
+}

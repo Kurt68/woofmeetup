@@ -1,0 +1,104 @@
+/* ========================================
+   Animations & Keyframes
+   ======================================== */
+
+/* @keyframes hide-scroll {
+  from,
+  to {
+    overflow: hidden;
+  }
+} */
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 1);
+  }
+  70% {
+    box-shadow: 0 0 0 var(--spacing-sm) rgba(var(--color-primary-rgb), 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 50px rgba(var(--color-primary-rgb), 0.1);
+  }
+}
+
+@keyframes blink {
+  100% {
+    transform: scale(3, 3);
+    opacity: 0;
+  }
+}
+
+@keyframes sending-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.8);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
+
+@keyframes loading {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* ========================================
+   Heart Fountain Animation
+   ======================================== */
+
+@keyframes fountain-heart-left {
+  0% {
+    transform: translateX(-20px) translateY(0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-60px) translateY(-120px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes fountain-heart-right {
+  0% {
+    transform: translateX(20px) translateY(0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(60px) translateY(-120px) scale(0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes fountain-heart-center {
+  0% {
+    transform: translateY(0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120px) scale(0.3);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,217 @@
+/* ========================================
+   Image Utilities - Responsive & Performance
+   ======================================== */
+
+/**
+ * Image Base Styles
+ * Provides responsive sizing, lazy loading, and performance optimization
+ */
+
+/* Responsive Images */
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive background images */
+[class*='background-image'],
+[class*='bg-image'] {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* ========================================
+   Aspect Ratio Utilities
+   ======================================== */
+
+/* Square (1:1) - Avatars, Profile Images */
+.aspect-square,
+.aspect-1-1 {
+  aspect-ratio: 1 / 1;
+}
+
+/* Portrait (4:5) - Typical photo ratio */
+.aspect-portrait,
+.aspect-4-5 {
+  aspect-ratio: 4 / 5;
+}
+
+/* Landscape (16:9) - Video/Banner ratio */
+.aspect-video,
+.aspect-16-9 {
+  aspect-ratio: 16 / 9;
+}
+
+/* Wide (21:9) - Panoramic ratio */
+.aspect-wide,
+.aspect-21-9 {
+  aspect-ratio: 21 / 9;
+}
+
+/* Card ratio (typically 1.1:1 for polaroid-style) */
+.aspect-card {
+  aspect-ratio: 1.1 / 1;
+}
+
+/* ========================================
+   Image Container Sizing
+   ======================================== */
+
+/* Small image container (32px - icons, small avatars) */
+.img-sm,
+.image-small {
+  width: 2rem;
+  height: 2rem;
+  object-fit: cover;
+}
+
+/* Medium image container (48px - standard avatars) */
+.img-md,
+.image-medium {
+  width: 3rem;
+  height: 3rem;
+  object-fit: cover;
+}
+
+/* Large image container (64px - profile images) */
+.img-lg,
+.image-large {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+}
+
+/* Extra large (96px - card images) */
+.img-xl,
+.image-xlarge {
+  width: 6rem;
+  height: 6rem;
+  object-fit: cover;
+}
+
+/* ========================================
+   Image Object Fit Utilities
+   ======================================== */
+
+/* Preserve aspect ratio, fill container */
+.object-cover {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Preserve aspect ratio, fit inside container */
+.object-contain {
+  object-fit: contain;
+  object-position: center;
+}
+
+/* Stretch to fill container */
+.object-fill {
+  object-fit: fill;
+}
+
+/* ========================================
+   Picture Element (Responsive Images)
+   ======================================== */
+
+picture {
+  display: block;
+}
+
+picture img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ========================================
+   Image Animations
+   ======================================== */
+
+/* Fade in animation for lazy-loaded images */
+@keyframes imageLoadFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+img[loading='lazy']:not([src='']) {
+  animation: imageLoadFade 300ms ease-out;
+}
+
+/* ========================================
+   Responsive Image Variants
+   ======================================== */
+
+/* Mobile-optimized image sizing */
+@media (max-width: 640px) {
+  .img-responsive-mobile {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .img-hide-mobile {
+    display: none;
+  }
+}
+
+/* Tablet-optimized image sizing */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .img-hide-tablet {
+    display: none;
+  }
+}
+
+/* Desktop-optimized image sizing */
+@media (min-width: 1025px) {
+  .img-hide-desktop {
+    display: none;
+  }
+}
+
+/* ========================================
+   Accessibility - Missing Image Fallback
+   ======================================== */
+
+/* Style for broken images (alt text visible) */
+img:broken {
+  display: block;
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--color-neutral-light, #f5f5f5);
+  border: 1px solid var(--color-border, #e0e0e0);
+  text-align: center;
+}
+
+/* ========================================
+   Performance Hints
+   ======================================== */
+
+/* Hint to browser about image priority */
+img[fetchpriority='high'] {
+  /* LCP candidate - load immediately */
+}
+
+img[loading='lazy'][fetchpriority='high'] {
+  /* Lazy-load but high priority when in view */
+}
+
+/* ========================================
+   Print Styles
+   ======================================== */
+
+@media print {
+  img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+
+  picture {
+    max-width: 100%;
+  }
+}

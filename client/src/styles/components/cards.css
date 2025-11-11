@@ -1,0 +1,197 @@
+/*-------- Polaroid for Tinder Cards--------*/
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  25% {
+    transform: translateY(-0.5rem);
+  }
+  50% {
+    transform: translateY(-1rem);
+  }
+  75% {
+    transform: translateY(-0.5rem);
+  }
+}
+
+.polaroid {
+  background: var(--color-white);
+  color: var(--color-black);
+  max-width: clamp(16rem, 80vw, 33.875rem);
+  padding: var(--spacing-md-lg);
+  padding-bottom: clamp(5.5rem, 6vw, 6rem);
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  touch-action: pan-x;
+  transition: transform var(--transition-normal),
+    opacity var(--transition-normal);
+
+  > img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:nth-of-type(4n + 1) {
+    transform: scale(0.8) rotate(2deg);
+  }
+}
+
+.photo {
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: clamp(12rem, 65vw, 31.25rem);
+  height: clamp(10.9rem, 59vw, 25rem);
+  position: relative;
+  aspect-ratio: 1.1 / 1;
+}
+
+.caption {
+  position: relative;
+  transform: translateY(clamp(6.3rem, 6.5vw, 6.6rem));
+  user-select: none;
+
+  & p,
+  & span {
+    font-size: clamp(1.25rem, 1.4vw, 1.5rem);
+    line-height: var(--line-height-extra-tight);
+    text-align: center;
+    font-family: var(--font-secondary);
+    font-weight: var(--font-weight-semibold);
+    font-style: normal;
+    min-height: 5rem;
+  }
+}
+
+.dog-info {
+  font-size: clamp(1.4rem, 1.5vw, 1.65rem) !important;
+  color: var(--color-black);
+}
+
+.user-about {
+  display: block;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.profile {
+  & .avatar,
+  & .img-container {
+    border: var(--border-width-thick) solid var(--color-white);
+    width: clamp(4.5rem, 12vw, 8rem);
+    height: clamp(4.5rem, 12vw, 8rem);
+  }
+}
+
+.match-button {
+  & .avatar,
+  & .img-container {
+    border: var(--border-width-thick) solid var(--color-primary);
+    width: clamp(4.5rem, 12vw, 8rem);
+    height: clamp(4.5rem, 12vw, 8rem);
+  }
+}
+
+.dashboard {
+  & .swipe-container {
+    user-select: none;
+  }
+}
+
+.polaroid-container {
+  & .swipe:first-child .polaroid {
+    box-shadow: var(--shadow-md);
+  }
+}
+
+.exercise-buddy::before {
+  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="43" height="41" viewBox="0 0 46.157 44.41"><g transform="translate(0)"><g transform="translate(0)"><path d="M391.866,439.079a34.849,34.849,0,0,0,9.142-.29l1.6-3.628L413.923,434l11.9,5.079,4.934-1.306a2.113,2.113,0,0,1,1.161,4.063l-5.079,1.451-2.177,4.789a26.8,26.8,0,0,0,7.256,7.691c2.322,1.6-.145,5.079-2.467,3.483a29.32,29.32,0,0,1-5.369-4.934,19.1,19.1,0,0,0,2.757,4.208c1.741,2.177-1.6,4.789-3.338,2.612a30.565,30.565,0,0,1-5.659-11.029L401.589,443a39.715,39.715,0,0,1-10.158.29A2.116,2.116,0,0,1,391.866,439.079Z" transform="translate(-387.273 -417.545)" fill-rule="evenodd"/><path d="M533.936,334.014c-3.193,0-8.126-1.306-6.675-5.369.726-2.032,5.95-1.451,6.53-1.741,1.741-.58,2.612-1.741,4.353-2.032,1.886-.435,1.161-.29,1.886-2.177,1.016-2.757,4.5-3.047,3.918.726-.435,3.047,1.016,8.707,1.741,12.044L535.1,336.626S534.226,334.014,533.936,334.014Z" transform="translate(-519.476 -320.606)" fill-rule="evenodd"/><circle cx="2" cy="2" r="2" transform="translate(0 3.919)"/><circle cx="1.5" cy="1.5" r="1.5" transform="translate(17 5.919)" fill="%23fff"/></g></g></svg>');
+  top: var(--spacing-2xl);
+  right: 0;
+  position: absolute;
+}
+.play-dates::before {
+  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="50" height="33" viewBox="0 0 55.307 37.674"><g transform="translate(-1702.632 -161.357)"><g transform="translate(1702.632 161.357)"><g transform="translate(0)"><path d="M150.449,91.635a1.811,1.811,0,0,0-2.422.833,16.955,16.955,0,0,1-8.428,8.219c-7.943-2.914-9.2,4.339-18.036,2.887a22.864,22.864,0,0,1-3.659,4.046c-.584.727-1.257,1.5-2.033,2.288l-12.154,10.537a2.129,2.129,0,1,0,2.789,3.218l0,0c.054-.028.108-.053.16-.085l11.746-7.374a15.491,15.491,0,0,0,6.531,2.261c5,.069,11.98-6.657,12.281-6.727-.243,1.623.108,6.605-.982,9.219a2.265,2.265,0,0,0,4.18,1.746,26.7,26.7,0,0,0,2.384-10.045c.023-.012.044-.027.066-.042.715,2.295.66,5.206,1.207,8.665a2.271,2.271,0,0,0,2.492,1.9l.1-.015a2.265,2.265,0,0,0,1.881-2.592c-.832-5.249-2.4-12.813-2.5-13.1a13.008,13.008,0,0,0-2.442-4.5c-.049-.08-.1-.163-.145-.232a20.662,20.662,0,0,0,7.811-8.674A1.808,1.808,0,0,0,150.449,91.635Z" transform="translate(-102.408 -86.51)"/><path d="M119.783,100.945c-.744-2.477-2.742-5.824-5.78-6.829.119-1.781-.227-3.226-2.245-4.177-1.7-.8-3.611-.224-2.795.468,2.337,1.981,1.14,4.032,1.057,4.108a7.521,7.521,0,0,1-3.214,3.044c-1.373.51-5.217,1.441-5.174,3.19.044,1.771.26,2.134,1.053,3.048,1.137,1.308,3.89.216,5.794.523.875.14,2.88,2.039,3.989,3.236a12.9,12.9,0,0,0,1.592-.861A19.757,19.757,0,0,0,119.783,100.945Zm-9.589-.953a1.384,1.384,0,1,1,1.384-1.384A1.384,1.384,0,0,1,110.193,99.992Z" transform="translate(-101.632 -85.42)"/><path d="M203.278,85.389c.053,0,.106,0,.159,0a.426.426,0,1,0,.055-.85c-.076-.006-.147-.007-.215-.007a3.435,3.435,0,0,0-2.659,1.268,4.375,4.375,0,0,0-.756,1.251.426.426,0,1,0,.8.29h0a3.067,3.067,0,0,1,.138-.3A2.851,2.851,0,0,1,203.278,85.389Z" transform="translate(-158.016 -82.541)"/><path d="M200.731,79.876c-.222-.019-.434-.027-.637-.027A4.582,4.582,0,0,0,196,81.9a5.092,5.092,0,0,0-.766,2.048.426.426,0,0,0,.379.468l.044,0a.427.427,0,0,0,.424-.382h0a3.174,3.174,0,0,1,.11-.508,3.736,3.736,0,0,1,3.9-2.831c.18,0,.366.008.563.025a.426.426,0,0,0,.073-.849Z" transform="translate(-155.374 -79.849)"/><path d="M223.252,90.021a.425.425,0,1,0-.563.638h0a1.476,1.476,0,0,1,.127.13,2.862,2.862,0,0,1,.756,1.852A3.176,3.176,0,0,1,222.7,94.7a.426.426,0,1,0,.651.549,4.033,4.033,0,0,0,1.074-2.613A3.738,3.738,0,0,0,223.252,90.021Z" transform="translate(-171.054 -85.627)"/><path d="M227.086,87.257a.425.425,0,0,0-.124.589s.051.077.139.244a7.092,7.092,0,0,1,.807,3.216,6.23,6.23,0,0,1-1.111,3.539.426.426,0,1,0,.707.475,7.085,7.085,0,0,0,1.256-4.014,7.792,7.792,0,0,0-1.085-3.926A.426.426,0,0,0,227.086,87.257Z" transform="translate(-173.454 -84.062)"/></g></g></g></svg>');
+  top: calc(var(--spacing-2xl) + 0.6rem);
+  right: 0;
+  position: absolute;
+}
+.walk-companion::before {
+  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="42" viewBox="0 0 46.157 48.015"><g transform="translate(0 0)"><g transform="translate(0 0)"><g transform="translate(0 0)"><g transform="translate(0 9.568)"><path d="M48.148,279.246c2.092,0,9.432-8.977,5.652-10.485-1.075-.43-.133-2.02,1.9-1.748a4.149,4.149,0,0,1,3.792,3.5c4.088,0,5.258,3.1,7.263,5.687l-6.98,8.376c-.631-1.024-1.274-1.83-2.179-1.83-1.9,1.748-5.155,3.986-7.586,1.748C48.111,282.741,46.252,279.246,48.148,279.246Zm8.738-1.748a1.748,1.748,0,1,0-1.748-1.748A1.746,1.746,0,0,0,56.886,277.5Z" transform="translate(-47.355 -265.266)"/><path d="M41.679,279.981H57.418a6.649,6.649,0,0,0,3.291-3.832c.825-3.448-2.728-7.1-2.793-7.168a1.747,1.747,0,0,1,2.475-2.467c.2.2,4.988,5.064,3.722,10.428-.568,2.41-2.247,4.437-4.958,6.076v18.809a2.621,2.621,0,0,1-5.243,0v-7.864H38.184v7.864a2.621,2.621,0,0,1-5.243,0V288.718a6.8,6.8,0,0,1-.9-1.068l7.371-8.848A7.19,7.19,0,0,0,41.679,279.981Z" transform="translate(-18.168 -266)"/></g><g transform="translate(20.376 0)"><rect width="2.621" height="25.18" transform="translate(2.014 21.022) rotate(-140.193)"/></g></g></g></g></svg>');
+  top: var(--spacing-2xl);
+  right: 0;
+  position: absolute;
+}
+.swipe-info {
+  & p {
+    color: var(--color-white);
+    font-size: 1.7rem;
+    text-align: center;
+  }
+}
+
+.age {
+  font-style: italic;
+}
+
+/* Swipe Gesture Indicator Button */
+.swipe-indicator {
+  position: absolute;
+  bottom: var(--spacing-md);
+  left: var(--spacing-md);
+  background: none;
+  border: none;
+  color: var(--color-white);
+  opacity: 1;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--transition-fast);
+  padding: var(--spacing-sm);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  touch-action: manipulation;
+  animation: bounce 0.5s infinite;
+
+  &.animation-hidden {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  &:hover {
+    color: var(--color-white);
+    opacity: 1;
+  }
+
+  &:active {
+    opacity: 1;
+  }
+}
+
+.swipe-indicator-icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+
+  & svg:last-child {
+    margin-top: -1.2rem;
+  }
+}

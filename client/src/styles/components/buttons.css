@@ -1,0 +1,89 @@
+/* ========================================
+   Buttons Component
+   ======================================== */
+
+.primary-button {
+  color: var(--color-white);
+  text-transform: uppercase;
+  font-size: var(--font-size-base);
+  background: linear-gradient(45deg, var(--color-accent), var(--color-accent));
+  padding: var(--spacing-button-v) var(--spacing-button-h);
+  border-radius: var(--radius-xl);
+  border: none;
+  cursor: pointer;
+}
+
+.secondary-button,
+.edit-button {
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  font-weight: 500;
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  padding: var(--spacing-button-v) var(--spacing-button-h);
+  border-radius: var(--radius-xl);
+  border: none;
+  margin: var(--spacing-xs);
+  cursor: pointer;
+  outline: none;
+}
+
+.edit-button {
+  text-transform: none;
+
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-primary);
+  }
+}
+
+.secondary-button {
+  &:hover {
+    color: var(--color-white);
+    background-color: var(--color-secondary);
+  }
+}
+
+/* Geolocation Button */
+.allow-geo-location {
+  color: var(--color-white);
+  background-color: var(--color-primary);
+  font-size: var(--font-size-md);
+  padding: var(--spacing-sm) var(--spacing-button-h);
+  border-radius: var(--radius-2xl);
+  border: none;
+  margin-bottom: var(--spacing-xl);
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb), 0.4);
+  animation: pulse 1.5s infinite;
+
+  & p {
+    display: inline-block;
+    padding-left: var(--spacing-3xs);
+
+    &:after {
+      content: '';
+      background: var(--color-white);
+      width: var(--spacing-md-lg);
+      height: var(--spacing-md-lg);
+      position: absolute;
+      left: var(--spacing-sm);
+      border-radius: 50% 50% 50% 0%;
+      transform: rotate(-49deg);
+    }
+
+    &:before {
+      content: '';
+      background: var(--color-primary);
+      width: var(--spacing-sm);
+      position: absolute;
+      height: var(--spacing-sm);
+      left: var(--spacing-md);
+      margin-left: -0.09375rem;
+      border-radius: 50%;
+      top: 1.9375rem;
+      z-index: var(--z-base);
+    }
+  }
+}

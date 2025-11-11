@@ -1,0 +1,2 @@
+# Ignore temporary cookie files
+/tmp/woofmeetup_cookies_*.txt.env

@@ -1,0 +1,43 @@
+/* ========================================
+   Generic Loading States
+   Provides non-animated loading indicators
+   separate from chat skeleton animations
+   ======================================== */
+
+.loading-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  color: var(--color-gray-text);
+  font-size: var(--font-size-base);
+  min-height: 6rem;
+  background-color: var(--color-white);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.loading-state::before {
+  content: '';
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  margin-right: var(--spacing-sm);
+  border: 2px solid var(--color-gray-light);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Text content alignment with spinner */
+.loading-state-text {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}

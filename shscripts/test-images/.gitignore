@@ -1,0 +1,8 @@
+# Ignore downloaded test images
+*.jpg
+*.jpeg
+*.png
+*.gif
+
+# Keep the directory structure
+!.gitignore
