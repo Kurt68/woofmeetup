@@ -43,6 +43,7 @@ const randomImageName = (bytes = 32) => randomBytes(bytes).toString('hex')
 const getS3 = () => getS3Client()
 const getCloudFront = () => getCloudFrontClient()
 const bucketName = process.env.AWS_BUCKET_NAME
+const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN
 
 // Signup to the Database
 export const signup = async (req, res) => {
@@ -154,7 +155,7 @@ export const login = async (req, res) => {
     if (user.image) {
       try {
         userObj.imageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+          url: `https://${cloudfrontDomain}/` + user.image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -172,7 +173,7 @@ export const login = async (req, res) => {
     if (user.profile_image) {
       try {
         userObj.profileImageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+          url: `https://${cloudfrontDomain}/` + user.profile_image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -243,7 +244,7 @@ export const verifyEmail = async (req, res) => {
     if (user.image) {
       try {
         userObj.imageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+          url: `https://${cloudfrontDomain}/` + user.image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -261,7 +262,7 @@ export const verifyEmail = async (req, res) => {
     if (user.profile_image) {
       try {
         userObj.profileImageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+          url: `https://${cloudfrontDomain}/` + user.profile_image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -462,7 +463,7 @@ export const checkAuth = async (req, res) => {
     if (user.image) {
       try {
         userObj.imageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+          url: `https://${cloudfrontDomain}/` + user.image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -480,7 +481,7 @@ export const checkAuth = async (req, res) => {
     if (user.profile_image) {
       try {
         userObj.profileImageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+          url: `https://${cloudfrontDomain}/` + user.profile_image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -643,7 +644,7 @@ export const getMatches = async (req, res) => {
                     image: '$image',
                   },
                   in: {
-                    $concat: ['d36ifi98wv8n1.cloudfront.net/', '$$image'],
+                    $concat: [process.env.CLOUDFRONT_DOMAIN, '/', '$$image'],
                   },
                 },
               },
@@ -658,7 +659,7 @@ export const getMatches = async (req, res) => {
       if (user.image) {
         try {
           user.imageUrl = getSignedUrl({
-            url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+            url: `https://${cloudfrontDomain}/` + user.image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: getCloudFrontPrivateKey(),
             keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -676,7 +677,7 @@ export const getMatches = async (req, res) => {
       if (user.profile_image) {
         try {
           user.profileImageUrl = getSignedUrl({
-            url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+            url: `https://${cloudfrontDomain}/` + user.profile_image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: getCloudFrontPrivateKey(),
             keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -751,7 +752,7 @@ export const getUser = async (req, res) => {
     if (user.image) {
       try {
         user.imageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+          url: `https://${cloudfrontDomain}/` + user.image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -769,7 +770,7 @@ export const getUser = async (req, res) => {
     if (user.profile_image) {
       try {
         user.profileImageUrl = getSignedUrl({
-          url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+          url: `https://${cloudfrontDomain}/` + user.profile_image,
           dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -907,7 +908,7 @@ export const getMeetupTypeUsers = async (req, res) => {
       {
         $addFields: {
           imageUrl: {
-            $concat: ['https://d36ifi98wv8n1.cloudfront.net/', '$image'],
+            $concat: [`https://${process.env.CLOUDFRONT_DOMAIN}/`, '$image'],
           },
         },
       },
@@ -942,7 +943,7 @@ export const getMeetupTypeUsers = async (req, res) => {
       if (user.image) {
         try {
           user.imageUrl = getSignedUrl({
-            url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.image,
+            url: `https://${cloudfrontDomain}/` + user.image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: getCloudFrontPrivateKey(),
             keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -960,7 +961,7 @@ export const getMeetupTypeUsers = async (req, res) => {
       if (user.profile_image) {
         try {
           user.profileImageUrl = getSignedUrl({
-            url: 'https://d36ifi98wv8n1.cloudfront.net/' + user.profile_image,
+            url: `https://${cloudfrontDomain}/` + user.profile_image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: getCloudFrontPrivateKey(),
             keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
@@ -1409,7 +1410,7 @@ export const uploadProfileImage = async (req, res) => {
     let imageURL = null
     try {
       imageURL = getSignedUrl({
-        url: `https://d36ifi98wv8n1.cloudfront.net/${imageName}`,
+        url: `https://${cloudfrontDomain}/${imageName}`,
         keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         privateKey: getCloudFrontPrivateKey(),
         dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
@@ -1475,7 +1476,7 @@ export const getCurrentUserProfile = async (req, res) => {
         } else {
           currentUserProfile.image = getSignedUrl({
             url:
-              'https://d36ifi98wv8n1.cloudfront.net/' +
+              `https://${cloudfrontDomain}/` +
               currentUserProfile.image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: privateKey,
@@ -1511,7 +1512,7 @@ export const getCurrentUserProfile = async (req, res) => {
         } else {
           currentUserProfile.profile_image = getSignedUrl({
             url:
-              'https://d36ifi98wv8n1.cloudfront.net/' +
+              `https://${cloudfrontDomain}/` +
               currentUserProfile.profile_image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: privateKey,
