@@ -43,13 +43,15 @@ const __dirname = path.resolve()
 // Security: HTTPS Enforcement Middleware
 // Redirects all HTTP requests to HTTPS in production
 // Skips enforcement for localhost to allow local testing without SSL certificates
+// Skips enforcement for Stripe webhook endpoint (Stripe may send HTTP requests)
 app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'production') {
     const host = req.headers.host
     const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1')
+    const isWebhook = req.path === '/api/payments/webhook' || req.path.startsWith('/api/payments/webhook/')
 
-    // Skip HTTPS enforcement for localhost (for local testing)
-    if (!isLocalhost) {
+    // Skip HTTPS enforcement for localhost (for local testing) and webhook endpoints
+    if (!isLocalhost && !isWebhook) {
       // Check if connection is via proxy (common in production environments)
       const protocol = req.headers['x-forwarded-proto'] || req.protocol
       const isSecure = protocol === 'https'

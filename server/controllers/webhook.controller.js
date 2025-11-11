@@ -245,13 +245,22 @@ async function handleCheckoutCompleted(session, eventId) {
 // Handle subscription created
 // eventId is used for idempotency - prevents duplicate processing if webhook is retried
 async function handleSubscriptionCreated(subscription, eventId) {
+  logInfo(
+    'webhook.controller',
+    `Looking up user for subscription creation - Customer ID: ${subscription.customer}, Subscription ID: ${subscription.id}`
+  )
+
   const user = await User.findOne({ stripeCustomerId: subscription.customer })
 
   if (!user) {
     logError(
       'webhook.controller',
-      'User not found for subscription creation',
-      { customerId: subscription.customer }
+      'User not found for subscription creation - Customer ID may not be saved yet',
+      { 
+        customerId: subscription.customer,
+        subscriptionId: subscription.id,
+        priceId: subscription.items.data[0]?.price?.id
+      }
     )
     throw new Error('User not found for subscription creation')
   }
@@ -260,11 +269,37 @@ async function handleSubscriptionCreated(subscription, eventId) {
   const planType =
     priceId === process.env.STRIPE_VIP_PRICE_ID ? 'vip' : 'premium'
 
+  logInfo(
+    'webhook.controller',
+    `Updating user subscription - User: ${user.user_id}, Plan: ${planType}, Status: ${subscription.status}`
+  )
+
   user.subscription = planType
   user.subscriptionStatus = subscription.status
   user.stripeSubscriptionId = subscription.id
   user.subscriptionEndDate = new Date(subscription.current_period_end * 1000)
   await user.save()
+
+  logInfo(
+    'webhook.controller',
+    `Successfully updated user subscription - User: ${user.user_id}, Plan: ${planType}`
+  )
+
+  // Create transaction record for subscription creation
+  await Transaction.create({
+    userId: user._id,
+    stripePaymentId: subscription.id,
+    type: 'subscription',
+    amount: subscription.items.data[0].price.unit_amount / 100,
+    currency: subscription.currency,
+    status: 'completed',
+    description: `${planType} subscription created`,
+    metadata: {
+      subscriptionId: subscription.id,
+      customerId: subscription.customer,
+      stripeEventId: eventId,
+    },
+  })
 
   // Send welcome email for new subscription
   try {
