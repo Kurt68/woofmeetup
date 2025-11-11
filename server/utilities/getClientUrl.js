@@ -6,7 +6,6 @@ import { logError } from './logger.js'
  */
 const ALLOWED_REDIRECT_URLS = [
   'https://woofmeetup.com',
-  'https://www.woofmeetup.com',
   'http://localhost:5173', // Vite dev server
   'http://localhost:8000', // Production build testing
 ]
@@ -48,7 +47,6 @@ export const getClientUrl = (req = null) => {
       url = 'https://woofmeetup.com'
     }
   } else if (process.env.NODE_ENV === 'production') {
-    // Production fallback (no request provided)
     url = 'https://woofmeetup.com'
   } else {
     // Development fallback

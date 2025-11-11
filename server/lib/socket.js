@@ -13,7 +13,7 @@ const io = new Server(server, {
     origin:
       process.env.NODE_ENV === 'development'
         ? ['http://localhost:5173', 'http://localhost:8000']
-        : ['https://woofmeetup.com', 'https://www.woofmeetup.com'],
+        : 'https://woofmeetup.com',
     credentials: true,
     methods: ['GET', 'POST'],
     allowedHeaders: [

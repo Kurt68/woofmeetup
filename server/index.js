@@ -127,7 +127,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? ['https://woofmeetup.com', 'https://www.woofmeetup.com']
+        ? 'https://woofmeetup.com'
         : ['http://localhost:8000', 'http://localhost:5173'],
     credentials: true,
   })
