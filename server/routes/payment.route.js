@@ -66,11 +66,18 @@ router.get('/credit-packages', getCreditPackages)
 export default router
 
 // Export webhook handler separately for raw body parsing
-export const webhookRouter = express.Router()
+export const webhookRouter = express.Router({ strict: false })
 // Security: Apply rate limiting to prevent webhook endpoint flooding and DoS attacks
 // Security: Max 100 requests per 1 minute per IP
+// Handle both /webhook and /webhook/ paths
 webhookRouter.post(
   '/',
+  stripeLimiter,
+  express.raw({ type: 'application/json' }),
+  handleStripeWebhook
+)
+webhookRouter.post(
+  '',
   stripeLimiter,
   express.raw({ type: 'application/json' }),
   handleStripeWebhook

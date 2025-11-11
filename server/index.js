@@ -50,6 +50,11 @@ app.use((req, res, next) => {
     const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1')
     const isWebhook = req.path === '/api/payments/webhook' || req.path.startsWith('/api/payments/webhook/')
 
+    // Debug logging for webhook requests
+    if (isWebhook) {
+      console.log('[WEBHOOK DEBUG] Path:', req.path, '| Method:', req.method, '| Skipping HTTPS check')
+    }
+
     // Skip HTTPS enforcement for localhost (for local testing) and webhook endpoints
     if (!isLocalhost && !isWebhook) {
       // Check if connection is via proxy (common in production environments)
@@ -137,7 +142,9 @@ app.use(
 
 // Stripe webhook route MUST be before express.json() to receive raw body
 // Mount at specific webhook path to avoid interfering with other payment endpoints
+// Disable strict routing to accept both /webhook and /webhook/
 app.use('/api/payments/webhook', webhookRouter)
+app.set('strict routing', false)
 
 // Security: Request Size Limits
 // Limit JSON body size to 5MB to support base64-encoded image uploads
