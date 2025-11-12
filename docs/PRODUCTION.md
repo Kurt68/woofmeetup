@@ -354,6 +354,13 @@ pm2 logs woof-server
 #### Nginx Configuration
 
 ```nginx
+# Map for WebSocket and HTTP polling support
+# Sets Connection header based on Upgrade header presence
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
 server {
     listen 80;
     server_name yourdomain.com www.yourdomain.com;
@@ -390,16 +397,29 @@ server {
         proxy_read_timeout 60s;
     }
 
-    # WebSocket support
+    # Socket.io - supports both WebSocket and HTTP long-polling
     location /socket.io {
         proxy_pass http://localhost:8000/socket.io;
         proxy_http_version 1.1;
         proxy_buffering off;
+        
+        # For WebSocket connections
         proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "Upgrade";
+        proxy_set_header Connection $connection_upgrade;
+        
+        # Standard proxy headers
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        
+        # Timeouts for long-polling (HTTP GET requests that wait for data)
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_connect_timeout 60s;
+        
+        # Disable caching for Socket.io
+        proxy_cache_bypass $http_upgrade;
     }
 }
 ```

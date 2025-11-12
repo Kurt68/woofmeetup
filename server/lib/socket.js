@@ -24,6 +24,12 @@ const io = new Server(server, {
     ],
   },
   transports: ['websocket', 'polling'],
+  pingInterval: 25000,
+  pingTimeout: 60000,
+  // HTTP long-polling configuration
+  httpCompression: {
+    threshold: 1024,
+  },
   // Additional security settings for production
   cookie:
     process.env.NODE_ENV === 'production'

@@ -38,10 +38,20 @@ export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
     transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
-    reconnectionDelayMax: 5000,
-    reconnectionAttempts: 10,
-    reconnectionAttemptDelay: 1500,
+    reconnectionDelayMax: 10000,
+    reconnectionAttempts: 15,
+    reconnectionAttemptDelay: 2000,
+    // Polling-specific config for mobile reliability
+    rememberUpgrade: true,
+    upgrade: true,
   })
+
+  // Debug polling transport issues
+  if (socketInstance.io.engine) {
+    socketInstance.io.engine.on('upgrade', (transport) => {
+      console.log(`🔄 Socket.io upgraded to transport:`, transport.name)
+    })
+  }
 
   // Handle connection events
   socketInstance.on('connect', () => {
