@@ -76,22 +76,20 @@
 .chat-modal {
   position: relative;
   width: 100%;
-  height: 100dvh;
+  height: calc(100dvh - 1.25rem);
   background-color: var(--color-white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-height: 100dvh;
-  padding-bottom: 0.625rem;
+  max-height: calc(100dvh - 1.25rem);
 
   @media screen and (min-width: 768px) {
     height: auto;
     max-height: 70vh;
     min-height: 70vh;
     border-radius: var(--radius-md);
-    padding-bottom: 0;
   }
 
   & .close-icon {
