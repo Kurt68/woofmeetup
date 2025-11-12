@@ -4,7 +4,8 @@ import axiosInstance from '../config/axiosInstance'
 import { useAuthStore } from './useAuthStore'
 import { getErrorMessage } from '../utilities/axiosUtils.js'
 import { ensureCsrfToken } from '../services/csrfService.js'
-import { setReconnectCallback } from '../services/socketService.js'
+
+let reconnectHandler = null
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -143,7 +144,9 @@ export const useChatStore = create((set, get) => ({
 
     socket.on('newMessage', handleNewMessage)
     socket.on('chatCleared', handleChatCleared)
-    setReconnectCallback(handleReconnect)
+    socket.on('reconnect', handleReconnect)
+    
+    reconnectHandler = handleReconnect
     console.log('✅ Message listeners registered for user:', selectedUser._id)
   },
 
@@ -151,6 +154,10 @@ export const useChatStore = create((set, get) => ({
     const socket = useAuthStore.getState().socket
     socket.off('newMessage')
     socket.off('chatCleared')
+    if (reconnectHandler) {
+      socket.off('reconnect', reconnectHandler)
+      reconnectHandler = null
+    }
   },
 
   clearMessages: async () => {
