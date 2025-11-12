@@ -1,4 +1,5 @@
 import Message from '../models/message.model.js'
+import { User } from '../models/user.model.js'
 import { validationResult } from 'express-validator'
 import cloudinary from '../lib/cloudinary.js'
 import { getReceiverSocketId, io } from '../lib/socket.js'
@@ -156,7 +157,25 @@ export const sendMessage = async (req, res) => {
     await decrementMessageCredit(senderId)
 
     // Emit with acknowledgment - wait for client confirmation
-    const receiverSocketId = getReceiverSocketId(receiverId)
+    // First try direct lookup, then try to find user by _id and use their user_id
+    let receiverSocketId = getReceiverSocketId(receiverId)
+    
+    if (!receiverSocketId) {
+      // Try looking up the user by _id to get their user_id for socket lookup
+      try {
+        const receiverUser = await User.findById(receiverId).select('user_id')
+        if (receiverUser && receiverUser.user_id) {
+          receiverSocketId = getReceiverSocketId(receiverUser.user_id)
+          logInfo(
+            'message.controller',
+            `Receiver lookup: _id ${receiverId} → user_id ${receiverUser.user_id}, SocketId: ${receiverSocketId || 'NOT FOUND'}`
+          )
+        }
+      } catch (error) {
+        logError('message.controller', 'Failed to lookup receiver user', error)
+      }
+    }
+    
     logInfo(
       'message.controller',
       `Attempting to send message to receiver: ${receiverId}, SocketId: ${
@@ -200,7 +219,20 @@ export const deleteMessages = async (req, res) => {
     })
 
     // Notify the other user that chat has been cleared via Socket.IO (with acknowledgment)
-    const receiverSocketId = getReceiverSocketId(userChattingWithId)
+    let receiverSocketId = getReceiverSocketId(userChattingWithId)
+    
+    if (!receiverSocketId) {
+      // Try looking up the user by _id to get their user_id for socket lookup
+      try {
+        const receiverUser = await User.findById(userChattingWithId).select('user_id')
+        if (receiverUser && receiverUser.user_id) {
+          receiverSocketId = getReceiverSocketId(receiverUser.user_id)
+        }
+      } catch (error) {
+        logError('message.controller', 'Failed to lookup receiver for chat clear', error)
+      }
+    }
+    
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('chatCleared', { userId: myId }, (ack) => {
         if (ack) {
