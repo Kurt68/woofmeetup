@@ -29,7 +29,7 @@ export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
 
   socketInstance = io(SOCKET_URL, {
     withCredentials: true,
-    transports: ['websocket'],
+    transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 10000,

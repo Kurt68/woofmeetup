@@ -74,13 +74,15 @@ export const useChatStore = create((set, get) => ({
   subscribeToMessages: () => {
     const { selectedUser } = get()
     if (!selectedUser) {
-      console.log('❌ subscribeToMessages: No selected user')
       return
     }
 
     const socket = useAuthStore.getState().socket
-    if (!socket) {
-      console.log('❌ subscribeToMessages: No socket available')
+    if (!socket || !socket.connected) {
+      console.warn('⚠️ Socket not connected yet, retrying...')
+      setTimeout(() => {
+        get().subscribeToMessages()
+      }, 500)
       return
     }
 
@@ -94,15 +96,6 @@ export const useChatStore = create((set, get) => ({
     socket.off('chatCleared')
 
     const handleNewMessage = (newMessage, ack) => {
-      console.log(
-        '📨 newMessage event received from server. Sender:',
-        newMessage.senderId,
-        'Current selectedUser:',
-        selectedUser?._id,
-        'Receiver:',
-        newMessage.receiverId
-      )
-
       const currentState = get()
       const isMessageForCurrentChat =
         (newMessage.senderId === selectedUser?._id ||
@@ -112,14 +105,6 @@ export const useChatStore = create((set, get) => ({
         set({
           messages: [...currentState.messages, newMessage],
         })
-        console.log('✅ Message added to store:', newMessage._id)
-      } else {
-        console.log(
-          '⚠️ Message received but not for current chat. Sender:',
-          newMessage.senderId,
-          'Receiver:',
-          newMessage.receiverId
-        )
       }
 
       if (typeof ack === 'function') ack(true)
