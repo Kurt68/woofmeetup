@@ -4,6 +4,7 @@ import axiosInstance from '../config/axiosInstance'
 import { useAuthStore } from './useAuthStore'
 import { getErrorMessage } from '../utilities/axiosUtils.js'
 import { ensureCsrfToken } from '../services/csrfService.js'
+import { setReconnectCallback } from '../services/socketService.js'
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -131,8 +132,18 @@ export const useChatStore = create((set, get) => ({
       if (typeof ack === 'function') ack(true)
     }
 
+    const handleReconnect = async () => {
+      console.log('🔄 Socket reconnected, fetching messages for:', selectedUser._id)
+      try {
+        await get().getMessages(selectedUser._id)
+      } catch (error) {
+        console.error('Failed to fetch messages on reconnect:', error)
+      }
+    }
+
     socket.on('newMessage', handleNewMessage)
     socket.on('chatCleared', handleChatCleared)
+    setReconnectCallback(handleReconnect)
     console.log('✅ Message listeners registered for user:', selectedUser._id)
   },
 
@@ -157,5 +168,16 @@ export const useChatStore = create((set, get) => ({
     }
   },
 
-  setSelectedUser: (selectedUser) => set({ selectedUser }),
+  setSelectedUser: async (selectedUser) => {
+    set({ selectedUser })
+    if (selectedUser) {
+      setTimeout(async () => {
+        try {
+          await get().getMessages(selectedUser._id)
+        } catch (error) {
+          console.error('Failed to load messages for selected user:', error)
+        }
+      }, 0)
+    }
+  },
 }))

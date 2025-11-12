@@ -20,6 +20,12 @@ let socketInstance = null
  * @param {Function} onOnlineUsersChange - Callback when online users change
  * @returns {Socket} Socket.IO instance
  */
+let onReconnectCallback = null
+
+export const setReconnectCallback = (callback) => {
+  onReconnectCallback = callback
+}
+
 export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
   // Prevent multiple connections
   if (socketInstance?.connected) {
@@ -52,6 +58,13 @@ export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
 
   socketInstance.on('disconnect', () => {
     console.log('❌ Socket disconnected')
+  })
+
+  socketInstance.on('reconnect', () => {
+    console.log('🔄 Socket reconnected:', socketInstance.id)
+    if (onReconnectCallback) {
+      onReconnectCallback()
+    }
   })
 
   socketInstance.on('connect_error', (error) => {
