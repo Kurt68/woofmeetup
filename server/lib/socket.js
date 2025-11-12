@@ -179,12 +179,14 @@ export function getReceiverSocketId(userId) {
   if (socketId) {
     logInfo(
       'socket.lookup',
-      `User ${maskedId} found online (${userCount} total online)`
+      `✅ User ${maskedId} found online (${userCount} total online)`
     )
   } else {
+    // Debug: Show what users ARE in the map
+    const mappedUserIds = Object.keys(userSocketMap).slice(0, 5)
     logInfo(
       'socket.lookup',
-      `User ${maskedId} not found (${userCount} total online)`
+      `❌ User ${maskedId} NOT found (${userCount} total online). Sample mapped IDs: ${mappedUserIds.join(', ')}`
     )
   }
 
@@ -519,7 +521,11 @@ io.on('connection', (socket) => {
   const uniqueConnected = new Set(Object.values(userSocketMap))
   logInfo(
     'socket.io',
-    `✅ Socket registered - connection from ${maskedUserId} (${uniqueConnected.size} total online)`
+    `✅ Socket registered - connection from ${maskedUserId}/${maskedMongoId} (${uniqueConnected.size} total online)`
+  )
+  logInfo(
+    'socket.io',
+    `📋 Map entries: mongoId[${mongoId}]=${socket.id.substring(0, 8)}..., userId[${userId}]=${socket.id.substring(0, 8)}...`
   )
 
   // Send filtered online users (only matched users) to the newly connected client

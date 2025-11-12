@@ -94,30 +94,34 @@ export const useChatStore = create((set, get) => ({
     socket.off('chatCleared')
 
     const handleNewMessage = (newMessage, ack) => {
-      const isMessageSentFromSelectedUser =
-        newMessage.senderId === selectedUser._id
-
       console.log(
         '📨 newMessage event received from server. Sender:',
         newMessage.senderId,
-        'Selected user:',
-        selectedUser._id,
-        'Match:',
-        isMessageSentFromSelectedUser
+        'Current selectedUser:',
+        selectedUser?._id,
+        'Receiver:',
+        newMessage.receiverId
       )
 
-      if (!isMessageSentFromSelectedUser) {
-        // Still acknowledge even if not for this user
-        if (typeof ack === 'function') ack(true)
-        return
+      const currentState = get()
+      const isMessageForCurrentChat =
+        (newMessage.senderId === selectedUser?._id ||
+          newMessage.receiverId === selectedUser?._id)
+
+      if (isMessageForCurrentChat) {
+        set({
+          messages: [...currentState.messages, newMessage],
+        })
+        console.log('✅ Message added to store:', newMessage._id)
+      } else {
+        console.log(
+          '⚠️ Message received but not for current chat. Sender:',
+          newMessage.senderId,
+          'Receiver:',
+          newMessage.receiverId
+        )
       }
 
-      set({
-        messages: [...get().messages, newMessage],
-      })
-      console.log('✅ Message added to store:', newMessage._id)
-
-      // Send acknowledgment back to server
       if (typeof ack === 'function') ack(true)
     }
 
