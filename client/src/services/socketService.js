@@ -27,23 +27,14 @@ export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
     return socketInstance
   }
 
-  // Security Fix: JWT tokens are now stored in httpOnly cookies
-  // Socket.IO will automatically send cookies with the handshake request
-  // We don't extract the token manually from sessionStorage anymore to prevent XSS
   socketInstance = io(SOCKET_URL, {
-    // Critical: withCredentials must be true to send httpOnly cookies in cross-origin requests
-    // In development: frontend (localhost:5173) → backend (localhost:8000) are different origins
-    // Browser security requires explicit credential sending in this case
     withCredentials: true,
-    transports: ['websocket', 'polling'],
+    transports: ['websocket'],
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 10000,
-    reconnectionAttempts: 15,
+    reconnectionAttempts: 20,
     reconnectionAttemptDelay: 2000,
-    // Polling-specific config for mobile reliability
-    rememberUpgrade: true,
-    upgrade: true,
   })
 
   // Debug polling transport issues

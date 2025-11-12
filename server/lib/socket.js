@@ -200,7 +200,8 @@ const userSocketMap = {} // {userId: socketId}
  * Tracks connection attempts per user IP/token to detect abuse
  */
 const socketConnectionTracker = {} // {userId: { count, resetTime }}
-const MAX_CONNECTIONS_PER_USER = 3 // Max 3 simultaneous connections
+const MAX_CONNECTIONS_PER_USER =
+  process.env.NODE_ENV === 'production' ? 5 : 10 // More lenient for mobile reconnections
 const CONNECTION_RESET_INTERVAL = 60 * 1000 // Reset every 1 minute
 
 /**

@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: woof-server
+    runtime: node
+    plan: standard
+    buildCommand: npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 8000
