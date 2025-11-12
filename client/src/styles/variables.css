@@ -123,7 +123,7 @@
   /* Border Width */
   --border-width-thin: 1px;
   --border-width-normal: 2px;
-  --border-width-thick: 3px;
+  --border-width-thick: 4px;
 
   /* Transitions */
   --transition-fast: 0.2s ease;

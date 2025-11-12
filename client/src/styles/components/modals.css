@@ -76,13 +76,14 @@
 .chat-modal {
   position: relative;
   width: 100%;
-  height: calc(100vh - 20px);
+  height: 100dvh;
   background-color: var(--color-white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  max-height: 100dvh;
 
   @media screen and (min-width: 768px) {
     height: auto;
