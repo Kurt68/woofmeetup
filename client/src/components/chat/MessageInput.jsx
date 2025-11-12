@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { useChatStore } from '../../store/useChatStore'
 import { Image, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { compressImage } from '../../utilities/compressImage'
 
 const MessageInput = () => {
   const [text, setText] = useState('')
@@ -10,10 +11,11 @@ const MessageInput = () => {
   const fileInputRef = useRef(null)
   const { sendMessage } = useChatStore()
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files[0]
 
-    // Allowed image types for chat
+    if (!file) return
+
     const ALLOWED_TYPES = [
       'image/png',
       'image/gif',
@@ -26,19 +28,33 @@ const MessageInput = () => {
       return
     }
 
-    // Validate file size (max 3.75MB to account for ~33% base64 encoding overhead → 5MB limit)
-    const MAX_FILE_SIZE_MB = 3.75
+    const MAX_FILE_SIZE_MB = 15
     const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
     if (file.size > MAX_FILE_SIZE_BYTES) {
       toast.error(`Image too large. Max size: ${MAX_FILE_SIZE_MB}MB`)
       return
     }
 
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setImagePreview(reader.result)
+    try {
+      toast.loading('Compressing image...', { id: 'compress' })
+
+      let imageToPreview = file
+
+      if (file.type !== 'image/gif' && file.type !== 'image/svg+xml') {
+        imageToPreview = await compressImage(file, 0.6)
+      }
+
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result)
+        toast.dismiss('compress')
+        toast.success('Image ready to send')
+      }
+      reader.readAsDataURL(imageToPreview)
+    } catch (error) {
+      toast.dismiss('compress')
+      toast.error('Failed to process image')
     }
-    reader.readAsDataURL(file)
   }
 
   const removeImage = () => {

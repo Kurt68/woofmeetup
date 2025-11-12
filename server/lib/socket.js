@@ -32,8 +32,8 @@ const io = new Server(server, {
           sameSite: 'strict',
         }
       : false,
-  // Security: Set max event listeners per socket to prevent memory leaks
-  maxHttpBufferSize: 1e6, // 1MB max message size
+  // Security: Set max buffer size for chat images (60% compressed to ~800KB per image)
+  maxHttpBufferSize: 5 * 1024 * 1024, // 5MB max message size for compressed images
 })
 
 /**
