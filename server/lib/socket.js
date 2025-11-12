@@ -23,13 +23,14 @@ const io = new Server(server, {
       'sentry-trace',
     ],
   },
+  transports: ['websocket', 'polling'],
   // Additional security settings for production
   cookie:
     process.env.NODE_ENV === 'production'
       ? {
           secure: true,
           httpOnly: true,
-          sameSite: 'strict',
+          sameSite: 'lax',
         }
       : false,
   // Security: Set max buffer size for chat images (60% compressed to ~800KB per image)

@@ -35,15 +35,18 @@ export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
     // In development: frontend (localhost:5173) → backend (localhost:8000) are different origins
     // Browser security requires explicit credential sending in this case
     withCredentials: true,
+    transports: ['websocket', 'polling'],
     reconnection: true,
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
-    reconnectionAttempts: 5,
+    reconnectionAttempts: 10,
+    reconnectionAttemptDelay: 1500,
   })
 
   // Handle connection events
   socketInstance.on('connect', () => {
-    console.log('✅ Socket connected:', socketInstance.id)
+    const transport = socketInstance.io.engine.transport.name
+    console.log('✅ Socket connected:', socketInstance.id, `(transport: ${transport})`)
   })
 
   socketInstance.on('disconnect', () => {
@@ -52,6 +55,10 @@ export const connectSocket = (userId, mongoId, onOnlineUsersChange) => {
 
   socketInstance.on('connect_error', (error) => {
     console.error('🔴 Socket connection error:', error.message)
+  })
+
+  socketInstance.on('disconnect_reason', (reason) => {
+    console.warn('⚠️ Socket disconnect reason:', reason)
   })
 
   socketInstance.on('getOnlineUsers', (userIds) => {
