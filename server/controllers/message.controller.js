@@ -207,11 +207,30 @@ export const sendMessage = async (req, res) => {
           })
           logInfo('message.controller', `✅ Message ${newMessage._id} updated with image URL`)
 
-          // Emit updated message to both users
-          io.to(receiverSocketId).emit('messageImageUpdated', {
+          // Emit updated message to both sender and receiver
+          let senderSocketId = getReceiverSocketId(senderId)
+          if (!senderSocketId) {
+            try {
+              const senderUser = await User.findById(senderId).select('user_id')
+              if (senderUser && senderUser.user_id) {
+                senderSocketId = getReceiverSocketId(senderUser.user_id)
+              }
+            } catch (error) {
+              logError('message.controller', 'Failed to lookup sender user', error)
+            }
+          }
+
+          const imageUpdateData = {
             messageId: newMessage._id,
             imageUrl: uploadedImageUrl,
-          })
+          }
+
+          if (senderSocketId) {
+            io.to(senderSocketId).emit('messageImageUpdated', imageUpdateData)
+          }
+          if (receiverSocketId) {
+            io.to(receiverSocketId).emit('messageImageUpdated', imageUpdateData)
+          }
 
           // Check image for nudity ASYNCHRONOUSLY (non-blocking)
           if (!rawImageData.isSvg) {
