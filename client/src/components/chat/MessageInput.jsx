@@ -51,7 +51,7 @@ const MessageInput = () => {
       let compressedBlob = file
 
       if (file.type !== 'image/gif' && file.type !== 'image/svg+xml') {
-        compressedBlob = await compressImage(file, 0.6)
+        compressedBlob = await compressImage(file, 0.4)
       }
 
       const url = URL.createObjectURL(compressedBlob)
