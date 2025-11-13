@@ -120,12 +120,6 @@ const Dashboard = () => {
     <>
       {user && (
         <main className="dashboard" role="main">
-          <span className="ball"></span>
-          <span className="ball"></span>
-          <span className="ball"></span>
-          <span className="ball"></span>
-          <span className="ball"></span>
-          <span className="ball"></span>
           <section aria-label="Messages and matches">
             <ChatContainer user={user} />
           </section>
