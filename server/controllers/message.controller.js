@@ -49,6 +49,7 @@ export const sendMessage = async (req, res) => {
 
     const { id: receiverId } = req.params
     const senderId = req._id
+    const requestStart = Date.now()
 
     // Double-check validation (defense in depth)
     validateUserId(receiverId, 'receiverId')
@@ -129,14 +130,16 @@ export const sendMessage = async (req, res) => {
       'message.controller',
       `💾 Saving message from sender to receiver`
     )
-    await newMessage.save()
+    
+    // Run these in parallel to speed up response
+    await Promise.all([
+      newMessage.save(),
+      decrementMessageCredit(senderId),
+    ])
     logInfo(
       'message.controller',
       `✅ Message saved to database: ${newMessage._id}`
     )
-
-    // Decrement message credit for free users
-    await decrementMessageCredit(senderId)
 
     // Emit with acknowledgment - wait for client confirmation
     // First try direct lookup, then try to find user by _id and use their user_id
@@ -177,6 +180,8 @@ export const sendMessage = async (req, res) => {
       )
     }
 
+    const requestEnd = Date.now()
+    logInfo('message.controller', `⏱️ POST request processed in ${requestEnd - requestStart}ms before response`)
     res.status(201).json(newMessage)
 
     // Process image ASYNCHRONOUSLY in background (don't block response)

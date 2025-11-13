@@ -53,10 +53,13 @@ export const useChatStore = create((set, get) => ({
       })
 
       await ensureCsrfToken()
+      const sendStart = performance.now()
       const res = await axiosInstance.post(
         `/api/messages/send/${selectedUser._id}`,
         messageData
       )
+      const sendEnd = performance.now()
+      console.log(`⏱️ Message POST took ${(sendEnd - sendStart).toFixed(0)}ms`)
       const newMessage = res.data
       set({ messages: [...messages, newMessage] })
 
