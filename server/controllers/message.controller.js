@@ -151,7 +151,15 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     })
 
+    logInfo(
+      'message.controller',
+      `💾 Saving message from sender to receiver`
+    )
     await newMessage.save()
+    logInfo(
+      'message.controller',
+      `✅ Message saved to database: ${newMessage._id}`
+    )
 
     // Decrement message credit for free users
     await decrementMessageCredit(senderId)
