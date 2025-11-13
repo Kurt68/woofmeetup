@@ -162,7 +162,7 @@ export const useChatStore = create((set, get) => ({
       } catch (error) {
         console.error('Periodic message refresh failed:', error)
       }
-    }, 10000)
+    }, 60000)
     
     console.log('✅ Message listeners registered for user:', selectedUser._id)
   },
