@@ -113,7 +113,7 @@
    Dashboard background animation
    ======================================== */
 
-.dashboard {
+/* .dashboard {
   position: fixed;
   width: 100vw;
   height: 100vh;
@@ -121,7 +121,7 @@
   left: 0;
   background: #53c8a0;
   overflow: hidden;
-}
+} */
 
 .ball {
   position: absolute;
