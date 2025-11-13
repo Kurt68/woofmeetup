@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useChatStore } from '../../store/useChatStore'
 import { Image, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -7,9 +7,19 @@ import { compressImage } from '../../utilities/compressImage'
 const MessageInput = () => {
   const [text, setText] = useState('')
   const [imagePreview, setImagePreview] = useState(null)
+  const [imageBlob, setImageBlob] = useState(null)
+  const [previewUrl, setPreviewUrl] = useState(null)
   const [isSendingImage, setIsSendingImage] = useState(false)
   const fileInputRef = useRef(null)
   const { sendMessage } = useChatStore()
+
+  useEffect(() => {
+    return () => {
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl)
+      }
+    }
+  }, [previewUrl])
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0]
@@ -38,13 +48,16 @@ const MessageInput = () => {
     try {
       toast.loading('Compressing image...', { id: 'compress' })
 
-      let imageToPreview = file
+      let compressedBlob = file
 
       if (file.type !== 'image/gif' && file.type !== 'image/svg+xml') {
-        imageToPreview = await compressImage(file, 0.6)
+        compressedBlob = await compressImage(file, 0.6)
       }
 
-      setImagePreview(imageToPreview)
+      const url = URL.createObjectURL(compressedBlob)
+      setImageBlob(compressedBlob)
+      setPreviewUrl(url)
+      setImagePreview(true)
       toast.dismiss('compress')
       toast.success('Image ready to send')
     } catch (error) {
@@ -54,7 +67,12 @@ const MessageInput = () => {
   }
 
   const removeImage = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
     setImagePreview(null)
+    setImageBlob(null)
+    setPreviewUrl(null)
     if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
@@ -68,13 +86,12 @@ const MessageInput = () => {
     try {
       await sendMessage({
         text: text.trim(),
-        imageBlob: imagePreview,
+        imageBlob: imageBlob,
       })
 
       // Clear form
       setText('')
-      setImagePreview(null)
-      if (fileInputRef.current) fileInputRef.current.value = ''
+      removeImage()
     } finally {
       if (sendingImage) setIsSendingImage(false)
     }
@@ -82,10 +99,10 @@ const MessageInput = () => {
 
   return (
     <div className="container-input">
-      {imagePreview && (
+      {imagePreview && previewUrl && (
         <div className="column-input">
           <div className="input-relative">
-            <img src={imagePreview} alt="Preview" className="border-input" />
+            <img src={previewUrl} alt="Preview" className="border-input" />
             <div
               onClick={removeImage}
               className="input-absolute close-icon"
