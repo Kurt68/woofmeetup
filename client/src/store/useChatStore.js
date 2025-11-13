@@ -6,6 +6,7 @@ import { getErrorMessage } from '../utilities/axiosUtils.js'
 import { ensureCsrfToken } from '../services/csrfService.js'
 
 let reconnectHandler = null
+let messageRefreshInterval = null
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -134,19 +135,35 @@ export const useChatStore = create((set, get) => ({
     }
 
     const handleReconnect = async () => {
-      console.log('🔄 Socket reconnected, fetching messages for:', selectedUser._id)
-      try {
-        await get().getMessages(selectedUser._id)
-      } catch (error) {
-        console.error('Failed to fetch messages on reconnect:', error)
-      }
+      const currentSelectedUser = get().selectedUser
+      if (!currentSelectedUser) return
+      
+      console.log('🔄 Socket reconnected, fetching messages for:', currentSelectedUser._id)
+      setTimeout(async () => {
+        try {
+          await get().getMessages(currentSelectedUser._id)
+          console.log('✅ Messages fetched after reconnect')
+        } catch (error) {
+          console.error('Failed to fetch messages on reconnect:', error)
+        }
+      }, 300)
     }
 
     socket.on('newMessage', handleNewMessage)
     socket.on('chatCleared', handleChatCleared)
-    socket.on('reconnect', handleReconnect)
+    socket.on('connect', handleReconnect)
     
     reconnectHandler = handleReconnect
+    
+    if (messageRefreshInterval) clearInterval(messageRefreshInterval)
+    messageRefreshInterval = setInterval(async () => {
+      try {
+        await get().getMessages(selectedUser._id)
+      } catch (error) {
+        console.error('Periodic message refresh failed:', error)
+      }
+    }, 10000)
+    
     console.log('✅ Message listeners registered for user:', selectedUser._id)
   },
 
@@ -155,8 +172,12 @@ export const useChatStore = create((set, get) => ({
     socket.off('newMessage')
     socket.off('chatCleared')
     if (reconnectHandler) {
-      socket.off('reconnect', reconnectHandler)
+      socket.off('connect', reconnectHandler)
       reconnectHandler = null
+    }
+    if (messageRefreshInterval) {
+      clearInterval(messageRefreshInterval)
+      messageRefreshInterval = null
     }
   },
 
