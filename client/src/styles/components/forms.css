@@ -364,7 +364,7 @@ select:disabled {
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + 0.25rem);
+  top: calc(100% + 0);
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
