@@ -1,5 +1,6 @@
 import express from 'express'
 import { body } from 'express-validator'
+import multer from 'multer'
 import { verifyToken } from '../middleware/verifyToken.js'
 import { checkMessageLimit } from '../middleware/checkMessageLimit.js'
 import {
@@ -20,6 +21,25 @@ import {
 
 const router = express.Router()
 
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/svg+xml',
+      'image/webp',
+    ]
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Invalid image format'))
+    }
+  },
+})
+
 // Security: Validate user ID from URL parameter to prevent NoSQL injection
 // Security: Validate pagination parameters to prevent DoS and injection attacks
 // Security: Rate limit message retrieval to prevent enumeration and DoS attacks
@@ -34,12 +54,14 @@ router.get(
 
 // Security: Apply CSRF protection to message sending
 // Security: Apply rate limiting to prevent spam and message bombing attacks
+// Support both JSON (base64) and multipart FormData (binary) image uploads
 router.post(
   '/send/:id',
   csrfProtection,
   verifyToken,
   messageSendingLimiter,
   validateParamUserId('id'),
+  upload.single('image'),
   body('text')
     .optional()
     .trim()
@@ -63,7 +85,8 @@ router.post(
     .optional()
     .custom((value) => {
       if (!value) return true
-      // Validate base64 format
+      if (typeof value !== 'string') return true
+      // Validate base64 format (for JSON requests)
       // Allow data URLs like: data:image/svg+xml;base64,... or data:image/png;base64,...
       // Also allow raw base64 strings
       const isDataUrl = /^data:image\/[a-z+\-]+;base64,/.test(value)

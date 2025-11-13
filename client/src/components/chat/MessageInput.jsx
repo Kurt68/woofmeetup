@@ -44,13 +44,9 @@ const MessageInput = () => {
         imageToPreview = await compressImage(file, 0.6)
       }
 
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-        toast.dismiss('compress')
-        toast.success('Image ready to send')
-      }
-      reader.readAsDataURL(imageToPreview)
+      setImagePreview(imageToPreview)
+      toast.dismiss('compress')
+      toast.success('Image ready to send')
     } catch (error) {
       toast.dismiss('compress')
       toast.error('Failed to process image')
@@ -72,7 +68,7 @@ const MessageInput = () => {
     try {
       await sendMessage({
         text: text.trim(),
-        image: imagePreview,
+        imageBlob: imagePreview,
       })
 
       // Clear form

@@ -54,9 +54,24 @@ export const useChatStore = create((set, get) => ({
 
       await ensureCsrfToken()
       const sendStart = performance.now()
+      
+      let postData = messageData
+      let config = {}
+      
+      // If sending image as blob, convert to FormData for binary transmission
+      if (messageData.imageBlob) {
+        postData = new FormData()
+        postData.append('text', messageData.text || '')
+        postData.append('image', messageData.imageBlob)
+        config.headers = {
+          'Content-Type': 'multipart/form-data',
+        }
+      }
+      
       const res = await axiosInstance.post(
         `/api/messages/send/${selectedUser._id}`,
-        messageData
+        postData,
+        config
       )
       const sendEnd = performance.now()
       console.log(`⏱️ Message POST took ${(sendEnd - sendStart).toFixed(0)}ms`)
@@ -64,7 +79,7 @@ export const useChatStore = create((set, get) => ({
       set({ messages: [...messages, newMessage] })
 
       // If image was sent, poll for image URL update as fallback
-      if (messageData.image && newMessage._id) {
+      if (messageData.imageBlob && newMessage._id) {
         console.log(`⏱️ Starting image poll for message ${newMessage._id}`)
         let attempts = 0
         const pollTimer = setInterval(async () => {

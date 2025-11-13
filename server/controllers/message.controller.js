@@ -45,7 +45,15 @@ export const sendMessage = async (req, res) => {
       })
     }
 
-    const { text, image } = req.body
+    // Handle both FormData (multipart) and JSON payloads
+    let text = req.body.text || ''
+    let image = req.body.image
+    
+    // If image came as a File/Buffer from multipart form-data
+    if (req.file) {
+      image = req.file.buffer
+      logInfo('message.controller', `📸 Received image as multipart file (${req.file.size} bytes)`)
+    }
 
     const { id: receiverId } = req.params
     const senderId = req._id
@@ -58,52 +66,65 @@ export const sendMessage = async (req, res) => {
     let rawImageData = null
     if (image) {
       try {
-        // Validate base64 format
-        if (typeof image !== 'string' || image.length === 0) {
+        let base64Data = ''
+        let isSvg = false
+        let isBase64String = false
+
+        // Handle multipart Buffer (from FormData)
+        if (Buffer.isBuffer(image)) {
+          base64Data = image.toString('base64')
+          // Detect SVG from buffer content
+          isSvg = image.toString('utf8').includes('<svg')
+          logInfo('message.controller', `📸 Processing binary image buffer (${image.length} bytes)`)
+        } else if (typeof image === 'string') {
+          // Handle base64 string (from JSON)
+          isBase64String = true
+          if (image.length === 0) {
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid image format: image must be a base64 encoded string',
+              code: 'INVALID_IMAGE_FORMAT',
+            })
+          }
+
+          // Extract base64 data (handle both data:image/type;base64,... and raw base64)
+          let extracted = image
+          const hasDataUrlPrefix = image.includes(',')
+          if (hasDataUrlPrefix) {
+            extracted = image.split(',')[1]
+          }
+
+          // Clean up whitespace
+          extracted = extracted.trim()
+
+          // Validate base64 is properly encoded
+          const base64Regex = /^[A-Za-z0-9+/\s]*={0,2}$/
+          const cleaned = extracted.replace(/\s/g, '')
+
+          if (!base64Regex.test(extracted) || cleaned.length === 0) {
+            return res.status(400).json({
+              success: false,
+              message: 'Invalid image format: image must be valid base64',
+              code: 'INVALID_BASE64',
+            })
+          }
+
+          base64Data = cleaned
+          isSvg = image.includes('image/svg+xml') || image.includes('svg+xml')
+        } else {
           return res.status(400).json({
             success: false,
-            message:
-              'Invalid image format: image must be a base64 encoded string',
+            message: 'Invalid image format: must be base64 string or binary data',
             code: 'INVALID_IMAGE_FORMAT',
           })
         }
 
-        // Extract base64 data (handle both data:image/type;base64,... and raw base64)
-        let base64Data = image
-        const hasDataUrlPrefix = image.includes(',')
-        if (hasDataUrlPrefix) {
-          base64Data = image.split(',')[1]
-        }
-
-        // Clean up whitespace
-        base64Data = base64Data.trim()
-
-        // Validate base64 is properly encoded
-        // Base64 must only contain valid characters and proper padding
-        // Allow whitespace and newlines (some systems include them)
-        const base64Regex = /^[A-Za-z0-9+/\s]*={0,2}$/
-        const cleanedBase64 = base64Data.replace(/\s/g, '')
-
-        if (!base64Regex.test(base64Data) || cleanedBase64.length === 0) {
-          return res.status(400).json({
-            success: false,
-            message: 'Invalid image format: image must be valid base64',
-            code: 'INVALID_BASE64',
-          })
-        }
-
-        // Use cleaned base64 for further processing
-        base64Data = cleanedBase64
-
-        // SVG images should skip nudity detection since they're vector graphics
-        const isSvg =
-          image.includes('image/svg+xml') || image.includes('svg+xml')
-
         // Store image data for async background processing
         rawImageData = {
           originalData: image,
-          base64Data: cleanedBase64,
+          base64Data,
           isSvg,
+          isBase64String,
         }
 
         // Message is saved with null image URL - will be updated in background
