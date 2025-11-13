@@ -46,26 +46,24 @@ export const useChatStore = create((set, get) => ({
     try {
       console.log('📨 Sending message:', {
         hasText: !!messageData.text,
-        hasImage: !!messageData.image,
-        imageLength: messageData.image?.length || 0,
-        imageType: typeof messageData.image,
-        imagePreview: messageData.image?.substring(0, 100),
+        hasImageBlob: !!messageData.imageBlob,
+        imageBlobType: messageData.imageBlob?.type || 'N/A',
+        imageBlobSize: messageData.imageBlob?.size || 0,
       })
 
       await ensureCsrfToken()
       const sendStart = performance.now()
       
       let postData = messageData
-      let config = {}
+      let config = undefined
       
       // If sending image as blob, convert to FormData for binary transmission
       if (messageData.imageBlob) {
         postData = new FormData()
-        postData.append('text', messageData.text || '')
-        postData.append('image', messageData.imageBlob)
-        config.headers = {
-          'Content-Type': 'multipart/form-data',
+        if (messageData.text && messageData.text.trim()) {
+          postData.append('text', messageData.text)
         }
+        postData.append('image', messageData.imageBlob, 'image.jpg')
       }
       
       const res = await axiosInstance.post(
@@ -75,8 +73,12 @@ export const useChatStore = create((set, get) => ({
       )
       const sendEnd = performance.now()
       console.log(`⏱️ Message POST took ${(sendEnd - sendStart).toFixed(0)}ms`)
+      console.log('📨 Server response:', res.status, res.data)
       const newMessage = res.data
+      console.log('📨 Adding message to state:', newMessage)
+      console.log('📨 Current messages count:', messages.length, '→ will be:', messages.length + 1)
       set({ messages: [...messages, newMessage] })
+      console.log('📨 Message added to state, new messages:', get().messages.length)
 
       // If image was sent, poll for image URL update as fallback
       if (messageData.imageBlob && newMessage._id) {
