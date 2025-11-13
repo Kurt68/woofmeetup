@@ -60,9 +60,7 @@ export const useChatStore = create((set, get) => ({
       // If sending image as blob, convert to FormData for binary transmission
       if (messageData.imageBlob) {
         postData = new FormData()
-        if (messageData.text && messageData.text.trim()) {
-          postData.append('text', messageData.text)
-        }
+        postData.append('text', messageData.text || '')
         postData.append('image', messageData.imageBlob, 'image.jpg')
       }
       

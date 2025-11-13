@@ -63,13 +63,9 @@ router.post(
   validateParamUserId('id'),
   upload.single('image'),
   body('text')
-    .optional()
     .trim()
-    .if((value) => value && value.length > 0) // Only validate length if text is provided
-    // SECURITY FIX: Enhanced input sanitization for message text
-    // Remove null bytes and control characters that could cause issues
     .customSanitizer((value) => {
-      if (!value) return value
+      if (!value) return ''
       // Remove null bytes and other control characters
       // Allow only safe printable characters, newlines, and tabs
       return value
@@ -78,8 +74,9 @@ router.post(
         .replace(/\s+/g, ' ') // Normalize whitespace (multiple spaces to single)
         .trim() // Remove leading/trailing whitespace
     })
+    .if((value) => value && value.length > 0) // Only validate length if text is not empty
     .isLength({ min: 1, max: 2000 })
-    .withMessage('Message must be between 1 and 2000 characters')
+    .withMessage('Message text must be between 1 and 2000 characters')
     .escape(),
   body('image')
     .optional()
