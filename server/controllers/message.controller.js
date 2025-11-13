@@ -208,28 +208,42 @@ export const sendMessage = async (req, res) => {
           logInfo('message.controller', `✅ Message ${newMessage._id} updated with image URL`)
 
           // Emit updated message to both sender and receiver
+          const imageUpdateData = {
+            messageId: newMessage._id,
+            imageUrl: uploadedImageUrl,
+          }
+
+          logInfo('message.controller', `🔍 Looking up socket IDs - Sender: ${senderId}, Receiver: ${receiverId}`)
+          
           let senderSocketId = getReceiverSocketId(senderId)
+          logInfo('message.controller', `🔍 Sender lookup by _id (${senderId}): ${senderSocketId ? senderSocketId.substring(0, 8) + '...' : 'NOT FOUND'}`)
+          
           if (!senderSocketId) {
             try {
               const senderUser = await User.findById(senderId).select('user_id')
               if (senderUser && senderUser.user_id) {
                 senderSocketId = getReceiverSocketId(senderUser.user_id)
+                logInfo('message.controller', `🔍 Sender lookup by user_id (${senderUser.user_id}): ${senderSocketId ? senderSocketId.substring(0, 8) + '...' : 'NOT FOUND'}`)
+              } else {
+                logWarning('message.controller', `⚠️ Sender user not found in DB with _id: ${senderId}`)
               }
             } catch (error) {
               logError('message.controller', 'Failed to lookup sender user', error)
             }
           }
 
-          const imageUpdateData = {
-            messageId: newMessage._id,
-            imageUrl: uploadedImageUrl,
-          }
-
           if (senderSocketId) {
+            logInfo('message.controller', `📤 Emitting messageImageUpdated to SENDER socket`)
             io.to(senderSocketId).emit('messageImageUpdated', imageUpdateData)
+          } else {
+            logWarning('message.controller', `⚠️ Sender socket NOT found - image update will NOT be delivered to sender`)
           }
+          
           if (receiverSocketId) {
+            logInfo('message.controller', `📤 Emitting messageImageUpdated to RECEIVER socket`)
             io.to(receiverSocketId).emit('messageImageUpdated', imageUpdateData)
+          } else {
+            logWarning('message.controller', `⚠️ Receiver socket NOT found - image update will NOT be delivered to receiver`)
           }
 
           // Check image for nudity ASYNCHRONOUSLY (non-blocking)

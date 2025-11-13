@@ -57,7 +57,40 @@ export const useChatStore = create((set, get) => ({
         `/api/messages/send/${selectedUser._id}`,
         messageData
       )
-      set({ messages: [...messages, res.data] })
+      const newMessage = res.data
+      set({ messages: [...messages, newMessage] })
+
+      // If image was sent, poll for image URL update as fallback
+      if (messageData.image && newMessage._id) {
+        console.log(`⏱️ Starting image poll for message ${newMessage._id}`)
+        let attempts = 0
+        const pollTimer = setInterval(async () => {
+          attempts++
+          if (attempts > 30) {
+            clearInterval(pollTimer)
+            console.log(`⏱️ Image poll stopped after 30 attempts for ${newMessage._id}`)
+            return
+          }
+          try {
+            const { data: messageList } = await axiosInstance.get(
+              `/api/messages/${selectedUser._id}`,
+              { params: { _t: Date.now() } }
+            )
+            const updated = messageList.find((m) => m._id === newMessage._id)
+            if (updated && updated.image) {
+              console.log(`✅ Image detected in poll for ${newMessage._id}`)
+              const current = get().messages
+              const msgs = current.map((m) =>
+                m._id === newMessage._id ? updated : m
+              )
+              set({ messages: msgs })
+              clearInterval(pollTimer)
+            }
+          } catch (e) {
+            console.error('Image poll error:', e)
+          }
+        }, 500)
+      }
 
       // Update user's message credits in auth store
       const authState = useAuthStore.getState()
@@ -153,11 +186,16 @@ export const useChatStore = create((set, get) => ({
     const handleImageUpdated = (data) => {
       const { messageId, imageUrl } = data
       const currentState = get()
-      const updatedMessages = currentState.messages.map((msg) =>
-        msg._id === messageId ? { ...msg, image: imageUrl } : msg
-      )
+      console.log(`🖼️ handleImageUpdated received for ${messageId}, current messages:`, currentState.messages.length, 'messages')
+      const updatedMessages = currentState.messages.map((msg) => {
+        if (msg._id === messageId) {
+          console.log(`  ✅ Updated message ${messageId} with image URL`)
+          return { ...msg, image: imageUrl }
+        }
+        return msg
+      })
       set({ messages: updatedMessages })
-      console.log(`✅ Message ${messageId} image updated`)
+      console.log(`✅ Message ${messageId} image updated, new messages:`, updatedMessages.length)
     }
 
     socket.on('newMessage', handleNewMessage)
@@ -167,6 +205,8 @@ export const useChatStore = create((set, get) => ({
     
     reconnectHandler = handleReconnect
     imageUpdateHandler = handleImageUpdated
+    
+    console.log('✅ Socket listeners registered, including messageImageUpdated')
     
     if (messageRefreshInterval) clearInterval(messageRefreshInterval)
     messageRefreshInterval = setInterval(async () => {
