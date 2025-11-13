@@ -7,7 +7,7 @@ import { decrementMessageCredit } from '../middleware/checkMessageLimit.js'
 import { sendError } from '../middleware/errorHandler.js'
 import { checkImage } from '../utilities/checkImage.js'
 import { validateUserId } from '../utilities/sanitizeInput.js'
-import { logError, logInfo } from '../utilities/logger.js'
+import { logError, logInfo, logWarning } from '../utilities/logger.js'
 
 // Get messages
 export const getMessages = async (req, res) => {
@@ -98,25 +98,8 @@ export const sendMessage = async (req, res) => {
         const isSvg =
           image.includes('image/svg+xml') || image.includes('svg+xml')
 
-        if (!isSvg) {
-          const imageBuffer = Buffer.from(base64Data, 'base64')
-
-          // Check image for nudity before uploading (keep app family-friendly)
-          const imageCheck = await checkImage(imageBuffer)
-
-          if (imageCheck.isNude) {
-            return res.status(400).json({
-              success: false,
-              message:
-                'Image rejected: This app is family-oriented. Please share a non-explicit image.',
-              code: 'NUDITY_DETECTED',
-              confidence: imageCheck.confidence,
-            })
-          }
-        }
-
-        // Upload base64 image to cloudinary
-        // Note: For animated GIFs, we keep format as is; for SVGs, we preserve them
+        // Upload base64 image to cloudinary FIRST (don't wait for nudity check)
+        // This significantly speeds up perceived message send time
         const uploadOptions = {
           quality: 'auto:eco',
           width: 600,
@@ -128,11 +111,35 @@ export const sendMessage = async (req, res) => {
           uploadOptions.format = 'webp'
         }
 
+        logInfo('message.controller', '📤 Starting Cloudinary upload...')
         const uploadResponse = await cloudinary.uploader.upload(
           image,
           uploadOptions
         )
         imageUrl = uploadResponse.secure_url
+        logInfo('message.controller', '✅ Cloudinary upload complete')
+
+        // Check image for nudity ASYNCHRONOUSLY in background (non-blocking)
+        // User won't wait for this check - images show immediately
+        if (!isSvg) {
+          const imageBuffer = Buffer.from(base64Data, 'base64')
+          checkImage(imageBuffer)
+            .then((imageCheck) => {
+              if (imageCheck.isNude) {
+                logWarning(
+                  'message.controller',
+                  `🚨 INAPPROPRIATE IMAGE - Message ${newMessage._id} may need review`
+                )
+              }
+            })
+            .catch((error) => {
+              logError(
+                'message.controller',
+                'Background nudity check failed',
+                error
+              )
+            })
+        }
       } catch (error) {
         logError('message.controller', 'Image upload failed', error)
 
