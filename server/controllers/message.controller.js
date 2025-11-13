@@ -223,8 +223,16 @@ export const sendMessage = async (req, res) => {
             uploadOptions.format = 'webp'
           }
 
+          // Convert Buffer to data URL if needed for Cloudinary
+          let uploadData = image
+          if (Buffer.isBuffer(image)) {
+            const mimeType = rawImageData.isSvg ? 'image/svg+xml' : 'image/jpeg'
+            uploadData = `data:${mimeType};base64,${rawImageData.base64Data}`
+            logInfo('message.controller', `📤 Converted Buffer to data URL for Cloudinary (${mimeType})`)
+          }
+
           const uploadResponse = await cloudinary.uploader.upload(
-            image,
+            uploadData,
             uploadOptions
           )
           const uploadedImageUrl = uploadResponse.secure_url
