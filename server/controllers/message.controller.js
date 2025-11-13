@@ -35,9 +35,12 @@ export const getMessages = async (req, res) => {
 // Send messages
 export const sendMessage = async (req, res) => {
   try {
+    logInfo('message.controller', `📥 sendMessage called - body keys: ${Object.keys(req.body).join(', ')}, file: ${req.file ? `${req.file.originalname} (${req.file.size}b)` : 'none'}`)
+    
     // Check for validation errors
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
+      logInfo('message.controller', `❌ Validation errors: ${JSON.stringify(errors.array())}`)
       return res.status(400).json({
         success: false,
         message: 'Validation failed',

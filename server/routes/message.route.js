@@ -63,35 +63,37 @@ router.post(
   validateParamUserId('id'),
   upload.single('image'),
   body('text')
-    .trim()
     .customSanitizer((value) => {
       if (!value) return ''
       // Remove null bytes and other control characters
-      // Allow only safe printable characters, newlines, and tabs
-      return value
-        .replace(/\x00/g, '') // Remove null bytes
-        .replace(/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '') // Remove other control chars
-        .replace(/\s+/g, ' ') // Normalize whitespace (multiple spaces to single)
-        .trim() // Remove leading/trailing whitespace
+      return String(value)
+        .trim()
+        .replace(/\x00/g, '')
+        .replace(/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim()
     })
-    .if((value) => value && value.length > 0) // Only validate length if text is not empty
+    .optional({ checkFalsy: true })
     .isLength({ min: 1, max: 2000 })
     .withMessage('Message text must be between 1 and 2000 characters')
     .escape(),
+  // For JSON requests with base64 image, validate the body field
+  // For multipart requests, multer handles file validation via fileFilter and size limit
   body('image')
     .optional()
     .custom((value) => {
+      // Skip validation if using multipart (image is in req.file, not req.body.image)
       if (!value) return true
+      // Only validate if it's a string (JSON base64 request)
       if (typeof value !== 'string') return true
+      
       // Validate base64 format (for JSON requests)
-      // Allow data URLs like: data:image/svg+xml;base64,... or data:image/png;base64,...
-      // Also allow raw base64 strings
       const isDataUrl = /^data:image\/[a-z+\-]+;base64,/.test(value)
       const isRawBase64 = /^[A-Za-z0-9+/\s=]*$/.test(value)
-
       if (!isDataUrl && !isRawBase64) {
         throw new Error('Image must be valid base64 format')
       }
+      
       // Validate size (5MB limit)
       const sizeInBytes =
         Math.ceil((value.length * 3) / 4) -
