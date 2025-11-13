@@ -6,6 +6,7 @@ import { getErrorMessage } from '../utilities/axiosUtils.js'
 import { ensureCsrfToken } from '../services/csrfService.js'
 
 let reconnectHandler = null
+let imageUpdateHandler = null
 let messageRefreshInterval = null
 
 export const useChatStore = create((set, get) => ({
@@ -149,11 +150,23 @@ export const useChatStore = create((set, get) => ({
       }, 300)
     }
 
+    const handleImageUpdated = (data) => {
+      const { messageId, imageUrl } = data
+      const currentState = get()
+      const updatedMessages = currentState.messages.map((msg) =>
+        msg._id === messageId ? { ...msg, image: imageUrl } : msg
+      )
+      set({ messages: updatedMessages })
+      console.log(`✅ Message ${messageId} image updated`)
+    }
+
     socket.on('newMessage', handleNewMessage)
     socket.on('chatCleared', handleChatCleared)
+    socket.on('messageImageUpdated', handleImageUpdated)
     socket.on('connect', handleReconnect)
     
     reconnectHandler = handleReconnect
+    imageUpdateHandler = handleImageUpdated
     
     if (messageRefreshInterval) clearInterval(messageRefreshInterval)
     messageRefreshInterval = setInterval(async () => {
@@ -174,6 +187,10 @@ export const useChatStore = create((set, get) => ({
     if (reconnectHandler) {
       socket.off('connect', reconnectHandler)
       reconnectHandler = null
+    }
+    if (imageUpdateHandler) {
+      socket.off('messageImageUpdated', imageUpdateHandler)
+      imageUpdateHandler = null
     }
     if (messageRefreshInterval) {
       clearInterval(messageRefreshInterval)

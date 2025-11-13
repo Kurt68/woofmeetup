@@ -54,6 +54,7 @@ export const sendMessage = async (req, res) => {
     validateUserId(receiverId, 'receiverId')
 
     let imageUrl
+    let rawImageData = null
     if (image) {
       try {
         // Validate base64 format
@@ -93,53 +94,19 @@ export const sendMessage = async (req, res) => {
         // Use cleaned base64 for further processing
         base64Data = cleanedBase64
 
-        // Convert base64 to buffer for nudity detection
         // SVG images should skip nudity detection since they're vector graphics
         const isSvg =
           image.includes('image/svg+xml') || image.includes('svg+xml')
 
-        // Upload base64 image to cloudinary FIRST (don't wait for nudity check)
-        // This significantly speeds up perceived message send time
-        const uploadOptions = {
-          quality: 'auto:eco',
-          width: 600,
-          crop: 'limit',
+        // Store image data for async background processing
+        rawImageData = {
+          originalData: image,
+          base64Data: cleanedBase64,
+          isSvg,
         }
 
-        // Don't convert SVGs or GIFs to webp - preserve original format
-        if (!isSvg && !image.includes('image/gif')) {
-          uploadOptions.format = 'webp'
-        }
-
-        logInfo('message.controller', '📤 Starting Cloudinary upload...')
-        const uploadResponse = await cloudinary.uploader.upload(
-          image,
-          uploadOptions
-        )
-        imageUrl = uploadResponse.secure_url
-        logInfo('message.controller', '✅ Cloudinary upload complete')
-
-        // Check image for nudity ASYNCHRONOUSLY in background (non-blocking)
-        // User won't wait for this check - images show immediately
-        if (!isSvg) {
-          const imageBuffer = Buffer.from(base64Data, 'base64')
-          checkImage(imageBuffer)
-            .then((imageCheck) => {
-              if (imageCheck.isNude) {
-                logWarning(
-                  'message.controller',
-                  `🚨 INAPPROPRIATE IMAGE - Message ${newMessage._id} may need review`
-                )
-              }
-            })
-            .catch((error) => {
-              logError(
-                'message.controller',
-                'Background nudity check failed',
-                error
-              )
-            })
-        }
+        // Message is saved with null image URL - will be updated in background
+        imageUrl = null
       } catch (error) {
         logError('message.controller', 'Image upload failed', error)
 
@@ -211,6 +178,66 @@ export const sendMessage = async (req, res) => {
     }
 
     res.status(201).json(newMessage)
+
+    // Process image ASYNCHRONOUSLY in background (don't block response)
+    if (image && rawImageData) {
+      setImmediate(async () => {
+        try {
+          logInfo('message.controller', '📤 Starting background Cloudinary upload...')
+          const uploadOptions = {
+            quality: 'auto:eco',
+            width: 600,
+            crop: 'limit',
+          }
+
+          if (!rawImageData.isSvg && !image.includes('image/gif')) {
+            uploadOptions.format = 'webp'
+          }
+
+          const uploadResponse = await cloudinary.uploader.upload(
+            image,
+            uploadOptions
+          )
+          const uploadedImageUrl = uploadResponse.secure_url
+          logInfo('message.controller', '✅ Cloudinary upload complete')
+
+          // Update message with image URL
+          await Message.findByIdAndUpdate(newMessage._id, {
+            image: uploadedImageUrl,
+          })
+          logInfo('message.controller', `✅ Message ${newMessage._id} updated with image URL`)
+
+          // Emit updated message to both users
+          io.to(receiverSocketId).emit('messageImageUpdated', {
+            messageId: newMessage._id,
+            imageUrl: uploadedImageUrl,
+          })
+
+          // Check image for nudity ASYNCHRONOUSLY (non-blocking)
+          if (!rawImageData.isSvg) {
+            const imageBuffer = Buffer.from(rawImageData.base64Data, 'base64')
+            checkImage(imageBuffer)
+              .then((imageCheck) => {
+                if (imageCheck.isNude) {
+                  logWarning(
+                    'message.controller',
+                    `🚨 INAPPROPRIATE IMAGE - Message ${newMessage._id} may need review`
+                  )
+                }
+              })
+              .catch((error) => {
+                logError(
+                  'message.controller',
+                  'Background nudity check failed',
+                  error
+                )
+              })
+          }
+        } catch (error) {
+          logError('message.controller', 'Background image processing failed', error)
+        }
+      })
+    }
   } catch (error) {
     logError('message.controller', 'Failed to send message', error)
     sendError(res, 500, 'Failed to send message')
