@@ -227,9 +227,6 @@
 .bestGuess {
   display: block;
 }
-/* .spinner svg {
-  animation: spin 1s linear infinite;
-} */
 
 /* Model Loading and Ready Status Styles */
 .model-loading-alert {
