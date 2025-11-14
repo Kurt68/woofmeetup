@@ -68,8 +68,8 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
               type="button"
             >
               <div className="swipe-indicator-icons" aria-hidden="true">
-                <Images size={60} />
-                <Ellipsis size={60} />
+                <Images size={45} />
+                <Ellipsis size={45} />
               </div>
             </button>
           )}
