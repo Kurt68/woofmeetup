@@ -140,12 +140,12 @@ const TruncatedBio = ({ text, isUserBio = false, dogName = '', meetup_type = '' 
               const paragraphs = formattedText.split('\n').filter(p => p.trim())
               return (
                 <div className="truncated-bio-tooltip-content">
+                  <div className="truncated-bio-tooltip-header">
+                    <h3 className="truncated-bio-tooltip-title">
+                      About Me and {dogName || 'Unknown'}
+                    </h3>
+                  </div>
                   <div className="truncated-bio-tooltip-text">
-                    <div className="truncated-bio-tooltip-header">
-                      <h3 className="truncated-bio-tooltip-title">
-                        About Me and {dogName || 'Unknown'}
-                      </h3>
-                    </div>
                     {paragraphs.map((para, idx) => (
                       <div key={idx} style={{ marginTop: idx > 0 ? '.8rem' : '0' }}>
                         {para}
