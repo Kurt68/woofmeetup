@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Ellipsis, Images } from 'lucide-react'
 import TinderCard from 'react-tinder-card'
+import TruncatedBio from '../ui/TruncatedBio'
 
 const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
   // Initialize images array: [dogImage, userProfileImage]
@@ -38,13 +39,14 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
   const isShowingProfileImage = currentImageIndex === 1 && hasProfileImage
 
   return (
-    <TinderCard
-      className="swipe"
-      key={user.user_id}
-      onSwipe={(dir) => onSwipe(dir, user.user_id)}
-      onCardLeftScreen={() => onCardLeftScreen(user.dogs_name)}
-      preventSwipe={['up', 'down']}
-    >
+    <>
+      <TinderCard
+        className="swipe"
+        key={user.user_id}
+        onSwipe={(dir) => onSwipe(dir, user.user_id)}
+        onCardLeftScreen={() => onCardLeftScreen(user.dogs_name)}
+        preventSwipe={['up', 'down']}
+      >
       <figure className="polaroid">
         <div
           className="photo"
@@ -81,7 +83,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
                   {', '}
                   Age {user.userAge}
                   <br />
-                  {user.userAbout}
+                  <TruncatedBio text={user.userAbout} isUserBio={true} dogName={user.dogs_name} meetup_type={user.meetup_type} />
                 </>
               ) : (
                 <>
@@ -111,6 +113,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
         </div>
       </figure>
     </TinderCard>
+    </>
   )
 }
 

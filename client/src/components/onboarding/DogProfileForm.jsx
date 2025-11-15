@@ -29,15 +29,28 @@ const DogProfileForm = ({ formData, handleChange, aboutError }) => {
 
       <label htmlFor="about">
         <strong>About Me</strong>
+        <span
+          style={{
+            fontSize: '0.85rem',
+            fontWeight: 'normal',
+            marginLeft: '0.5rem',
+            display: 'block',
+            marginTop: '0.25rem',
+            color: 'var(--color-gray)',
+          }}
+        >
+          You can add paragraphs by pressing Enter
+        </span>
       </label>
-      <input
-        type="text"
+      <textarea
         id="about"
         name="about"
         required={true}
         placeholder="I like to play ball..."
         value={formData.about}
         onChange={handleChange}
+        maxLength="500"
+        style={{ height: '6rem' }}
       />
       {aboutError && (
         <p className="server-error" role="alert">

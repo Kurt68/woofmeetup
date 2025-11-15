@@ -131,8 +131,8 @@ export const useOnboarding = () => {
   }
 
   const validateUserAboutField = (value) => {
-    if (typeof value === 'string' && value.length > 100) {
-      setUserAboutError('About you must be 100 characters or fewer.')
+    if (typeof value === 'string' && value.length > 500) {
+      setUserAboutError('About you must be 500 characters or fewer.')
       return false
     } else {
       setUserAboutError('')

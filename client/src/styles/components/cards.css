@@ -78,13 +78,14 @@
 .dog-info {
   font-size: clamp(1.4rem, 1.5vw, 1.65rem) !important;
   color: var(--color-black);
+  white-space: pre-wrap;
 }
 
 .user-about {
   display: block;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  white-space: normal;
+  white-space: pre-wrap;
 }
 
 .profile {
@@ -192,6 +193,6 @@
   gap: 0;
 
   & svg:last-child {
-    margin-top: -1.2rem;
+    margin-top: -.8rem;
   }
 }

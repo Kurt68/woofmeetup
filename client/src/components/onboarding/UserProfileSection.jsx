@@ -28,7 +28,18 @@ const UserProfileSection = ({
             marginLeft: '0.5rem',
           }}
         >
-          ({userAboutLength}/100)
+          ({userAboutLength}/500)
+        </span>
+        <span
+          style={{
+            fontSize: '0.85rem',
+            fontWeight: 'normal',
+            display: 'block',
+            marginTop: '0.25rem',
+            color: 'var(--color-gray)',
+          }}
+        >
+          You can add paragraphs by pressing Enter
         </span>
       </label>
       <textarea
@@ -37,7 +48,7 @@ const UserProfileSection = ({
         placeholder="Tell others about yourself..."
         value={formData.userAbout || ''}
         onChange={handleChange}
-        maxLength="100"
+        maxLength="500"
         style={{ height: '8rem' }}
         required={true}
       />
