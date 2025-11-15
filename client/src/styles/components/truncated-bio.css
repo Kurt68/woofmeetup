@@ -45,7 +45,7 @@
   z-index: 1000 !important;
   border: 5px solid var(--color-primary) !important;
   max-height: 40vh !important;
-  overflow: hidden !important;
+  overflow: visible !important;
   pointer-events: auto !important;
   opacity: 1 !important;
 }
@@ -127,12 +127,13 @@
   box-sizing: border-box;
   align-self: flex-start;
   flex: 1;
-  overflow-y: auto;
+  overflow-y: scroll;
   max-height: 20vh;
   pointer-events: auto;
   cursor: text;
   scrollbar-color: var(--color-primary) var(--color-white);
   scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 
 .truncated-bio-tooltip-text > div {
