@@ -38,10 +38,19 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
   }
 
   const handleCardClick = (e) => {
-      console.log('handleCardClick fired, isModalOpen:', isModalOpen)
+    console.log('handleCardClick fired, isModalOpen:', isModalOpen)
     e.preventDefault()
     e.stopPropagation()
     setIsModalOpen(true)
+  }
+
+  const handleCardTouch = (e) => {
+    if (e.touches.length === 1) {
+      e.preventDefault()
+      e.stopPropagation()
+      console.log('handleCardTouch fired')
+      setIsModalOpen(true)
+    }
   }
 
   // Determine if we're showing the profile image (user's image)
@@ -56,7 +65,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
         onCardLeftScreen={() => onCardLeftScreen(user.dogs_name)}
         preventSwipe={['up', 'down']}
       >
-        <figure className="polaroid" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+        <figure className="polaroid" onClick={handleCardClick} onTouchEnd={handleCardTouch} style={{ cursor: 'pointer' }}>
           <div
             className="photo"
             style={{
