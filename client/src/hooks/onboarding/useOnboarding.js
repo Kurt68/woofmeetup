@@ -121,8 +121,8 @@ export const useOnboarding = () => {
 
   // Form Validation
   const validateAboutField = (value) => {
-    if (typeof value === 'string' && value.length > 26) {
-      setAboutError('About me must be 26 characters or fewer.')
+    if (typeof value === 'string' && value.length > 48) {
+      setAboutError('About me must be 48 characters or fewer.')
       return false
     } else {
       setAboutError('')
@@ -131,13 +131,8 @@ export const useOnboarding = () => {
   }
 
   const validateUserAboutField = (value) => {
-    if (typeof value === 'string' && value.length > 100) {
-      setUserAboutError('About you must be 100 characters or fewer.')
-      return false
-    } else {
-      setUserAboutError('')
-      return true
-    }
+    setUserAboutError('')
+    return true
   }
 
   // Form Change Handler
@@ -158,7 +153,7 @@ export const useOnboarding = () => {
       validateAboutField(value)
     }
 
-    // Validate userAbout field length (max 100 characters)
+    // Validate userAbout field (unlimited)
     if (name === 'userAbout') {
       validateUserAboutField(value)
     }
@@ -178,7 +173,7 @@ export const useOnboarding = () => {
       return
     }
 
-    // Block submit if userAbout exceeds 100 chars
+    // Validate userAbout field
     if (!validateUserAboutField(formData.userAbout)) {
       return
     }

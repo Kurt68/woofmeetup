@@ -37,10 +37,10 @@ const ProfileModal = ({ user, onClose }) => {
 
           <div className="profile-modal-info">
             <div className="profile-section">
-              <h2 className="profile-section-title">Dog Profile</h2>
+              {/* <h2 className="profile-section-title">Dog Profile</h2> */}
               <div className="profile-details">
                 <p>
-                  <strong>{user.dogs_name}</strong>, Age {user.age}
+                  <strong>{user.dogs_name}</strong>{user.age && `, Age ${user.age}`}
                 </p>
                 <p className="profile-distance">
                   {user.distance_to_other_users} miles from you
@@ -50,24 +50,24 @@ const ProfileModal = ({ user, onClose }) => {
                     <strong>Looking for:</strong> {user.meetup_type}
                   </p>
                 )}
-                {user.about && (
+                {/* {user.about && (
                   <div className="profile-bio">
                     <strong>About My Dog:</strong>
                     <p>{user.about}</p>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
 
             <div className="profile-section">
-              <h2 className="profile-section-title">Owner Profile</h2>
+              {/* <h2 className="profile-section-title">Owner Profile</h2> */}
               <div className="profile-details">
                 <p>
-                  <strong>{user.userName}</strong>, Age {user.userAge}
+                  <strong>{user.userName}</strong>{user.userAge && `, Age ${user.userAge}`}
                 </p>
                 {user.userAbout && (
                   <div className="profile-bio">
-                    <strong>About Me:</strong>
+                    {/* <strong>About Me:</strong> */}
                     <p>{user.userAbout}</p>
                   </div>
                 )}

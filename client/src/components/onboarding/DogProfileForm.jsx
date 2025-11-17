@@ -1,4 +1,6 @@
 const DogProfileForm = ({ formData, handleChange, aboutError }) => {
+  const aboutLength = formData.about ? formData.about.length : 0
+
   return (
     <div className="dog-profile-section">
       <label htmlFor="dogs_name">
@@ -29,6 +31,15 @@ const DogProfileForm = ({ formData, handleChange, aboutError }) => {
 
       <label htmlFor="about">
         <strong>About Me</strong>
+        <span
+          style={{
+            fontSize: '0.9rem',
+            fontWeight: 'normal',
+            marginLeft: '0.5rem',
+          }}
+        >
+          ({aboutLength}/48)
+        </span>
       </label>
       <input
         type="text"
@@ -38,6 +49,7 @@ const DogProfileForm = ({ formData, handleChange, aboutError }) => {
         placeholder="I like to play ball..."
         value={formData.about}
         onChange={handleChange}
+        maxLength="48"
       />
       {aboutError && (
         <p className="server-error" role="alert">

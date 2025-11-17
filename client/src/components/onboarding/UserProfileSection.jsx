@@ -3,8 +3,6 @@ const UserProfileSection = ({
   handleChange,
   userAboutError = '',
 }) => {
-  const userAboutLength = formData.userAbout ? formData.userAbout.length : 0
-
   return (
     <div className="user-profile-section">
       <label htmlFor="userAge">
@@ -21,23 +19,22 @@ const UserProfileSection = ({
 
       <label htmlFor="userAbout">
         <strong>About You & Your Dog</strong>
-        <span
-          style={{
-            fontSize: '0.9rem',
-            fontWeight: 'normal',
-            marginLeft: '0.5rem',
-          }}
-        >
-          ({userAboutLength}/100)
-        </span>
       </label>
+      <div
+        style={{
+          fontSize: '0.85rem',
+          color: 'var(--text-secondary)',
+          marginBottom: '0.5rem',
+        }}
+      >
+        Press Enter twice to create paragraphs
+      </div>
       <textarea
         id="userAbout"
         name="userAbout"
         placeholder="Tell others about yourself..."
         value={formData.userAbout || ''}
         onChange={handleChange}
-        maxLength="100"
         style={{ height: '8rem' }}
         required={true}
       />
