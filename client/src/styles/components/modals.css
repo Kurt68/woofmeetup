@@ -900,6 +900,9 @@
     line-height: var(--line-height-relaxed);
     font-size: var(--font-size-base);
   }
+  & h4 {
+    margin: 0;
+  }
 }
 
 .profile-distance {
@@ -917,6 +920,7 @@
 
 .profile-bio {
   margin-top: var(--spacing-sm);
+  text-align: left;
 
   & strong {
     display: block;
