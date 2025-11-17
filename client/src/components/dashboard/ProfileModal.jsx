@@ -63,9 +63,10 @@ const ProfileModal = ({ user, onClose }) => {
             <div className="profile-section">
               {/* <h2 className="profile-section-title">Owner Profile</h2> */}
               <div className="profile-details">
-                <h4>{user.userName}</h4>
-                {user.userAge && `, Age ${user.userAge}`}
-
+                <p>
+                  <strong>{user.userName}</strong>
+                  {user.age && `, Age ${user.userAge}`}
+                </p>
                 {user.userAbout && (
                   <div className="profile-bio">
                     {/* <strong>About Me:</strong> */}
