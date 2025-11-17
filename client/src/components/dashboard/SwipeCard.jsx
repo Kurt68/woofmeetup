@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Ellipsis, Images } from 'lucide-react'
+import { Ellipsis, Images, ChevronUp } from 'lucide-react'
 import TinderCard from 'react-tinder-card'
 import ProfileModal from './ProfileModal'
 
@@ -44,13 +44,11 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
     setIsModalOpen(true)
   }
 
-  const handleCardTouch = (e) => {
-    if (e.touches.length === 1) {
-      e.preventDefault()
-      e.stopPropagation()
-      console.log('handleCardTouch fired')
-      setIsModalOpen(true)
-    }
+  const handleOpenModal = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    console.log('Modal button clicked')
+    setIsModalOpen(true)
   }
 
   // Determine if we're showing the profile image (user's image)
@@ -65,7 +63,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
         onCardLeftScreen={() => onCardLeftScreen(user.dogs_name)}
         preventSwipe={['up', 'down']}
       >
-        <figure className="polaroid" onClick={handleCardClick} onTouchEnd={handleCardTouch} style={{ cursor: 'pointer' }}>
+        <figure className="polaroid" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
           <div
             className="photo"
             style={{
@@ -93,6 +91,14 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
               </div>
             </button>
           )}
+          <button
+            className="card-info-button"
+            onClick={handleOpenModal}
+            aria-label="View full profile"
+            type="button"
+          >
+            <ChevronUp size={24} />
+          </button>
           <figcaption className="caption">
             <p className="dog-info dog-info-truncated">
               {isShowingProfileImage ? (

@@ -203,3 +203,30 @@
     margin-top: -1.2rem;
   }
 }
+
+.card-info-button {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: var(--radius-full);
+  color: var(--color-primary);
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  transition: background-color var(--transition-fast);
+  z-index: 5;
+
+  &:active {
+    background-color: rgba(255, 255, 255, 1);
+  }
+
+  @media screen and (max-width: 767px) {
+    display: flex;
+  }
+}
