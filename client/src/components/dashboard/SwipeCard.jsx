@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { Ellipsis, Images } from 'lucide-react'
 import TinderCard from 'react-tinder-card'
+import ProfileModal from './ProfileModal'
 
 const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false)
   // Initialize images array: [dogImage, userProfileImage]
   // Note: Only include profileImageUrl if it exists (not as fallback)
   const images = [user.imageUrl, user.profileImageUrl]
@@ -26,6 +28,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
 
   const handleToggleImage = (e) => {
     e.preventDefault()
+    e.stopPropagation()
     if (hasProfileImage) {
       setCurrentImageIndex((prev) => (prev === 0 ? 1 : 0))
       // Mark that user has seen the swipe indicator animation
@@ -34,30 +37,37 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
     }
   }
 
+  const handleCardClick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsModalOpen(true)
+  }
+
   // Determine if we're showing the profile image (user's image)
   const isShowingProfileImage = currentImageIndex === 1 && hasProfileImage
 
   return (
-    <TinderCard
-      className="swipe"
-      key={user.user_id}
-      onSwipe={(dir) => onSwipe(dir, user.user_id)}
-      onCardLeftScreen={() => onCardLeftScreen(user.dogs_name)}
-      preventSwipe={['up', 'down']}
-    >
-      <figure className="polaroid">
-        <div
-          className="photo"
-          style={{
-            backgroundImage: 'url(' + images[currentImageIndex] + ')',
-          }}
-          role="img"
-          aria-label={
-            isShowingProfileImage
-              ? `${user.userName}, age ${user.userAge}`
-              : `${user.dogs_name}, age ${user.age}`
-          }
-        >
+    <>
+      <TinderCard
+        className="swipe"
+        key={user.user_id}
+        onSwipe={(dir) => onSwipe(dir, user.user_id)}
+        onCardLeftScreen={() => onCardLeftScreen(user.dogs_name)}
+        preventSwipe={['up', 'down']}
+      >
+        <figure className="polaroid" onClick={handleCardClick} style={{ cursor: 'pointer' }}>
+          <div
+            className="photo"
+            style={{
+              backgroundImage: 'url(' + images[currentImageIndex] + ')',
+            }}
+            role="img"
+            aria-label={
+              isShowingProfileImage
+                ? `${user.userName}, age ${user.userAge}`
+                : `${user.dogs_name}, age ${user.age}`
+            }
+          >
           {hasProfileImage && (
             <button
               className={`swipe-indicator ${
@@ -74,7 +84,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
             </button>
           )}
           <figcaption className="caption">
-            <p className="dog-info">
+            <p className="dog-info dog-info-truncated">
               {isShowingProfileImage ? (
                 <>
                   {user.userName}
@@ -110,7 +120,12 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
           </figcaption>
         </div>
       </figure>
-    </TinderCard>
+      </TinderCard>
+
+      {isModalOpen && (
+        <ProfileModal user={user} onClose={() => setIsModalOpen(false)} />
+      )}
+    </>
   )
 }
 

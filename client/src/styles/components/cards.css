@@ -80,6 +80,14 @@
   color: var(--color-black);
 }
 
+.dog-info-truncated {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .user-about {
   display: block;
   word-wrap: break-word;
