@@ -930,7 +930,7 @@
 
   & p {
     color: var(--color-black);
-    line-height: var(--line-height-tight);
+    line-height: var(--line-height-normal);
     margin: 0;
     white-space: pre-wrap;
   }

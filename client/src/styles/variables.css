@@ -57,6 +57,7 @@
   --spacing-xl: 2rem; /* 32px */
   --spacing-2xl: 3rem; /* 48px */
   --spacing-2-5xl: 2.5rem; /* 40px */
+  --spacing-5xl: 5rem; /* 80px */
 
   /* Button Spacing */
   --spacing-button-v: 0.75rem; /* 12px - vertical button padding */
