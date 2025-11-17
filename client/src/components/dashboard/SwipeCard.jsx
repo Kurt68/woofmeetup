@@ -38,6 +38,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
   }
 
   const handleCardClick = (e) => {
+      console.log('handleCardClick fired, isModalOpen:', isModalOpen)
     e.preventDefault()
     e.stopPropagation()
     setIsModalOpen(true)
