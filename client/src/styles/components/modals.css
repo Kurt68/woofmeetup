@@ -758,7 +758,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -776,13 +775,13 @@
 .profile-modal {
   position: relative;
   width: 100%;
-  height: calc(100dvh - 1.25rem);
   background-color: var(--color-white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-modal);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  height: calc(100dvh - 1.25rem);
   max-height: calc(100dvh - 1.25rem);
 
   @media screen and (min-width: 768px) {
@@ -793,32 +792,54 @@
   }
 }
 
+.profile-modal-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--color-gray-divider);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.profile-modal-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-dark);
+  margin: 0;
+}
+
 .profile-modal-close {
   position: absolute;
-  top: var(--spacing-xxs);
-  right: var(--spacing-xxs);
+  right: var(--spacing-md);
   background: none;
   border: none;
   cursor: pointer;
   color: var(--color-primary);
-  font-weight: bolder;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs);
   transition: color var(--transition-fast);
+  font-size: 1.7rem;
+  font-weight: bolder;
 
   &:hover {
     color: var(--color-secondary);
   }
 }
 
-.profile-modal-content {
-  padding: var(--spacing-lg);
-  padding-top: var(--spacing-xl);
-  overflow-y: auto;
+.profile-modal-scroll {
   flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-white);
+  display: flex;
+  flex-direction: column;
+  padding: var(--spacing-lg);
 }
 
 .profile-modal-gallery {
@@ -826,18 +847,23 @@
   grid-template-columns: 1fr;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
+  margin-top: var(--spacing-sm);
 
-  @media screen and (min-width: 640px) {
+  @media screen and (min-width: 768px) {
     grid-template-columns: 1fr 1fr;
   }
 }
 
 .profile-modal-image {
   width: 100%;
-  height: clamp(250px, 35vh, 350px);
+  height: 200px;
   object-fit: cover;
   border-radius: var(--radius-md);
   display: block;
+
+  @media screen and (min-width: 768px) {
+    height: 250px;
+  }
 }
 
 .profile-modal-info {

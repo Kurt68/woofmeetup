@@ -5,19 +5,21 @@ const ProfileModal = ({ user, onClose }) => {
   if (!user) return null
 
   return (
-    <>
-      <div className="profile-modal-overlay" onClick={onClose} />
+    <div className="profile-modal-overlay">
       <div className="profile-modal">
-        <button
-          className="profile-modal-close"
-          onClick={onClose}
-          aria-label="Close profile"
-          type="button"
-        >
-          <X size={24} />
-        </button>
+        <div className="profile-modal-header">
+          <h2 className="profile-modal-title">About Me and My Dog</h2>
+          <button
+            className="profile-modal-close"
+            onClick={onClose}
+            aria-label="Close profile"
+            type="button"
+          >
+            <X size={24} />
+          </button>
+        </div>
 
-        <div className="profile-modal-content">
+        <div className="profile-modal-scroll">
           <div className="profile-modal-gallery">
             <img
               src={sanitizeImageUrl(user.imageUrl)}
@@ -74,7 +76,7 @@ const ProfileModal = ({ user, onClose }) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
