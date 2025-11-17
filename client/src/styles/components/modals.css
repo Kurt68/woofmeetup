@@ -840,6 +840,10 @@
   display: flex;
   flex-direction: column;
   padding: var(--spacing-lg);
+
+  @media screen and (min-width: 768px) {
+    padding: var(--spacing-2xl);
+  }
 }
 
 .profile-modal-gallery {
@@ -858,7 +862,7 @@
   width: 100%;
   height: 200px;
   object-fit: cover;
-  /* border-radius: var(--radius-md); */
+  border-radius: var(--radius-md);
   display: block;
 
   @media screen and (min-width: 768px) {
@@ -936,9 +940,8 @@
   }
 
   @media screen and (min-width: 768px) {
-    max-width: 700px;
+    max-width: 600px;
     margin-left: auto;
     margin-right: auto;
-    text-align: center;
   }
 }
