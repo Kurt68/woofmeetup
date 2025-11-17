@@ -759,44 +759,54 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   z-index: 1100;
+  padding: 0.625rem;
+  height: 100dvh;
+
+  @media screen and (min-width: 768px) {
+    align-items: center;
+    justify-content: center;
+    padding: 0 9rem 0 9rem;
+  }
 }
 
 .profile-modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  width: 100%;
+  height: calc(100dvh - 1.25rem);
   background-color: var(--color-white);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-modal);
-  z-index: 1101;
-  max-height: 90vh;
-  width: 90%;
-  max-width: 600px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  max-height: calc(100dvh - 1.25rem);
 
-  @media screen and (max-width: 640px) {
-    width: 95%;
-    max-height: 95vh;
+  @media screen and (min-width: 768px) {
+    height: auto;
+    max-height: 70vh;
+    min-height: 70vh;
+    border-radius: var(--radius-md);
   }
 }
 
 .profile-modal-close {
   position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
+  top: var(--spacing-xxs);
+  right: var(--spacing-xxs);
   background: none;
   border: none;
   cursor: pointer;
   color: var(--color-primary);
+  font-weight: bolder;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-xs);
+  padding: var(--spacing-sm);
   transition: color var(--transition-fast);
 
   &:hover {
@@ -807,6 +817,8 @@
 .profile-modal-content {
   padding: var(--spacing-lg);
   padding-top: var(--spacing-xl);
+  overflow-y: auto;
+  flex: 1;
 }
 
 .profile-modal-gallery {
