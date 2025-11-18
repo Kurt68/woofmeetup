@@ -1,7 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../store/useAuthStore'
 import { usePaymentStore } from '../../store/usePaymentStore'
+import ConfirmationModal from '../modals/ConfirmationModal'
 
 const SubscriptionCard = () => {
   const navigate = useNavigate()
@@ -14,22 +15,26 @@ const SubscriptionCard = () => {
     createPortalSession,
     isLoading,
   } = usePaymentStore()
+  const [confirmModal, setConfirmModal] = useState(null)
 
   useEffect(() => {
     fetchSubscriptionStatus()
   }, [fetchSubscriptionStatus])
 
-  const handleCancelSubscription = async () => {
-    if (
-      window.confirm(
-        'Are you sure you want to cancel your subscription? You will retain access until the end of your billing period.'
-      )
-    ) {
-      try {
-        await cancelSubscription()
-      } catch (error) {
-        // Error canceling subscription
-      }
+  const handleCancelSubscription = () => {
+    setConfirmModal({
+      type: 'cancelSubscription',
+      title: 'Cancel Subscription',
+      message: 'Are you sure you want to cancel your subscription? \n\nYou will retain access until the end of your billing period.',
+    })
+  }
+
+  const handleCancelSubscriptionConfirm = async () => {
+    try {
+      await cancelSubscription()
+      setConfirmModal(null)
+    } catch (error) {
+      // Error canceling subscription
     }
   }
 
@@ -181,6 +186,18 @@ const SubscriptionCard = () => {
           <p>⚠️ You've run out of message credits!</p>
           <p>Upgrade to Premium for unlimited messages or buy more credits.</p>
         </div>
+      )}
+
+      {confirmModal && (
+        <ConfirmationModal
+          title={confirmModal.title}
+          message={confirmModal.message}
+          onConfirm={handleCancelSubscriptionConfirm}
+          onCancel={() => setConfirmModal(null)}
+          confirmText="Cancel Subscription"
+          cancelText="Keep Subscription"
+          isLoading={isLoading}
+        />
       )}
     </div>
   )

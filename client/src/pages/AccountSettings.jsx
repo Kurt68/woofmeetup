@@ -1,9 +1,31 @@
 import axiosInstance from '../config/axiosInstance'
 import { Link, useNavigate } from 'react-router-dom'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import { toast } from 'react-hot-toast'
 
 import { useAuthStore } from '../store/useAuthStore'
 import { Nav } from '../components/layout'
+
+const SCRIPT_CONFIG = {
+  privacy: {
+    id: 'enzuzo-privacy',
+    src: 'https://app.enzuzo.com/scripts/privacy/a7f5fb04-1623-11f0-bcc9-df08c51d2550',
+    label: 'Privacy Policy',
+  },
+  terms: {
+    id: 'enzuzo-terms',
+    src: 'https://app.enzuzo.com/scripts/tos/a7f5fb04-1623-11f0-bcc9-df08c51d2550',
+    label: 'Terms of Service',
+  },
+  cookie: {
+    id: 'enzuzo-cookie',
+    src: 'https://app.enzuzo.com/scripts/cookies/a7f5fb04-1623-11f0-bcc9-df08c51d2550',
+    label: 'Cookie Policy',
+  },
+}
+
+const MAX_RETRIES = 2
+const SCRIPT_TIMEOUT = 8000
 
 const AccountSettings = () => {
   const { logout, user } = useAuthStore()
@@ -31,7 +53,7 @@ const AccountSettings = () => {
       // Check if deletion was scheduled or immediate
       if (response.data.scheduled) {
         // Account scheduled for deletion - show message and keep user logged in
-        alert(response.data.message)
+        toast.success(response.data.message, { duration: 6000 })
         // Optionally redirect to dashboard or stay on settings
         navigate('/dashboard')
       } else {
@@ -40,56 +62,121 @@ const AccountSettings = () => {
         navigate('/')
       }
     } catch (err) {
-      alert('Failed to delete account. Please try again.')
+      toast.error('Failed to delete account. Please try again.', { duration: 6000 })
       setShowModal(false)
     }
   }
 
   const [activeScript, setActiveScript] = useState(null)
+  const [scriptError, setScriptError] = useState(null)
+  const [scriptLoading, setScriptLoading] = useState(false)
+  const [retryCount, setRetryCount] = useState(0)
   const containerRef = useRef(null)
+  const scriptTimeoutRef = useRef(null)
+  const debounceTimerRef = useRef(null)
+
+  const cleanupGlobalState = useCallback(() => {
+    // Clean up Enzuzo global state to prevent memory leaks
+    if (window.enzuzoPrivacy) delete window.enzuzoPrivacy
+    if (window.enzuzoTos) delete window.enzuzoTos
+    if (window.enzuzoCookies) delete window.enzuzoCookies
+  }, [])
+
+  const loadScript = useCallback(
+    async (scriptKey) => {
+      if (!scriptKey) return
+
+      setScriptLoading(true)
+      setScriptError(null)
+
+      try {
+        const container = containerRef.current
+        if (!container) throw new Error('Container not found')
+
+        // Clear previous content and scripts
+        container.innerHTML = ''
+        Object.values(SCRIPT_CONFIG).forEach(({ id }) => {
+          const existing = document.getElementById(id)
+          if (existing) existing.remove()
+        })
+
+        cleanupGlobalState()
+
+        const scriptInfo = SCRIPT_CONFIG[scriptKey]
+        if (!scriptInfo) throw new Error(`Invalid script: ${scriptKey}`)
+
+        // Create script element with security attributes
+        const script = document.createElement('script')
+        script.src = scriptInfo.src
+        script.id = scriptInfo.id
+        script.async = true
+        script.type = 'text/javascript'
+
+        // Set a timeout for script load
+        scriptTimeoutRef.current = setTimeout(() => {
+          setScriptError(`${scriptInfo.label} took too long to load`)
+          setScriptLoading(false)
+          script.remove()
+        }, SCRIPT_TIMEOUT)
+
+        script.onload = () => {
+          clearTimeout(scriptTimeoutRef.current)
+          setScriptLoading(false)
+          setRetryCount(0)
+        }
+
+        script.onerror = () => {
+          clearTimeout(scriptTimeoutRef.current)
+          if (retryCount < MAX_RETRIES) {
+            setRetryCount((prev) => prev + 1)
+            loadScript(scriptKey)
+          } else {
+            setScriptError(`Failed to load ${scriptInfo.label}. Please try again.`)
+            setScriptLoading(false)
+          }
+        }
+
+        container.appendChild(script)
+      } catch (error) {
+        setScriptError(
+          error instanceof Error
+            ? error.message
+            : 'An error occurred loading the document'
+        )
+        setScriptLoading(false)
+      }
+    },
+    [retryCount, cleanupGlobalState]
+  )
+
+  const handleScriptSelection = useCallback((scriptKey) => {
+    // Debounce rapid script switches
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      setActiveScript(scriptKey)
+      setRetryCount(0)
+      setScriptError(null)
+    }, 100)
+  }, [])
 
   useEffect(() => {
-    const scripts = {
-      privacy: {
-        id: 'enzuzo-privacy',
-        src: 'https://app.enzuzo.com/scripts/privacy/a7f5fb04-1623-11f0-bcc9-df08c51d2550',
-      },
-      terms: {
-        id: 'enzuzo-terms',
-        src: 'https://app.enzuzo.com/scripts/tos/a7f5fb04-1623-11f0-bcc9-df08c51d2550',
-      },
-      cookie: {
-        id: 'enzuzo-cookie',
-        src: 'https://app.enzuzo.com/scripts/cookies/a7f5fb04-1623-11f0-bcc9-df08c51d2550',
-      },
-    }
-    // Clear the container when activeScript changes
-    if (!activeScript) return
-
-    const container = containerRef.current
-    if (container) {
-      container.innerHTML = '' // Clear existing content (only where we control)
+    if (activeScript) {
+      loadScript(activeScript)
+    } else {
+      setScriptLoading(false)
+      setScriptError(null)
+      cleanupGlobalState()
     }
 
-    // Remove any previously inserted Enzuzo script
-    Object.values(scripts).forEach(({ id }) => {
-      const existing = document.getElementById(id)
-      if (existing) existing.remove()
-    })
-
-    // Create and append the new script
-    const scriptInfo = scripts[activeScript]
-    const script = document.createElement('script')
-    script.src = scriptInfo.src
-    script.id = scriptInfo.id
-    script.async = true
-    containerRef.current.appendChild(script)
-
-    // Cleanup script on unmount or switch
     return () => {
-      script.remove()
+      if (scriptTimeoutRef.current) {
+        clearTimeout(scriptTimeoutRef.current)
+      }
     }
-  }, [activeScript])
+  }, [activeScript, loadScript, cleanupGlobalState])
 
   return (
     <>
@@ -98,13 +185,13 @@ const AccountSettings = () => {
           <Nav minimal={true} />
           <div className="account-settings">
             <Link to="/dashboard">&lt;&lt; Back to Dashboard</Link>
-            <Link onClick={() => setActiveScript('privacy')}>
+            <Link onClick={() => handleScriptSelection('privacy')}>
               Privacy Policy
             </Link>
-            <Link onClick={() => setActiveScript('terms')}>
+            <Link onClick={() => handleScriptSelection('terms')}>
               Terms Of Service
             </Link>
-            <Link onClick={() => setActiveScript('cookie')}>Cookie Policy</Link>
+            <Link onClick={() => handleScriptSelection('cookie')}>Cookie Policy</Link>
             <Link
               className="primary-button delete-button"
               onClick={deleteClick}
@@ -173,16 +260,48 @@ const AccountSettings = () => {
           </div>
 
           {activeScript && (
-            <div className="external-script-wrapper">
-              <button
-                className="close-icon"
-                onClick={() => setActiveScript(null)}
-                aria-label="Close"
-                type="button"
-              >
-                &#x2715;
-              </button>
-              <div ref={containerRef} />
+            <div className="external-script-modal-overlay">
+              <div className="external-script-modal">
+                <div className="external-script-modal-header">
+                  <h3 className="external-script-modal-title">
+                    {SCRIPT_CONFIG[activeScript]?.label}
+                  </h3>
+                  <button
+                    className="external-script-close-icon"
+                    onClick={() => setActiveScript(null)}
+                    aria-label="Close"
+                    type="button"
+                  >
+                    &#x2715;
+                  </button>
+                </div>
+
+                <div className="external-script-modal-scroll">
+                  {scriptLoading && (
+                    <div className="script-loading">
+                      <p>Loading {SCRIPT_CONFIG[activeScript]?.label}...</p>
+                    </div>
+                  )}
+
+                  {scriptError && (
+                    <div className="script-error">
+                      <p>⚠️ {scriptError}</p>
+                      {retryCount < MAX_RETRIES && (
+                        <button
+                          className="secondary-button"
+                          onClick={() => handleScriptSelection(activeScript)}
+                        >
+                          Try Again
+                        </button>
+                      )}
+                    </div>
+                  )}
+
+                  <div ref={containerRef} />
+                </div>
+
+                <div className="external-script-modal-footer" />
+              </div>
             </div>
           )}
         </div>

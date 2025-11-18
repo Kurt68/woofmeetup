@@ -86,7 +86,10 @@ app.use(
           "'self'",
           "'unsafe-eval'",
           'https://challenges.cloudflare.com',
-          'https://app.enzuzo.com',
+          // Enzuzo external script (used for privacy policy, terms of service, and cookie policy)
+          // SECURITY: Consider using SRI (Subresource Integrity) hashes if Enzuzo provides them
+          // Format: 'https://app.enzuzo.com/scripts/ sha384-<hash>'
+          'https://app.enzuzo.com/scripts/',
         ],
         frameSrc: ["'self'", 'https://challenges.cloudflare.com'],
         connectSrc: [

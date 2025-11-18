@@ -68,6 +68,8 @@ const ProfileModal = ({ user, onClose }) => {
             </div>
           </div>
         </div>
+
+        <div className="profile-modal-footer" />
       </div>
     </div>
   )

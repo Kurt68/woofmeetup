@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useChatStore } from '../../store/useChatStore'
 import { useAuthStore } from '../../store/useAuthStore'
 import MessageInput from './MessageInput'
 import { MessageSkeleton } from '../skeletons'
+import ConfirmationModal from '../modals/ConfirmationModal'
 import { formatMessageTime } from '../../utilities/formatTime'
 import toast from 'react-hot-toast'
 import { sanitizeImageUrl } from '../../utilities/sanitizeUrl'
@@ -20,38 +21,41 @@ const ChatModal = ({ user }) => {
   } = useChatStore()
   const { unmatchUser, onlineUsers } = useAuthStore()
   const messageEndRef = useRef(null)
+  const [confirmModal, setConfirmModal] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleClose = () => {
     setSelectedUser(null)
   }
 
-  const handleClearChat = () => {
-    if (
-      window.confirm(
-        'Are you sure you want to clear this chat? This action cannot be undone.'
-      )
-    ) {
-      clearMessages()
+  const handleClearChatConfirm = async () => {
+    setIsLoading(true)
+    try {
+      await clearMessages()
+      setConfirmModal(null)
+      toast.success('Chat cleared')
+    } catch (error) {
+      console.error('Clear chat error:', error)
+      toast.error('Failed to clear chat. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const handleUnmatch = async () => {
-    if (
-      window.confirm(
-        `Are you sure you want to unmatch with ${selectedUser?.userName}?\n\nUnmatching clears your chat history as well.\n\nYou can match again if you both swipe right on each other in the future.`
-      )
-    ) {
-      try {
-        // Unsubscribe from messages first to prevent socket event handlers from firing
-        unsubscribeFromMessages()
-        await clearMessages()
-        await unmatchUser(selectedUser.user_id)
-        toast.success(`Successfully unmatched with ${selectedUser?.userName}`)
-        setSelectedUser(null)
-      } catch (error) {
-        console.error('Unmatch error:', error)
-        toast.error('Failed to unmatch. Please try again.')
-      }
+  const handleUnmatchConfirm = async () => {
+    setIsLoading(true)
+    try {
+      unsubscribeFromMessages()
+      await clearMessages()
+      await unmatchUser(selectedUser.user_id)
+      toast.success(`Successfully unmatched with ${selectedUser?.userName}`)
+      setConfirmModal(null)
+      setSelectedUser(null)
+    } catch (error) {
+      console.error('Unmatch error:', error)
+      toast.error('Failed to unmatch. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -99,7 +103,13 @@ const ChatModal = ({ user }) => {
             <h4 id="chat-modal-heading">{selectedUser?.userName}</h4>
             <button
               className="unmatch-btn"
-              onClick={handleUnmatch}
+              onClick={() =>
+                setConfirmModal({
+                  type: 'unmatch',
+                  title: 'Unmatch User',
+                  message: `Are you sure you want to unmatch with ${selectedUser?.userName}? \n\nUnmatching clears your chat history as well. \n\nYou can match again if you both swipe right on each other in the future.`,
+                })
+              }
               aria-label="Unmatch with this user"
               type="button"
             >
@@ -107,7 +117,14 @@ const ChatModal = ({ user }) => {
             </button>
             <button
               className="clear-chat-btn"
-              onClick={handleClearChat}
+              onClick={() =>
+                setConfirmModal({
+                  type: 'clearChat',
+                  title: 'Clear Chat',
+                  message:
+                    'Are you sure you want to clear this chat? This action cannot be undone.',
+                })
+              }
               aria-label="Clear chat history"
               type="button"
             >
@@ -178,7 +195,13 @@ const ChatModal = ({ user }) => {
           <div className="header-actions">
             <button
               className="unmatch-btn"
-              onClick={handleUnmatch}
+              onClick={() =>
+                setConfirmModal({
+                  type: 'unmatch',
+                  title: 'Unmatch User',
+                  message: `Are you sure you want to unmatch with ${selectedUser?.userName}? \n\nUnmatching clears your chat history as well. \n\nYou can match again if you both swipe right on each other in the future.`,
+                })
+              }
               aria-label="Unmatch with this user"
               type="button"
             >
@@ -186,7 +209,14 @@ const ChatModal = ({ user }) => {
             </button>
             <button
               className="clear-chat-btn"
-              onClick={handleClearChat}
+              onClick={() =>
+                setConfirmModal({
+                  type: 'clearChat',
+                  title: 'Clear Chat',
+                  message:
+                    'Are you sure you want to clear this chat? This action cannot be undone.',
+                })
+              }
               aria-label="Clear chat history"
               type="button"
             >
@@ -252,6 +282,22 @@ const ChatModal = ({ user }) => {
           <MessageInput />
         </div>
       </section>
+
+      {confirmModal && (
+        <ConfirmationModal
+          title={confirmModal.title}
+          message={confirmModal.message}
+          onConfirm={
+            confirmModal.type === 'clearChat'
+              ? handleClearChatConfirm
+              : handleUnmatchConfirm
+          }
+          onCancel={() => setConfirmModal(null)}
+          confirmText={confirmModal.type === 'clearChat' ? 'Clear' : 'Unmatch'}
+          cancelText="Cancel"
+          isLoading={isLoading}
+        />
+      )}
     </div>
   )
 }
