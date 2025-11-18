@@ -8,10 +8,10 @@ const MessageCreditsDisplay = () => {
 
   if (!user) return null
 
-  // Don't show for premium/vip users with active subscriptions
+  // Don't show for premium/vip users with active or canceling subscriptions
   if (
     (user.subscription === 'premium' || user.subscription === 'vip') &&
-    user.subscriptionStatus === 'active'
+    (user.subscriptionStatus === 'active' || user.subscriptionStatus === 'canceling')
   ) {
     return (
       <div className="credits-display unlimited">

@@ -32,3 +32,12 @@
 @import './utilities/animations.css';
 @import './utilities/container-queries.css';
 @import './utilities/images.css';
+
+/* ========================================
+   External Script CSS Overrides
+   ======================================== */
+
+[ez-acc-title=''] {
+  font-size: 16px !important;
+  text-align: left;
+}
