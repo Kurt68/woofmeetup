@@ -1838,6 +1838,16 @@ export const deleteOneUser = async (req, res) => {
       })
     }
 
+    if (currentUser.pendingDeletion) {
+      return res.json({
+        success: true,
+        scheduled: true,
+        message: 'Your account deletion is already scheduled.',
+        scheduledDeletionDate: currentUser.scheduledDeletionDate,
+        retainAccess: true,
+      })
+    }
+
     // ============================================
     // DETERMINE DELETION STRATEGY
     // ============================================
