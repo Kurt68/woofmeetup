@@ -172,7 +172,19 @@ const AccountSettings = () => {
             )}
           </div>
 
-          <div ref={containerRef} />
+          {activeScript && (
+            <div className="external-script-wrapper">
+              <button
+                className="close-icon"
+                onClick={() => setActiveScript(null)}
+                aria-label="Close"
+                type="button"
+              >
+                &#x2715;
+              </button>
+              <div ref={containerRef} />
+            </div>
+          )}
         </div>
       </div>
     </>
