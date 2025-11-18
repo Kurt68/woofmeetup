@@ -86,7 +86,12 @@ p {
   font-weight: var(--font-weight-bold);
   color: var(--color-white);
   margin: var(--spacing-sm);
+  margin-top: 7rem;
   line-height: var(--line-height-tight);
+
+  @media screen and (max-width: 639px) {
+    margin-top: 6.5rem;
+  }
 }
 
 /* Error Page */

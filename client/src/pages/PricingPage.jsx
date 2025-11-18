@@ -118,7 +118,7 @@ const PricingPage = () => {
 
             {/* Premium Plan */}
             <div className="pricing-card featured">
-              <div className="badge">Most Popular</div>
+              <div className="badge">Great Value</div>
               <div className="plan-header">
                 <h3>Premium</h3>
                 <div className="price">
@@ -130,7 +130,7 @@ const PricingPage = () => {
                 <li>✓ Unlimited messages</li>
                 <li>✓ All Free features</li>
                 <li>✓ Priority support</li>
-                <li>✓ No ads</li>
+                <li>✓ New features as we add them</li>
               </ul>
               <button
                 className="plan-button primary"

@@ -86,7 +86,7 @@ const Header = ({ user }) => {
               onClick={closeMenu}
               role="menuitem"
             >
-              <Gem aria-hidden="true" /> Upgrade
+              <Gem aria-hidden="true" /> &nbsp;Upgrade
             </Link>
             <button
               className="menu-item log-out-link"
@@ -95,7 +95,7 @@ const Header = ({ user }) => {
               aria-label="Sign out"
             >
               <LogOut aria-hidden="true" />
-              Sign Out
+              &nbsp;Sign Out
             </button>
           </nav>
         </>

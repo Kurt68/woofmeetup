@@ -113,6 +113,8 @@ const DogImageUploadSection = ({
     <div className="simple-image-upload dog-photo">
       <label>
         <strong>Upload Your Dog's Photo</strong>
+        <br />
+        <br />
       </label>
 
       <div className="upload-container">
@@ -162,9 +164,6 @@ const DogImageUploadSection = ({
               loading="lazy"
               decoding="async"
             />
-            {showingCurrentImage && !imageURL && (
-              <p className="current-image-label">Current Dog Photo</p>
-            )}
 
             {/* Breed List */}
             {dogBreeds.length > 0 && (

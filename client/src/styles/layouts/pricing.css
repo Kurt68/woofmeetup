@@ -258,6 +258,8 @@
 @media screen and (max-width: 768px) {
   .pricing-page {
     padding: var(--spacing-xl) var(--spacing-md);
+    padding-top: 0;
+    margin-top: -2.5rem;
   }
 
   .pricing-page h1 {

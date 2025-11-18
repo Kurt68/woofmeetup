@@ -23,7 +23,7 @@ const UserProfileSection = ({
       <div
         style={{
           fontSize: '0.85rem',
-          color: 'var(--text-secondary)',
+          color: 'var(--color-gray-text)',
           marginBottom: '0.5rem',
         }}
       >

@@ -36,9 +36,10 @@ const DogProfileForm = ({ formData, handleChange, aboutError }) => {
             fontSize: '0.9rem',
             fontWeight: 'normal',
             marginLeft: '0.5rem',
+            color: aboutLength >= 26 ? 'var(--color-error-dark)' : 'var(--color-gray-text)',
           }}
         >
-          ({aboutLength}/48)
+          ({aboutLength}/26)
         </span>
       </label>
       <input
@@ -49,7 +50,7 @@ const DogProfileForm = ({ formData, handleChange, aboutError }) => {
         placeholder="I like to play ball..."
         value={formData.about}
         onChange={handleChange}
-        maxLength="48"
+        maxLength="26"
       />
       {aboutError && (
         <p className="server-error" role="alert">

@@ -315,10 +315,17 @@
   border: none;
   border-radius: 0;
   background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
   & .upload-container {
     background-color: var(--color-white);
     padding: var(--spacing-md) var(--spacing-lg) 0 var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
 
     & h3 {
       margin: 0 0 0.5rem 0;
@@ -367,11 +374,14 @@
   }
 
   & .image-preview {
-    margin: 1rem 0;
+    margin: 1rem auto;
     text-align: center;
     width: 150px;
     height: auto;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     & img {
       width: 100px;
@@ -394,6 +404,8 @@
     font-size: 0.8rem;
     color: var(--color-gray-text);
     font-style: italic;
+    text-align: center;
+    width: 100%;
   }
 
   & .upload-actions {
@@ -464,11 +476,13 @@
 .simple-image-upload.dog-photo {
   & .image-preview.dog-preview {
     display: flex;
+    flex-direction: column;
     gap: 20px;
-    align-items: flex-start;
-    text-align: left;
+    align-items: center;
+    text-align: center;
     width: auto;
     overflow: visible;
+    margin: 1rem auto;
 
     & img {
       width: 100px;
@@ -477,17 +491,28 @@
       border-radius: 0;
       border: none;
     }
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: flex-start;
+      text-align: left;
+    }
   }
 }
 
 .breed-list {
   flex: 1;
+  text-align: center;
 
   & .breed-list-title {
     margin: 0 0 12px 0;
     font-size: 14px;
     font-weight: 600;
     color: #333;
+  }
+
+  @media (min-width: 768px) {
+    text-align: left;
   }
 }
 
@@ -705,28 +730,6 @@
   text-decoration: none;
 }
 
-.log-out-icon {
-  position: absolute;
-  top: var(--spacing-sm);
-  left: var(--spacing-sm);
-  font-size: var(--font-size-base);
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
-.edit-icon {
-  transform: rotateZ(90deg);
-  display: inline-block;
-  margin-top: 0.2rem;
-}
-
-.header-dropdown-menu {
-  width: 140px;
-  padding: var(--spacing-md) 0;
-}
-
 .menu-item {
   /* Mobile specific adjustments */
   @media screen and (max-width: 767px) {
@@ -886,13 +889,6 @@
   }
 }
 
-.profile-section-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-dark);
-  margin: 0 0 var(--spacing-sm) 0;
-}
-
 .profile-details {
   display: flex;
   flex-direction: column;
@@ -944,4 +940,16 @@
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
 }

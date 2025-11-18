@@ -218,9 +218,6 @@ const SimpleImageUpload = ({
               )}
               alt="Profile preview"
             />
-            {showingCurrentImage && !imageURL && (
-              <p className="current-image-label">Current Profile Photo</p>
-            )}
           </div>
         )}
 

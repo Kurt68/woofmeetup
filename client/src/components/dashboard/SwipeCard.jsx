@@ -36,7 +36,7 @@ const SwipeCard = ({ user, onSwipe, onCardLeftScreen }) => {
               aria-label="View full profile"
               type="button"
             >
-              <ChevronUp size={24} />
+              <ChevronUp size={40} />
             </button>
             <figcaption className="caption">
               <p className="dog-info">

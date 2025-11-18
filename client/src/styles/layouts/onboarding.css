@@ -57,7 +57,7 @@
   left: -3px;
 }
 .onboarding form label {
-  margin: var(--spacing-3xs) 0;
+  margin: var(--spacing-sm) 0;
   line-height: 1.4rem;
 }
 .onboarding form .multiple-input-container {
