@@ -186,7 +186,7 @@ const AccountSettings = () => {
         description="Manage your Woof Meetup account settings, preferences, and security."
       />
       <div className="background-color">
-        <div className="overlay overlay-account-settings">
+        <div className="overlay">
           <Nav minimal={true} />
           <div className="account-settings">
             <Link to="/dashboard">&lt;&lt; Back to Dashboard</Link>
