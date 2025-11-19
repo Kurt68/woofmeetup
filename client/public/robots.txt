@@ -15,7 +15,6 @@ Disallow: /*.json$
 Disallow: /*?*sort=
 Disallow: /*?*filter=
 
-Sitemap: https://woofmeetup.com/sitemap.xml
-Sitemap: https://woofmeetup.com/sitemap-public.xml
+Sitemap: https://www.woofmeetup.com/sitemap.xml
 
 Crawl-delay: 1

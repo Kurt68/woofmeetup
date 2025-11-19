@@ -173,3 +173,10 @@ p {
     padding-right: var(--spacing-lg);
   }
 }
+
+/* External Cookie Policy Element Styling */
+@media (max-width: 639px) {
+  [ez-title=""] {
+    margin-top: 3rem!important;
+  }
+}
