@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
 import { useNavigate, useParams } from 'react-router-dom'
+import { PageHead } from '../components/PageHead'
 import toast from 'react-hot-toast'
 import { Loader } from 'lucide-react'
 
@@ -34,12 +35,17 @@ const ResetPassword = () => {
   }
 
   return (
-    <div className="overlay" aria-hidden="true">
-      <div
-        className="auth-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="reset-password-heading"
+    <>
+      <PageHead
+        title="Reset Password"
+        description="Create a new password for your Woof Meetup account."
+      />
+      <div className="overlay" aria-hidden="true">
+        <div
+          className="auth-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="reset-password-heading"
       >
         <h2 id="reset-password-heading">Reset Password</h2>
         <br />
@@ -79,7 +85,8 @@ const ResetPassword = () => {
           </button>
         </form>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 export default ResetPassword

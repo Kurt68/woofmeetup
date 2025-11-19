@@ -1,5 +1,6 @@
 import { Nav } from '../components/layout'
 import { OnboardingForm } from '../components/onboarding'
+import { PageHead } from '../components/PageHead'
 import axiosInstance from '../config/axiosInstance'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
@@ -351,6 +352,10 @@ const EditDogProfile = () => {
 
   return (
     <>
+      <PageHead
+        title="Edit Dog Profile"
+        description="Update your dog's profile information on Woof Meetup."
+      />
       <div className="background-color">
         <div className="onboarding overlay-onboarding" aria-hidden="true">
           <Nav minimal={true} setShowModal={() => {}} showModal={false} />

@@ -3,24 +3,69 @@
 
 <head>
   <meta charset="UTF-8 " />
+  
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  
+  <!-- Preload critical CSS -->
+  <link rel="preload" href="/src/styles/index.css" as="style">
+
+  <!-- Favicon and app icons -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  
+  <!-- Mobile web app -->
   <meta name="apple-mobile-web-app-title" content="Woof Meetup" />
   <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#ec4899" />
 
-  <!-- Performance optimizations -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <!-- Viewport and base metadata -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Connect with dog owners and arrange meetups for your furry friends. Join Woof Meetup today!">
+  <meta name="keywords" content="dog dating, dog meetups, dog owners, pet social network, dog lovers">
+  <meta name="author" content="Woof Meetup">
+  <meta name="robots" content="index, follow">
 
-  <!-- Preload critical CSS -->
-  <link rel="preload" href="/src/styles/index.css" as="style">
+  <!-- Open Graph tags -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Woof Meetup - Connect Dog Owners" />
+  <meta property="og:description" content="Connect with dog owners and arrange meetups for your furry friends." />
+  <meta property="og:image" content="https://woofmeetup.com/web-app-manifest-512x512.png" />
+  <meta property="og:url" content="https://woofmeetup.com" />
+  <meta property="og:site_name" content="Woof Meetup" />
 
+  <!-- Twitter Card tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Woof Meetup - Connect Dog Owners" />
+  <meta name="twitter:description" content="Connect with dog owners and arrange meetups for your furry friends." />
+  <meta name="twitter:image" content="https://woofmeetup.com/web-app-manifest-512x512.png" />
+
+  <!-- SEO links -->
+  <link rel="canonical" href="https://woofmeetup.com" />
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+  <!-- Structured data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Woof Meetup",
+    "url": "https://woofmeetup.com",
+    "description": "Connect with dog owners and arrange meetups for your furry friends",
+    "applicationCategory": "SocialNetworking",
+    "image": "https://woofmeetup.com/web-app-manifest-512x512.png",
+    "author": {
+      "@type": "Organization",
+      "name": "Woof Meetup"
+    }
+  }
+  </script>
 
   <!-- Cookie consent bar -->
   <script src="https://app.enzuzo.com/scripts/cookiebar/a7f5fb04-1623-11f0-bcc9-df08c51d2550"></script>
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
   <title>Woof Meetup</title>
 </head>

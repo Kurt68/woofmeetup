@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import Nav from '../components/layout/Nav'
+import { PageHead } from '../components/PageHead'
 import axiosInstance from '../config/axiosInstance'
 
 const PaymentSuccess = () => {
@@ -66,9 +67,14 @@ const PaymentSuccess = () => {
   }
 
   return (
-    <div className="overlay">
-      <Nav minimal={true} />
-      <div className="payment-success-page">
+    <>
+      <PageHead
+        title="Payment Successful"
+        description="Your payment was successful! Your credits have been added to your account."
+      />
+      <div className="overlay">
+        <Nav minimal={true} />
+        <div className="payment-success-page">
         <div className="success-container">
           <div className="success-icon">✓</div>
           <h1>Payment Successful!</h1>
@@ -92,7 +98,8 @@ const PaymentSuccess = () => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 

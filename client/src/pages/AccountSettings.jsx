@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast'
 
 import { useAuthStore } from '../store/useAuthStore'
 import { Nav } from '../components/layout'
+import { PageHead } from '../components/PageHead'
 
 const SCRIPT_CONFIG = {
   privacy: {
@@ -180,6 +181,10 @@ const AccountSettings = () => {
 
   return (
     <>
+      <PageHead
+        title="Account Settings"
+        description="Manage your Woof Meetup account settings, preferences, and security."
+      />
       <div className="background-color">
         <div className="overlay overlay-account-settings">
           <Nav minimal={true} />

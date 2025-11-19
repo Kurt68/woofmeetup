@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
+import { PageHead } from '../components/PageHead'
 import { Loader } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -16,12 +17,17 @@ const ForgotPasswordPage = () => {
   }
 
   return (
-    <div className="overlay" aria-hidden="true">
-      <div
-        className="auth-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="forgot-password-heading"
+    <>
+      <PageHead
+        title="Forgot Password"
+        description="Reset your Woof Meetup password by entering your email address."
+      />
+      <div className="overlay" aria-hidden="true">
+        <div
+          className="auth-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="forgot-password-heading"
       >
         <h2 id="forgot-password-heading">Forgot Password</h2>
         <br />
@@ -74,7 +80,8 @@ const ForgotPasswordPage = () => {
           &lt;&lt; Back to Home Page
         </Link>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 export default ForgotPasswordPage

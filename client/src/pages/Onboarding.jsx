@@ -1,5 +1,6 @@
 import { Nav } from '../components/layout'
 import { OnboardingHeader, OnboardingForm } from '../components/onboarding'
+import { PageHead } from '../components/PageHead'
 import { useOnboarding } from '../hooks/onboarding'
 import { useState, useEffect } from 'react'
 
@@ -64,6 +65,10 @@ const Onboarding = () => {
 
   return (
     <>
+      <PageHead
+        title="Onboarding"
+        description="Complete your profile and tell us about your dog to get started on Woof Meetup."
+      />
       <div className="background-color">
         <div className="onboarding overlay-onboarding" aria-hidden="true">
           <Nav minimal={true} setShowModal={() => {}} showModal={false} />

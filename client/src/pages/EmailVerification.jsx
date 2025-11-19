@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAuthStore } from '../store/useAuthStore'
+import { PageHead } from '../components/PageHead'
 import toast from 'react-hot-toast'
 import { useNavigate } from 'react-router-dom'
 import { Loader } from 'lucide-react'
@@ -69,8 +70,13 @@ const EmailVerification = () => {
   }, [code, handleSubmit])
 
   return (
-    <div className="overlay" aria-hidden="true">
-      <Nav minimal={true} />
+    <>
+      <PageHead
+        title="Verify Email"
+        description="Verify your email address to complete your Woof Meetup registration."
+      />
+      <div className="overlay" aria-hidden="true">
+        <Nav minimal={true} />
       <div
         className="auth-modal"
         role="dialog"
@@ -113,7 +119,8 @@ const EmailVerification = () => {
           )}
         </button>
       </div>
-    </div>
+      </div>
+    </>
   )
 }
 export default EmailVerification

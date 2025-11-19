@@ -1,5 +1,6 @@
 import { ChatContainer } from '../components/chat'
 import { SwipeContainer } from '../components/dashboard'
+import { PageHead } from '../components/PageHead'
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
@@ -127,6 +128,10 @@ const Dashboard = () => {
   // throw new Error('Component')
   return (
     <>
+      <PageHead
+        title="Dashboard"
+        description="Discover dog owners and arrange meetups. Find your perfect match on Woof Meetup."
+      />
       {user && (
         <main className="dashboard" role="main">
           <section aria-label="Messages and matches">

@@ -1,5 +1,6 @@
 import { Nav } from '../components/layout'
 import { AuthModal } from '../components/auth'
+import { PageHead } from '../components/PageHead'
 import { useState } from 'react'
 import { useCookies } from 'react-cookie'
 
@@ -17,6 +18,12 @@ const Home = () => {
 
   return (
     <>
+      <PageHead
+        title="Home"
+        description="Connect with dog owners and arrange meetups for your furry friends. Join Woof Meetup today!"
+        ogTitle="Woof Meetup - Connect Dog Owners"
+        ogDescription="Connect with dog owners and arrange meetups for your furry friends."
+      />
       <div className="overlay">
         <Nav
           authToken={authToken}

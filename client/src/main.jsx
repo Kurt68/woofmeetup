@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { HelmetProvider } from 'react-helmet-async'
 import './styles/index.css'
 import App from './App.jsx'
 import { ErrorBoundary, ErrorComponent } from './components/ui'
@@ -64,9 +65,11 @@ async function startApp() {
 
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <ErrorBoundary fallback={<ErrorComponent />}>
-        <App />
-      </ErrorBoundary>
+      <HelmetProvider>
+        <ErrorBoundary fallback={<ErrorComponent />}>
+          <App />
+        </ErrorBoundary>
+      </HelmetProvider>
     </React.StrictMode>
   )
 }

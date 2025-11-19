@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /pricing
+Allow: /forgot-password
+
+Disallow: /dashboard
+Disallow: /onboarding
+Disallow: /verify-email
+Disallow: /edit-profile
+Disallow: /account-settings
+Disallow: /payment-success
+Disallow: /reset-password
+Disallow: /api/*
+Disallow: /*.json$
+Disallow: /*?*sort=
+Disallow: /*?*filter=
+
+Sitemap: https://woofmeetup.com/sitemap.xml
+Sitemap: https://woofmeetup.com/sitemap-public.xml
+
+Crawl-delay: 1

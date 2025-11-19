@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import { usePaymentStore } from '../store/usePaymentStore'
 import { Nav } from '../components/layout'
+import { PageHead } from '../components/PageHead'
 import toast from 'react-hot-toast'
 
 const PricingPage = () => {
@@ -65,8 +66,13 @@ const PricingPage = () => {
   }
 
   return (
-    <><div className="background-color">
-      <Nav minimal={true} />
+    <>
+      <PageHead
+        title="Pricing Plans"
+        description="Choose the perfect plan for your dog dating needs. Affordable credits and subscriptions available."
+      />
+      <div className="background-color">
+        <Nav minimal={true} />
       <div className="pricing-page">
         <Link to="/dashboard" className="back-to-dashboard">
           &lt;&lt; Back to Dashboard
