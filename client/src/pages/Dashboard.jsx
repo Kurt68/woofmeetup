@@ -98,14 +98,23 @@ const Dashboard = () => {
       })
     }
 
+    const handleUserLiked = (data) => {
+      toast.success(`❤️ ${data.fromUserName} likes you!`, {
+        duration: 4000,
+        icon: false,
+      })
+    }
+
     socket.on('newMatch', handleNewMatch)
     socket.on('userUnmatched', handleUserUnmatched)
     socket.on('userAccountDeleted', handleUserAccountDeleted)
+    socket.on('userLiked', handleUserLiked)
 
     return () => {
       socket.off('newMatch', handleNewMatch)
       socket.off('userUnmatched', handleUserUnmatched)
       socket.off('userAccountDeleted', handleUserAccountDeleted)
+      socket.off('userLiked', handleUserLiked)
     }
   }, [socket, getUser])
 

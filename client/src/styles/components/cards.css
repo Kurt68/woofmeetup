@@ -203,10 +203,10 @@
   position: absolute;
   bottom: var(--spacing-md);
   right: var(--spacing-md);
-  background-color: rgb(255, 255, 255);
+  background-color: var(--color-secondary);
   border: none;
   border-radius: var(--radius-full);
-  color: var(--color-primary);
+  color: var(--color-white);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -222,6 +222,6 @@
   }
 
   &:hover {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: var(--color-secondary);
   }
 }

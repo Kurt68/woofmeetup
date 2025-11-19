@@ -32,6 +32,7 @@ import {
   sendVerificationEmail,
   sendWelcomeEmail,
   sendAccountDeletionEmail,
+  sendMatchNotificationEmail,
 } from '../mailtrap/emails.js'
 
 // SECURITY FIX #6: Import AWS service singleton instead of initializing clients here
@@ -916,7 +917,7 @@ export const getMeetupTypeUsers = async (req, res) => {
       // Stage 5: Project only the needed fields
       {
         $project: {
-          _id: 0,
+          _id: 1,
           user_id: 1,
           userName: 1,
           about: 1,
@@ -1140,6 +1141,33 @@ export const updateMatches = async (req, res) => {
       $push: { matches: { user_id: matchedUserId } },
     }
     const user = await User.updateOne(query, updateDocument)
+
+    // Fetch current user and matched user for email notifications
+    const currentUser = await User.findOne({ user_id: userId })
+    const otherUser = await User.findOne({ user_id: matchedUserId })
+
+    if (currentUser && otherUser) {
+      const currentUserDogName = currentUser.dogs_name
+      const otherUserDogName = otherUser.dogs_name
+      const currentUserName = currentUser.userName
+      const otherUserName = otherUser.userName
+      const currentUserEmail = currentUser.email
+      const otherUserEmail = otherUser.email
+
+      // Send match notification email to the matched user (one-sided match)
+      try {
+        await sendMatchNotificationEmail(
+          otherUserEmail,
+          otherUserName,
+          currentUserName,
+          currentUserDogName,
+          otherUserDogName
+        )
+        logInfo('auth.controller', `✅ Match email sent to ${otherUserEmail}`)
+      } catch (emailError) {
+        logError('auth.controller', 'Failed to send match notification email', emailError)
+      }
+    }
 
     // Check if the other user also has this user in their matches (mutual match)
     const matchedUser = await User.findOne({ user_id: matchedUserId })

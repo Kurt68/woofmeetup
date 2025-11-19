@@ -41,6 +41,14 @@ export const senders = {
     email: 'hello@woofmeetup.com',
     name: 'Woof Meetup - Billing',
   },
+  likeNotification: {
+    email: 'hello@woofmeetup.com',
+    name: 'Woof Meetup - New Like',
+  },
+  matchNotification: {
+    email: 'hello@woofmeetup.com',
+    name: 'Woof Meetup - New Match',
+  },
 }
 
 // Legacy export for backward compatibility

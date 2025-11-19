@@ -51,7 +51,10 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  background-color: var(--color-secondary);
+  background: linear-gradient(-45deg, #53c8a0, #38be8f, #198a62, #41f7b7);
+  background-size: 400% 400%;
+  animation: gradient 15s ease infinite;
+  height: 100vh;
   overflow: auto;
   height: auto;
   min-height: 100%;
@@ -244,6 +247,7 @@ summary {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-dark);
   margin: 0;
+  visibility: hidden
 }
 
 .external-script-close-icon {
@@ -275,10 +279,17 @@ summary {
   scrollbar-color: var(--color-primary) var(--color-white);
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-lg);
 
   @media screen and (min-width: 768px) {
     padding: var(--spacing-2xl);
+  }
+
+  & main {
+    margin-top: -3rem !important;
+  }
+
+  & [ez-policy] {
+    margin-top: -3rem !important;
   }
 
   & .script-loading {

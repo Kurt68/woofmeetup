@@ -25,6 +25,7 @@ import { logError, logInfo, logWarning } from './utilities/logger.js'
 import authRoutes from './routes/auth.route.js'
 import messageRoutes from './routes/message.route.js'
 import paymentRoutes, { webhookRouter } from './routes/payment.route.js'
+import likeRoutes from './routes/like.route.js'
 import { startScheduledDeletionJob } from './jobs/scheduledDeletion.job.js'
 import { preloadModel } from './utilities/checkImage.js'
 import {
@@ -229,6 +230,7 @@ if (process.env.NODE_ENV === 'production') {
 app.use('/api/auth', authRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/payments', paymentRoutes)
+app.use('/api/likes', likeRoutes)
 
 // Security: CSRF Error Handler
 // Catches CSRF validation failures and returns proper JSON error responses

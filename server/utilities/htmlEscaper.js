@@ -56,8 +56,9 @@ export function escapeUrlAttribute(url) {
     }
   }
 
-  // Escape for HTML attribute context
-  return escapeHtml(url)
+  // Return URL as-is after protocol validation
+  // URLs in href attributes don't need HTML escaping
+  return url.trim()
 }
 
 /**

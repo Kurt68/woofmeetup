@@ -5,6 +5,8 @@ import {
   SUBSCRIPTION_WELCOME_TEMPLATE,
   ACCOUNT_DELETION_SCHEDULED_TEMPLATE,
   CREDITS_PURCHASE_TEMPLATE,
+  LIKE_NOTIFICATION_TEMPLATE,
+  MATCH_NOTIFICATION_TEMPLATE,
 } from './emailTemplates.js'
 import { mailtrapClient, senders } from './mailtrap.config.js'
 import fs from 'fs'
@@ -315,5 +317,99 @@ export const sendCreditsPurchaseEmail = async (
   } catch (error) {
     logError('emails', 'Error sending credits purchase email', error)
     // Don't throw error - email failure shouldn't break purchase flow
+  }
+}
+
+export const sendLikeNotificationEmail = async (
+  email,
+  userName,
+  likerName,
+  likerDogName,
+  yourDogName
+) => {
+  const recipient = [{ email }]
+
+  const getClientUrl = () => {
+    if (process.env.CLIENT_URL) {
+      return process.env.CLIENT_URL
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://woofmeetup.com'
+    }
+    return 'http://localhost:8000'
+  }
+
+  const clientUrl = getClientUrl()
+
+  try {
+    const htmlContent = safeTemplateReplace(LIKE_NOTIFICATION_TEMPLATE, {
+      userName: sanitizeTemplateVariable(userName, 'text'),
+      likerName: sanitizeTemplateVariable(likerName, 'text'),
+      likerDogName: sanitizeTemplateVariable(likerDogName, 'text'),
+      yourDogName: sanitizeTemplateVariable(yourDogName, 'text'),
+      dashboardUrl: sanitizeTemplateVariable(`${clientUrl}/dashboard`, 'url'),
+    })
+
+    const logoAttachment = getLogoAttachment()
+    const attachments = logoAttachment ? [logoAttachment] : []
+
+    await mailtrapClient.send({
+      from: senders.likeNotification,
+      to: recipient,
+      subject: `${likerName} liked your profile on Woof Meetup!`,
+      html: htmlContent,
+      category: 'Like Notification',
+      attachments,
+    })
+  } catch (error) {
+    logError('emails', 'Error sending like notification email', error)
+    // Don't throw error - email failure shouldn't break like flow
+  }
+}
+
+export const sendMatchNotificationEmail = async (
+  email,
+  userName,
+  matchName,
+  matchDogName,
+  yourDogName
+) => {
+  const recipient = [{ email }]
+
+  const getClientUrl = () => {
+    if (process.env.CLIENT_URL) {
+      return process.env.CLIENT_URL
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://woofmeetup.com'
+    }
+    return 'http://localhost:8000'
+  }
+
+  const clientUrl = getClientUrl()
+
+  try {
+    const htmlContent = safeTemplateReplace(MATCH_NOTIFICATION_TEMPLATE, {
+      userName: sanitizeTemplateVariable(userName, 'text'),
+      matchName: sanitizeTemplateVariable(matchName, 'text'),
+      matchDogName: sanitizeTemplateVariable(matchDogName, 'text'),
+      yourDogName: sanitizeTemplateVariable(yourDogName, 'text'),
+      dashboardUrl: sanitizeTemplateVariable(`${clientUrl}/dashboard`, 'url'),
+    })
+
+    const logoAttachment = getLogoAttachment()
+    const attachments = logoAttachment ? [logoAttachment] : []
+
+    await mailtrapClient.send({
+      from: senders.matchNotification,
+      to: recipient,
+      subject: `You've got a match with ${matchName} on Woof Meetup! 🎉`,
+      html: htmlContent,
+      category: 'Match Notification',
+      attachments,
+    })
+  } catch (error) {
+    logError('emails', 'Error sending match notification email', error)
+    // Don't throw error - email failure shouldn't break match flow
   }
 }

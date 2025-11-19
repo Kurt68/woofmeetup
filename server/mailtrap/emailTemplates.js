@@ -225,3 +225,77 @@ export const CREDITS_PURCHASE_TEMPLATE = `
 </body>
 </html>
 `
+
+export const LIKE_NOTIFICATION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You've Been Liked!</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.3; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="text-align: center; margin-bottom: 15px;">
+    <img src="cid:logo" alt="Woof Meetup Logo" style="width: 350px; height: auto;">
+    <h1 style="color: #000000; margin: 10px 0 0 0; font-size: 24px;">❤️ You've Been Liked!</h1>
+  </div>
+  <div style="background-color: #ffffff; padding: 10px 0 20px 0;">
+    <p style="margin-top: 0;">Hello {userName},</p>
+    <p>Great news! <strong>{likerName}</strong> and their pup <strong>{likerDogName}</strong> liked your profile on Woof Meetup!</p>
+    
+    <div style="background-color: #F9F9F9; padding: 20px;">
+      <h2 style="color: #000000; margin-top: 0;">✨ Check out their profile</h2>
+      <p style="margin: 10px 0;">They might be a great match for your {yourDogName}! Visit your dashboard to see their profile, wag right (swipe right) to match and start chatting.</p>
+      <div style="text-align: center; margin: 20px 0;">
+        <a href="{dashboardUrl}" style="background-color: #FFC0CB; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">View Profile</a>
+      </div>
+    </div>
+
+    <p style="color: #666; margin-top: 30px;">Keep making connections and arrange the perfect play date!</p>
+    
+    <p style="margin-top: 30px;">Happy meetup!<br>The Woof Meetup Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+    <p style="margin-top: 10px;">&copy; woofmeetup.com | 218 E Ramona Ave, Salt Lake City, UT 84115</p>
+  </div>
+</body>
+</html>
+`
+
+export const MATCH_NOTIFICATION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You've Got a Match!</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.3; color: #333; max-width: 600px; margin: 0 auto; padding: 0;">
+  <div style="text-align: center; margin-bottom: 15px;">
+    <img src="cid:logo" alt="Woof Meetup Logo" style="width: 350px; height: auto;">
+    <h1 style="color: #000000; margin: 10px 0 0 0; font-size: 24px;">🎉 You've Got a Match!</h1>
+  </div>
+  <div style="background-color: #ffffff; padding: 10px 0 20px 0;">
+    <p style="margin-top: 0;">Hello {userName},</p>
+    <p>Exciting news! You and <strong>{matchName}</strong> with their pup <strong>{matchDogName}</strong> have matched on Woof Meetup!</p>
+    
+    <div style="background-color: #F9F9F9; padding: 20px;">
+      <h2 style="color: #000000; margin-top: 0;">💬 Start chatting now!</h2>
+      <p style="margin: 10px 0;">You two are a perfect match! Head to the dashoard wag right (swipe right) to match and start chatting. Arrange a play date between {yourDogName} and {matchDogName}!</p>
+      <div style="text-align: center; margin: 20px 0;">
+        <a href="{dashboardUrl}" style="background-color: #FFC0CB; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">View Dashboard</a>
+      </div>
+    </div>
+
+    <p style="color: #666; margin-top: 30px;">We can't wait to hear how your meetup goes!</p>
+    
+    <p style="margin-top: 30px;">Happy meetup!<br>The Woof Meetup Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+    <p style="margin-top: 10px;">&copy; woofmeetup.com | 218 E Ramona Ave, Salt Lake City, UT 84115</p>
+  </div>
+</body>
+</html>
+`

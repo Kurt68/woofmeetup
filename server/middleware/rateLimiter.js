@@ -600,3 +600,32 @@ export const addCoordinatesLimiter =
   process.env.NODE_ENV === 'production'
     ? _addCoordinatesLimiter
     : bypassMiddleware
+
+// Rate limiter for /api/likes endpoint
+// Security: Prevents abuse of like functionality and spam
+// Default: 30 requests per 5 minutes per IP in production
+const LIKE_RATE_LIMIT_MAX = process.env.LIKE_RATE_LIMIT_MAX
+  ? parseInt(process.env.LIKE_RATE_LIMIT_MAX)
+  : 30
+const LIKE_RATE_LIMIT_WINDOW_MS = process.env.LIKE_RATE_LIMIT_WINDOW_MS
+  ? parseInt(process.env.LIKE_RATE_LIMIT_WINDOW_MS)
+  : 5 * 60 * 1000
+
+const _likeActionLimiter = createLimiterWithMonitoring('like-action', {
+  windowMs: LIKE_RATE_LIMIT_WINDOW_MS,
+  max: LIKE_RATE_LIMIT_MAX,
+  message: {
+    success: false,
+    message: 'Too many like actions, please try again later',
+    code: 'LIKE_RATE_LIMIT_EXCEEDED',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  skipFailedRequests: false,
+})
+
+export const likeActionLimiter =
+  process.env.NODE_ENV === 'production'
+    ? _likeActionLimiter
+    : bypassMiddleware

@@ -1,7 +1,23 @@
-import { X } from 'lucide-react'
+import { X, Heart } from 'lucide-react'
+import { useEffect } from 'react'
 import { sanitizeImageUrl } from '../../utilities/sanitizeUrl'
+import { useLike } from '../../hooks/dashboard/useLike'
 
 const ProfileModal = ({ user, onClose }) => {
+  const { liked, loading, createLike, checkIfLiked } = useLike()
+
+  useEffect(() => {
+    if (user?._id) {
+      checkIfLiked(user._id)
+    }
+  }, [user?._id, checkIfLiked])
+
+  const handleLike = async () => {
+    if (user?._id) {
+      await createLike(user._id)
+    }
+  }
+
   if (!user) return null
 
   return (
@@ -69,7 +85,18 @@ const ProfileModal = ({ user, onClose }) => {
           </div>
         </div>
 
-        <div className="profile-modal-footer" />
+        <div className="profile-modal-footer">
+          <button
+            className={`secondary-button profile-modal-like-btn ${liked ? 'liked' : ''}`}
+            onClick={handleLike}
+            disabled={loading}
+            aria-label={liked ? 'Unlike profile' : 'Like profile'}
+            type="button"
+          >
+            <Heart size={20} fill={liked ? 'currentColor' : 'none'} />
+            <span>{liked ? 'Liked' : 'Like'}</span>
+          </button>
+        </div>
       </div>
     </div>
   )
