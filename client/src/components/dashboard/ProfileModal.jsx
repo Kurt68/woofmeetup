@@ -2,6 +2,7 @@ import { X, Heart } from 'lucide-react'
 import { useEffect } from 'react'
 import { sanitizeImageUrl } from '../../utilities/sanitizeUrl'
 import { useLike } from '../../hooks/dashboard/useLike'
+import { SocialShareButtons } from '../share'
 
 const ProfileModal = ({ user, onClose }) => {
   const { liked, loading, createLike, checkIfLiked } = useLike()
@@ -86,6 +87,7 @@ const ProfileModal = ({ user, onClose }) => {
         </div>
 
         <div className="profile-modal-footer">
+          <SocialShareButtons profile={user} />
           <button
             className={`secondary-button profile-modal-like-btn ${liked ? 'liked' : ''}`}
             onClick={handleLike}

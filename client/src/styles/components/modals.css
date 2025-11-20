@@ -1024,3 +1024,78 @@ input[type="number"] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
+
+/* Social Share Buttons */
+.social-share-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.share-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--color-gray-light);
+  color: var(--color-text-dark);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  &.twitter {
+    background-color: #1da1f2;
+    color: white;
+
+    &:hover {
+      background-color: #1a8cd8;
+    }
+  }
+
+  &.facebook {
+    background-color: #1877f2;
+    color: white;
+
+    &:hover {
+      background-color: #165ac8;
+    }
+  }
+
+  &.linkedin {
+    background-color: #0a66c2;
+    color: white;
+
+    &:hover {
+      background-color: #084fa0;
+    }
+  }
+
+  &.whatsapp {
+    background-color: #25d366;
+    color: white;
+
+    &:hover {
+      background-color: #20ba5d;
+    }
+  }
+
+  &.copy {
+    background-color: var(--color-gray-light);
+    color: var(--color-text-dark);
+
+    &:hover {
+      background-color: var(--color-gray-medium);
+    }
+  }
+}

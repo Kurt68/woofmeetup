@@ -1,6 +1,7 @@
 import { Nav } from '../components/layout'
 import { AuthModal } from '../components/auth'
 import { PageHead } from '../components/PageHead'
+import { HomeShareButtons } from '../components/share'
 import { useState } from 'react'
 import { useCookies } from 'react-cookie'
 
@@ -42,6 +43,7 @@ const Home = () => {
             <AuthModal setShowModal={setShowModal} isSignUp={isSignUp} />
           )}
         </div>
+        <HomeShareButtons />
       </div>
     </>
   )
