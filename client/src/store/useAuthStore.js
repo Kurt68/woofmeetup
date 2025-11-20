@@ -31,7 +31,11 @@ export const useAuthStore = create((set, get) => ({
       // Removed sessionStorage usage to prevent XSS token theft
       // Backend automatically sets secure cookie, no need to store locally
       set({ user: response.data.user, isAuthenticated: true, isLoading: false })
-      get().connectSocket()
+      try {
+        get().connectSocket()
+      } catch (socketError) {
+        console.error('⚠️ Failed to connect socket after signup:', socketError)
+      }
     } catch (error) {
       const msg = getErrorMessage(error, 'Error signing up')
       set({
@@ -60,7 +64,11 @@ export const useAuthStore = create((set, get) => ({
         error: null,
         isLoading: false,
       })
-      get().connectSocket()
+      try {
+        get().connectSocket()
+      } catch (socketError) {
+        console.error('⚠️ Failed to connect socket after login:', socketError)
+      }
     } catch (error) {
       const msg = getErrorMessage(error, 'Error logging in')
       set({
@@ -126,7 +134,11 @@ export const useAuthStore = create((set, get) => ({
         isAuthenticated: true,
         isCheckingAuth: false,
       })
-      get().connectSocket()
+      try {
+        get().connectSocket()
+      } catch (socketError) {
+        console.error('⚠️ Failed to connect socket after checkAuth:', socketError)
+      }
     } catch (error) {
       set({ error: null, isCheckingAuth: false, isAuthenticated: false })
     }

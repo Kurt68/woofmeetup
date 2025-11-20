@@ -19,16 +19,16 @@ const ChatWindow = ({ user }) => {
   const messageEndRef = useRef(null)
 
   useEffect(() => {
-    getMessages(selectedUser._id)
-    subscribeToMessages()
+    const fetchAndSubscribe = async () => {
+      await getMessages(selectedUser._id)
+      subscribeToMessages()
+    }
+
+    fetchAndSubscribe()
 
     return () => unsubscribeFromMessages()
-  }, [
-    getMessages,
-    selectedUser._id,
-    subscribeToMessages,
-    unsubscribeFromMessages,
-  ])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedUser._id])
 
   useEffect(() => {
     if (messageEndRef.current && messages) {

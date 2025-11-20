@@ -4,8 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/useAuthStore'
 import { useEffect } from 'react'
-import { LoadingSpinner } from './components/ui'
+import { LoadingSpinner, ErrorBoundary } from './components/ui'
 import { fetchCsrfToken } from './services/csrfService'
+import { setAxiosLogoutHandler } from './config/axiosInstance'
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -50,13 +51,20 @@ const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
 const Home = lazy(() => import('./pages/Home'))
 
 const App = () => {
-  const { isCheckingAuth, checkAuth } = useAuthStore()
+  const { isCheckingAuth, checkAuth, logout } = useAuthStore()
 
   useEffect(() => {
     // Initialize CSRF token first (required for all state-changing requests)
     fetchCsrfToken().catch((error) => {
       console.error('⚠️ Failed to initialize CSRF token:', error)
       // Continue anyway - CSRF token will be fetched but may fail on requests
+    })
+
+    // Set up global 401 handler for session expiration
+    setAxiosLogoutHandler(() => {
+      logout().catch((err) => {
+        console.error('Error during auto-logout:', err)
+      })
     })
 
     checkAuth()
@@ -91,7 +99,9 @@ const App = () => {
               path="/onboarding"
               element={
                 <ProtectedRoute>
-                  <Onboarding />
+                  <ErrorBoundary>
+                    <Onboarding />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -99,7 +109,9 @@ const App = () => {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <ErrorBoundary>
+                    <Dashboard />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -110,7 +122,9 @@ const App = () => {
               path="/edit-profile"
               element={
                 <ProtectedRoute>
-                  <EditDogProfile />
+                  <ErrorBoundary>
+                    <EditDogProfile />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -119,7 +133,9 @@ const App = () => {
               path="/account-settings"
               element={
                 <ProtectedRoute>
-                  <AccountSettings />
+                  <ErrorBoundary>
+                    <AccountSettings />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -128,7 +144,9 @@ const App = () => {
               path="/pricing"
               element={
                 <ProtectedRoute>
-                  <PricingPage />
+                  <ErrorBoundary>
+                    <PricingPage />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />
@@ -137,7 +155,9 @@ const App = () => {
               path="/payment-success"
               element={
                 <ProtectedRoute>
-                  <PaymentSuccess />
+                  <ErrorBoundary>
+                    <PaymentSuccess />
+                  </ErrorBoundary>
                 </ProtectedRoute>
               }
             />

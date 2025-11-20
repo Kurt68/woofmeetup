@@ -7,7 +7,8 @@ import { ensureCsrfToken } from '../services/csrfService.js'
 
 let reconnectHandler = null
 let imageUpdateHandler = null
-let messageRefreshInterval = null
+const messageRefreshIntervals = new Map()
+const pollTimers = new Map()
 
 export const useChatStore = create((set, get) => ({
   messages: [],
@@ -81,11 +82,19 @@ export const useChatStore = create((set, get) => ({
       // If image was sent, poll for image URL update as fallback
       if (messageData.imageBlob && newMessage._id) {
         console.log(`⏱️ Starting image poll for message ${newMessage._id}`)
+        
+        // Clean up any existing timer for this message
+        if (pollTimers.has(newMessage._id)) {
+          clearInterval(pollTimers.get(newMessage._id))
+          pollTimers.delete(newMessage._id)
+        }
+        
         let attempts = 0
         const pollTimer = setInterval(async () => {
           attempts++
           if (attempts > 30) {
             clearInterval(pollTimer)
+            pollTimers.delete(newMessage._id)
             console.log(`⏱️ Image poll stopped after 30 attempts for ${newMessage._id}`)
             return
           }
@@ -103,11 +112,18 @@ export const useChatStore = create((set, get) => ({
               )
               set({ messages: msgs })
               clearInterval(pollTimer)
+              pollTimers.delete(newMessage._id)
             }
           } catch (e) {
             console.error('Image poll error:', e)
+            if (attempts >= 30) {
+              clearInterval(pollTimer)
+              pollTimers.delete(newMessage._id)
+            }
           }
         }, 500)
+        
+        pollTimers.set(newMessage._id, pollTimer)
       }
 
       // Update user's message credits in auth store
@@ -226,8 +242,12 @@ export const useChatStore = create((set, get) => ({
     
     console.log('✅ Socket listeners registered, including messageImageUpdated')
     
-    if (messageRefreshInterval) clearInterval(messageRefreshInterval)
-    messageRefreshInterval = setInterval(async () => {
+    // Clean up any existing interval for this user before creating a new one
+    if (messageRefreshIntervals.has(selectedUser._id)) {
+      clearInterval(messageRefreshIntervals.get(selectedUser._id))
+    }
+    
+    const interval = setInterval(async () => {
       try {
         await get().getMessages(selectedUser._id)
       } catch (error) {
@@ -235,11 +255,15 @@ export const useChatStore = create((set, get) => ({
       }
     }, 60000)
     
+    messageRefreshIntervals.set(selectedUser._id, interval)
+    
     console.log('✅ Message listeners registered for user:', selectedUser._id)
   },
 
   unsubscribeFromMessages: () => {
+    const { selectedUser } = get()
     const socket = useAuthStore.getState().socket
+    
     socket.off('newMessage')
     socket.off('chatCleared')
     if (reconnectHandler) {
@@ -250,10 +274,18 @@ export const useChatStore = create((set, get) => ({
       socket.off('messageImageUpdated', imageUpdateHandler)
       imageUpdateHandler = null
     }
-    if (messageRefreshInterval) {
-      clearInterval(messageRefreshInterval)
-      messageRefreshInterval = null
+    
+    // Clean up message refresh interval for this user
+    if (selectedUser && messageRefreshIntervals.has(selectedUser._id)) {
+      clearInterval(messageRefreshIntervals.get(selectedUser._id))
+      messageRefreshIntervals.delete(selectedUser._id)
     }
+    
+    // Clean up any pending poll timers for this user's messages
+    pollTimers.forEach((timer, messageId) => {
+      clearInterval(timer)
+      pollTimers.delete(messageId)
+    })
   },
 
   clearMessages: async () => {

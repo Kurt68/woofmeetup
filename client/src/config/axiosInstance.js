@@ -6,7 +6,14 @@
 
 import axios from 'axios'
 import { BASE_URL } from './api.js'
-import { getCsrfToken, ensureCsrfToken, refreshCsrfToken } from '../services/csrfService.js'
+import { ensureCsrfToken, refreshCsrfToken } from '../services/csrfService.js'
+
+// Will be set by app after store is created
+let handleLogout = null
+
+export const setAxiosLogoutHandler = (logoutFn) => {
+  handleLogout = logoutFn
+}
 
 /**
  * Create a centralized axios instance
@@ -104,6 +111,24 @@ axiosInstance.interceptors.response.use(
     error.isClientError = status >= 400 && status < 500
     error.isServerError = status >= 500
 
+    // SECURITY FIX: Handle 401 Unauthorized (expired session) with auto-logout
+    if (status === 401 && !error.config.url.includes('check-auth')) {
+      console.warn('🚨 [401] Unauthorized - session expired, clearing auth state')
+      
+      if (handleLogout) {
+        try {
+          handleLogout()
+        } catch (logoutError) {
+          console.error('Error during logout:', logoutError)
+        }
+      }
+      
+      // Prevent creating new check-auth requests while logging out
+      if (!error.config.url.includes('logout')) {
+        return Promise.reject(error)
+      }
+    }
+
     // Security Fix #3: Handle CSRF token failures with automatic retry
     if (status === 403 && errorCode === 'CSRF_TOKEN_INVALID') {
       error.isCsrfError = true
@@ -136,6 +161,19 @@ axiosInstance.interceptors.response.use(
       } else {
         console.error('❌ CSRF token retry limit exceeded')
       }
+    }
+
+    // Retry logic for transient failures (429, 502, 503, 504, 408)
+    const isTransientError = [408, 429, 502, 503, 504].includes(status)
+    const retryCount = (error.config.__retryCount ?? 0)
+    
+    if (isTransientError && retryCount < 2 && error.config.method !== 'get') {
+      error.config.__retryCount = retryCount + 1
+      const delay = Math.pow(2, error.config.__retryCount) * 1000
+      console.log(`⏳ Retrying ${error.config.method.toUpperCase()} ${error.config.url} after ${delay}ms (attempt ${error.config.__retryCount}/2)`)
+      
+      await new Promise((resolve) => setTimeout(resolve, delay))
+      return axiosInstance.request(error.config)
     }
 
     return Promise.reject(error)

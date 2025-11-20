@@ -2,10 +2,13 @@ import { useState, useCallback, useEffect } from 'react'
 import axiosInstance from '../../config/axiosInstance'
 import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { getErrorMessage } from '../../utilities/axiosUtils'
 
 export const useDashboardData = (userId) => {
   const [user, setUser] = useState(null)
   const [meetupTypeUsers, setMeetupTypeUsers] = useState([])
+  const [meetupTypeUsersError, setMeetupTypeUsersError] = useState(null)
+  const [isLoadingMeetupUsers, setIsLoadingMeetupUsers] = useState(false)
 
   const [searchParams, setSearchParams] = useSearchParams({
     selectDistance: '10',
@@ -25,6 +28,9 @@ export const useDashboardData = (userId) => {
 
   const getMeetupTypeUsers = useCallback(
     async (overrideDistance) => {
+      setIsLoadingMeetupUsers(true)
+      setMeetupTypeUsersError(null)
+      
       try {
         console.log(
           '🔍 Fetching meetup type users with distance:',
@@ -50,14 +56,19 @@ export const useDashboardData = (userId) => {
           'users found'
         )
         setMeetupTypeUsers(response.data)
+        setMeetupTypeUsersError(null)
       } catch (error) {
+        const msg = getErrorMessage(error, 'Failed to load profiles')
         console.error(
           '❌ Error fetching meetup type users:',
           error.response?.status,
           error.response?.data?.message || error.message
         )
-        // Ensure state is cleared on error to show "no results" instead of stale data
         setMeetupTypeUsers([])
+        setMeetupTypeUsersError(msg)
+        toast.error(msg)
+      } finally {
+        setIsLoadingMeetupUsers(false)
       }
     },
     [userId, selectDistance]
@@ -144,5 +155,7 @@ export const useDashboardData = (userId) => {
     getMeetupTypeUsers,
     handleDistanceChange,
     getFilteredUsers,
+    meetupTypeUsersError,
+    isLoadingMeetupUsers,
   }
 }

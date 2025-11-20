@@ -48,18 +48,19 @@ const PaymentSuccess = () => {
 
     const countdownInterval = setInterval(() => {
       setCountdown((prev) => {
-        if (prev <= 1) {
+        const next = prev - 1
+        if (next <= 0) {
           clearInterval(countdownInterval)
           // Navigate to dashboard with state to trigger success message
           navigate('/dashboard', { state: { fromPayment: true } })
-          return 0
         }
-        return prev - 1
+        return next
       })
     }, 1000)
 
     return () => clearInterval(countdownInterval)
-  }, [isRefreshing, navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRefreshing])
 
   const handleGoToDashboard = () => {
     // Navigate to dashboard with state to trigger success message
