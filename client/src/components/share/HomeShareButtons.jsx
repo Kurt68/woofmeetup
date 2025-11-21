@@ -1,7 +1,7 @@
 const HomeShareButtons = () => {
   const appUrl = 'https://woofmeetup.com'
   const shareMessage =
-    'Join Woof Meetup - Connect with dog owners and arrange meetups for your furry friends! 🐕'
+    'Join Woof Meetup - Connect with dog owners and arrange meetups for your furry friends!'
 
   const handleShare = (platform) => {
     let url = ''
