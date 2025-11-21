@@ -37,8 +37,7 @@
   z-index: 100;
 
   @media (max-width: 640px) {
-    bottom: var(--spacing-md);
-    right: var(--spacing-md);
+    bottom: var(--spacing-2xl);
   }
 }
 

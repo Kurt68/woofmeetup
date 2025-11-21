@@ -199,7 +199,7 @@ const ChatModal = ({ user }) => {
                 setConfirmModal({
                   type: 'unmatch',
                   title: 'Unmatch User',
-                  message: `Are you sure you want to unmatch with ${selectedUser?.userName}? \n\nUnmatching clears your chat history as well. \n\nYou can match again if you both swipe right on each other in the future.`,
+                  message: `Are you sure you want to unmatch with ${selectedUser?.userName}? \n\nYou can match again if you both swipe right on each other in the future.`,
                 })
               }
               aria-label="Unmatch with this user"
