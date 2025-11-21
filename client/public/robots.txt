@@ -16,5 +16,3 @@ Disallow: /*?*sort=
 Disallow: /*?*filter=
 
 Sitemap: https://www.woofmeetup.com/sitemap.xml
-
-Crawl-delay: 1
