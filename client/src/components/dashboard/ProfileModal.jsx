@@ -26,6 +26,9 @@ const ProfileModal = ({ user, onClose }) => {
       <div className="profile-modal">
         <div className="profile-modal-header">
           <h2 className="profile-modal-title">About Me and My Dog</h2>
+          <div className="social-share-buttons">
+            <SocialShareButtons profile={user} />
+          </div>
           <button
             className="profile-modal-close"
             onClick={onClose}
@@ -87,7 +90,6 @@ const ProfileModal = ({ user, onClose }) => {
         </div>
 
         <div className="profile-modal-footer">
-          <SocialShareButtons profile={user} />
           <button
             className={`secondary-button profile-modal-like-btn ${liked ? 'liked' : ''}`}
             onClick={handleLike}

@@ -89,8 +89,7 @@ p {
   line-height: var(--line-height-tight);
 
   @media screen and (max-width: 639px) {
-    margin-top: 7.5rem;
-    /* color: var(--color-black) */
+  display: none;
 
   }
 }

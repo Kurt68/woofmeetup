@@ -51,10 +51,7 @@
   flex-direction: column;
   align-items: center;
   position: relative;
-  background: linear-gradient(-45deg, #53c8a0, #38be8f, #198a62, #41f7b7);
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
-  height: 100vh;
+  background-color: var(--color-secondary);
   overflow: auto;
   height: auto;
   min-height: 100%;
@@ -247,7 +244,7 @@ summary {
   font-weight: var(--font-weight-bold);
   color: var(--color-text-dark);
   margin: 0;
-  visibility: hidden
+  visibility: hidden;
 }
 
 .external-script-close-icon {
