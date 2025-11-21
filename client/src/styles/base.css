@@ -82,16 +82,15 @@ p {
 
 /* Primary Title - Hero/Brand */
 .primary-title {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-h1);
   font-weight: var(--font-weight-bold);
   color: var(--color-white);
   margin: var(--spacing-sm);
-  margin-top: 2rem;
   line-height: var(--line-height-tight);
 
   @media screen and (max-width: 639px) {
-    margin-top: 5.5rem;
-    color: var(--color-black)
+    margin-top: 7.5rem;
+    /* color: var(--color-black) */
 
   }
 }

@@ -4,7 +4,6 @@ import { PageHead } from '../components/PageHead'
 import { HomeShareButtons } from '../components/share'
 import { useState } from 'react'
 import { useCookies } from 'react-cookie'
-import chatImage from '../images/chat-image.svg'
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false)
@@ -35,10 +34,7 @@ const Home = () => {
           setIsSignUp={setIsSignUp}
         />
         <div className="home">
-          <div className="primary-title">
-            <img src={chatImage} alt="Chat bubble" className="primary-title-image" />
-            <h1>Wag Right</h1>
-          </div>
+          <h1 className="primary-title">"Wag Right"</h1>
           <button className="primary-button" onClick={handleClick}>
             Create Account
           </button>

@@ -33,9 +33,7 @@ const HomeShareButtons = () => {
 
   return (
     <div className="home-share-section">
-      <p className="home-share-text">
-        <span style={{ 'display': 'block','margin-bottom':' -0.5rem;' }}>Share</span>Woof Meetup:
-      </p>
+      <p className="home-share-text">Share Woof Meetup:</p>
       <div className="home-share-buttons">
         <button
           className="home-share-button twitter"
