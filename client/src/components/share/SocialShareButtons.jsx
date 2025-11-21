@@ -11,9 +11,18 @@ const SocialShareButtons = ({ profile }) => {
     }
     return 'https://woofmeetup.com'
   }
+
+  const getArticle = (word) => {
+    if (word.toLowerCase().endsWith('s')) {
+      return ''
+    }
+    const vowels = 'aeiou'
+    return vowels.includes(word.toLowerCase()[0]) ? 'an ' : 'a '
+  }
+
   const appUrl = getCurrentBaseUrl()
   const shareUrl = `${appUrl}?referral=${profile.user_id || profile._id}`
-  const shareMessage = `Check out ${profile.dogs_name}! A ${profile.age} year old dog who likes to "${profile.about}" and is looking for a ${profile.meetup_type} on Woof Meetup`
+  const shareMessage = `Check out ${profile.dogs_name}! A ${profile.age} year old dog who likes to "${profile.about}" and is looking for ${getArticle(profile.meetup_type)}${profile.meetup_type} on Woof Meetup`
 
   const handleShare = (platform) => {
     let url = ''
