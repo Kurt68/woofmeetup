@@ -29,7 +29,6 @@ export const PageHead = ({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={fullOgDescription} />
-      <meta name="theme-color" content="#ec4899" />
 
       {robots && <meta name="robots" content={robots} />}
 
