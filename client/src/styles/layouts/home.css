@@ -37,7 +37,7 @@
   z-index: 100;
 
   @media (max-width: 640px) {
-    bottom: var(--spacing-2xl);
+    bottom: var(--spacing-xl);
   }
 }
 
