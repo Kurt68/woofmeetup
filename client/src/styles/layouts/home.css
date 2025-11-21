@@ -25,30 +25,40 @@
 }
 
 .primary-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.45rem, 1.3vw, 0.67rem);
   background-color: rgba(255, 255, 255, 0.95);
   color: var(--color-black);
-  padding: clamp(2.5rem, 8vw, 4rem) clamp(1rem, 4vw, 2rem);
+  padding: clamp(1.1rem, 3.5vw, 1.8rem) clamp(0.7rem, 2.7vw, 1.3rem);
   border-radius: var(--radius-lg);
   position: relative;
   width: fit-content;
-  max-width: min(90vw, 30rem);
+  max-width: min(90vw, 20rem);
   text-align: center;
   box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    white-space: nowrap;
+  }
 
   &:before {
     content: '';
     position: absolute;
-    bottom: calc(-1rem + 0px);
+    bottom: calc(-0.67rem + 0px);
     height: 0;
-    border-left: 1rem solid transparent;
-    border-top: 1rem solid rgba(255, 255, 255, 0.95);
+    border-left: 0.67rem solid transparent;
+    border-top: 0.67rem solid rgba(255, 255, 255, 0.95);
 
     @media (max-width: 640px) {
-      right: 1.5rem;
+      right: 2rem;
     }
 
     @media (min-width: 641px) {
-      right: 6.5rem;
+      right: 3rem;
     }
   }
 
@@ -60,6 +70,12 @@
   @media (min-width: 641px) {
     margin-right: var(--spacing-lg);
   }
+}
+
+.primary-title-image {
+  width: clamp(4rem, 17vw, 8rem);
+  height: auto;
+  display: block;
 }
 
 /* Home Share Buttons */
