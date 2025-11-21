@@ -13,23 +13,31 @@ const SocialShareButtons = ({ profile }) => {
   }
   const appUrl = getCurrentBaseUrl()
   const shareUrl = `${appUrl}?referral=${profile.user_id || profile._id}`
-  const shareMessage = `Check out ${profile.dogs_name}! 🐕 A ${profile.age}-year-old ${profile.about} looking for ${profile.meetup_type} on Woof Meetup`
+  const shareMessage = `Check out ${profile.dogs_name}! A ${profile.age} year old dog who likes to "${profile.about}" and is looking for a ${profile.meetup_type} on Woof Meetup`
 
   const handleShare = (platform) => {
     let url = ''
 
     switch (platform) {
       case 'twitter':
-        url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareMessage)}`
+        url = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+          shareUrl
+        )}&text=${encodeURIComponent(shareMessage)}`
         break
       case 'facebook':
-        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`
+        url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          shareUrl
+        )}`
         break
       case 'linkedin':
-        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`
+        url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+          shareUrl
+        )}`
         break
       case 'whatsapp':
-        url = `https://wa.me/?text=${encodeURIComponent(shareMessage + ' ' + shareUrl)}`
+        url = `https://wa.me/?text=${encodeURIComponent(
+          shareMessage + ' ' + shareUrl
+        )}`
         break
       default:
         return
