@@ -15,7 +15,7 @@ export const PageHead = ({
   const siteTitle = 'Woof Meetup'
   const siteUrl = import.meta.env.VITE_API_URL || 'https://woofmeetup.com'
   const defaultImage =
-    `${siteUrl}/web-app-manifest-512x512.png` || 'https://woofmeetup.com/og-image.png'
+    `${siteUrl}/web-app-manifest-192x192.png` || 'https://woofmeetup.com/og-image.png'
 
   const fullTitle = title ? `${title} | ${siteTitle}` : siteTitle
   const fullOgTitle = ogTitle || title || siteTitle
