@@ -30,7 +30,7 @@ const DogProfileForm = ({ formData, handleChange, aboutError }) => {
       />
 
       <label htmlFor="about">
-        <strong>About Me</strong>
+        <strong>About Your Dog</strong>
         <span
           style={{
             fontSize: '0.9rem',

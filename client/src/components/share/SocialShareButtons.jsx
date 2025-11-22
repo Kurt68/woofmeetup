@@ -22,7 +22,13 @@ const SocialShareButtons = ({ profile }) => {
 
   const appUrl = getCurrentBaseUrl()
   const shareUrl = `${appUrl}?referral=${profile.user_id || profile._id}`
-  const shareMessage = `Check out ${profile.dogs_name}! A ${profile.age} year old dog who likes to "${profile.about}" and is looking for ${getArticle(profile.meetup_type)}${profile.meetup_type} on Woof Meetup`
+  const shareMessage = `Check out ${profile.dogs_name}! A ${
+    profile.age
+  } year old dog who is looking for ${getArticle(profile.meetup_type)}${
+    profile.meetup_type
+  } on Woof Meetup.`
+
+  // who likes to "${profile.about}"
 
   const handleShare = (platform) => {
     let url = ''

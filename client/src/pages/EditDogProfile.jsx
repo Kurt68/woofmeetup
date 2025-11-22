@@ -208,7 +208,7 @@ const EditDogProfile = () => {
   // Form Validation
   const validateAboutField = (value) => {
     if (typeof value === 'string' && value.length > 26) {
-      setAboutError('About me must be 26 characters or fewer.')
+      setAboutError('About your dog must be 26 characters or fewer.')
       return false
     } else {
       setAboutError('')
