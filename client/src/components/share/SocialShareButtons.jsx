@@ -9,7 +9,7 @@ const SocialShareButtons = ({ profile }) => {
     if (import.meta.env.MODE === 'development') {
       return 'http://localhost:5173'
     }
-    return 'https://woofmeetup.com'
+    return 'https://www.woofmeetup.com'
   }
 
   const getArticle = (word) => {
