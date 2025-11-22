@@ -138,11 +138,27 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? 'https://woofmeetup.com'
+        ? ['https://woofmeetup.com', 'https://www.woofmeetup.com']
         : ['http://localhost:8000', 'http://localhost:5173'],
     credentials: true,
   })
 )
+
+app.use((req, res, next) => {
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (req.path.endsWith('.png') ||
+      req.path.endsWith('.jpg') ||
+      req.path.endsWith('.jpeg') ||
+      req.path.endsWith('.gif') ||
+      req.path.endsWith('.webp') ||
+      req.path.endsWith('.svg'))
+  ) {
+    res.setHeader('Access-Control-Allow-Origin', '*')
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin')
+  }
+  next()
+})
 
 // Stripe webhook route MUST be before express.json() to receive raw body
 // Mount at specific webhook path to avoid interfering with other payment endpoints
