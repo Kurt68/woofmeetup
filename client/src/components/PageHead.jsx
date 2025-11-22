@@ -23,7 +23,7 @@ export const PageHead = ({
   const fullOgDescription =
     ogDescription ||
     description ||
-    'Connect with dog owners and arrange meetups for your furry friends. Create free account, wag right to find a match! Start chatting with 10 free credits.  Make new friends for you and your dog today!'
+    'Connect with dog owners and arrange meetups for your furry friends. Create a free account and wag right to find a match! Start chatting with 10 free credits.  Make new friends for you and your dog today!'
   const fullOgImage = ogImage || defaultImage
   const fullOgUrl = ogUrl || siteUrl
   const canonicalUrl = canonical || fullOgUrl
