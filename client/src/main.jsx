@@ -5,6 +5,7 @@ import './styles/index.css'
 import App from './App.jsx'
 import { ErrorBoundary, ErrorComponent } from './components/ui'
 import { fetchCsrfToken } from './services/csrfService.js'
+import { initializeGA } from './services/analyticsService.js'
 
 // Initialize Sentry with dynamic import to avoid production build issues
 async function initializeSentry() {
@@ -63,6 +64,12 @@ async function startApp() {
 
   // Wait for Sentry to initialize before rendering
   await initializeSentry()
+
+  // Initialize Google Analytics
+  const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID
+  if (gaMeasurementId) {
+    initializeGA(gaMeasurementId)
+  }
 
   // Register service worker for caching optimization
   if ('serviceWorker' in navigator && import.meta.env.PROD) {

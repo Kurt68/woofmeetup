@@ -1,9 +1,11 @@
 import { Share2, Copy, Check } from 'lucide-react'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import { useGA } from '../../hooks/useGA'
 
 const SocialShareButtons = ({ profile }) => {
   const [copied, setCopied] = useState(false)
+  const { trackShareEvent, trackLinkCopyEvent } = useGA()
 
   const getCurrentBaseUrl = () => {
     if (import.meta.env.MODE === 'development') {
@@ -59,6 +61,7 @@ const SocialShareButtons = ({ profile }) => {
     }
 
     if (url) {
+      trackShareEvent(platform)
       window.open(url, '_blank', 'width=600,height=400')
     }
   }
@@ -67,6 +70,7 @@ const SocialShareButtons = ({ profile }) => {
     navigator.clipboard.writeText(shareUrl)
     setCopied(true)
     toast.success('Link copied to clipboard!')
+    trackLinkCopyEvent()
     setTimeout(() => setCopied(false), 2000)
   }
 

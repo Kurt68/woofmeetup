@@ -1,12 +1,13 @@
 import { lazy, Suspense } from 'react'
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './store/useAuthStore'
 import { useEffect } from 'react'
 import { LoadingSpinner, ErrorBoundary } from './components/ui'
 import { fetchCsrfToken } from './services/csrfService'
 import { setAxiosLogoutHandler } from './config/axiosInstance'
+import { trackPageView } from './services/analyticsService'
 
 // Protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -50,6 +51,16 @@ const PricingPage = lazy(() => import('./pages/PricingPage'))
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
 const Home = lazy(() => import('./pages/Home'))
 
+const LocationTracker = () => {
+  const location = useLocation()
+
+  useEffect(() => {
+    trackPageView(location.pathname, document.title)
+  }, [location.pathname])
+
+  return null
+}
+
 const App = () => {
   const { isCheckingAuth, checkAuth, logout } = useAuthStore()
 
@@ -82,6 +93,7 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
+        <LocationTracker />
         <Suspense fallback={<LoadingSpinner />}>
           <Routes>
             <Route
