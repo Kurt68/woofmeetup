@@ -8,6 +8,7 @@ import {
 } from '../../utilities/validators'
 import { useAuthStore } from '../../store/useAuthStore'
 import { ensureCsrfToken } from '../../services/csrfService'
+import { trackSignup, trackLogin } from '../../services/analyticsService'
 
 const SERVER_URL =
   import.meta.env.MODE === 'development' ? 'http://localhost:8000' : ''
@@ -105,9 +106,11 @@ export const useAuthModal = (isSignUp) => {
 
       if (isSignUp) {
         await signup(email, password, userName)
+        trackSignup('email')
         navigate('/verify-email')
       } else {
         await login(email, password)
+        trackLogin()
         navigate('/dashboard')
       }
     } catch (serverError) {

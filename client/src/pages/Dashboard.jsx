@@ -10,6 +10,7 @@ import {
   useDashboardData,
   useSwipeLogic,
 } from '../hooks/dashboard'
+import { trackProfileMatch, trackProfileLike } from '../services/analyticsService'
 
 const Dashboard = () => {
   const { user } = useAuthStore()
@@ -78,6 +79,7 @@ const Dashboard = () => {
     const handleNewMatch = () => {
       getUser()
       useAuthStore.getState().checkAuth()
+      trackProfileMatch()
       toast.success('You have a new match! 🎉', {
         duration: 3000,
       })
@@ -100,6 +102,7 @@ const Dashboard = () => {
     }
 
     const handleUserLiked = (data) => {
+      trackProfileLike()
       toast.success(`❤️ ${data.fromUserName} likes you!`, {
         duration: 4000,
         icon: false,

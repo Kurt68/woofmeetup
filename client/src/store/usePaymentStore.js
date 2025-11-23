@@ -2,8 +2,8 @@ import { create } from 'zustand'
 import axiosInstance from '../config/axiosInstance'
 import toast from 'react-hot-toast'
 import { getErrorMessage } from '../utilities/axiosUtils.js'
-import { getFullApiUrl } from '../config/api.js'
 import { ensureCsrfToken } from '../services/csrfService.js'
+import { trackPaymentInitiated } from '../services/analyticsService.js'
 
 export const usePaymentStore = create((set, get) => ({
   subscription: null,
@@ -44,6 +44,7 @@ export const usePaymentStore = create((set, get) => ({
       )
 
       if (response.data.url) {
+        trackPaymentInitiated(0, planType)
         window.location.href = response.data.url
       }
 
@@ -72,6 +73,7 @@ export const usePaymentStore = create((set, get) => ({
       )
 
       if (response.data.url) {
+        trackPaymentInitiated(0, packageType)
         window.location.href = response.data.url
       }
 

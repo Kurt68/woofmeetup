@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../config/axiosInstance'
 import { useAuthStore } from '../../store/useAuthStore'
 import { formatSentenceCase } from '../../utilities/formatSentenceCase'
+import { trackDogProfileCreated } from '../../services/analyticsService'
 
 export const useOnboarding = () => {
   const { user, checkAuth } = useAuthStore()
@@ -186,6 +187,7 @@ export const useOnboarding = () => {
       })
       const success = response.status === 200
       if (success) {
+        trackDogProfileCreated()
         // Navigate immediately to dashboard
         navigate('/dashboard')
 

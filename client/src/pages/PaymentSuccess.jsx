@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/useAuthStore'
 import Nav from '../components/layout/Nav'
 import { PageHead } from '../components/PageHead'
 import axiosInstance from '../config/axiosInstance'
+import { trackPaymentCompleted } from '../services/analyticsService'
 
 const PaymentSuccess = () => {
   const navigate = useNavigate()
@@ -27,6 +28,7 @@ const PaymentSuccess = () => {
               '✅ User credits updated:',
               response.data.user.messageCredits
             )
+            trackPaymentCompleted(0, 'completed')
           }
         } catch (error) {
           console.error('⚠️ Failed to refresh user data:', error.message)

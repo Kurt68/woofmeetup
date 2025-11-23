@@ -10,6 +10,7 @@ import {
   sanitizeErrorMessage,
   sanitizeImageUrl,
 } from '../utilities/sanitizeUrl'
+import { trackDogProfileUpdated } from '../services/analyticsService'
 
 /**
  * EditDogProfile - Edit existing user profile with image previews
@@ -299,6 +300,7 @@ const EditDogProfile = () => {
           return
         }
 
+        trackDogProfileUpdated()
         console.log('🚀 [EditProfile] About to call navigate()...')
         navigate('/dashboard')
         console.log('🚀 [EditProfile] navigate() called')

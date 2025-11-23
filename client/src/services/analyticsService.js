@@ -54,3 +54,83 @@ export const trackLinkCopyEvent = () => {
     timestamp: new Date().toISOString(),
   })
 }
+
+export const trackSignup = (method = 'email') => {
+  trackEvent('user_signup', {
+    method: method,
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackLogin = () => {
+  trackEvent('user_login', {
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackMessageSent = (creditsUsed = 1) => {
+  trackEvent('message_sent', {
+    credits_used: creditsUsed,
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackProfileLike = () => {
+  trackEvent('profile_liked', {
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackProfileMatch = () => {
+  trackEvent('profile_matched', {
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackPaymentCompleted = (amount, plan) => {
+  trackEvent('payment_completed', {
+    value: amount,
+    plan: plan,
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackPaymentInitiated = (amount, plan) => {
+  trackEvent('payment_initiated', {
+    value: amount,
+    plan: plan,
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackDogProfileCreated = () => {
+  trackEvent('dog_profile_created', {
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackDogProfileUpdated = () => {
+  trackEvent('dog_profile_updated', {
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackMeetupScheduled = (meetupType) => {
+  trackEvent('meetup_scheduled', {
+    meetup_type: meetupType,
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackChatInitiated = (recipientId) => {
+  trackEvent('chat_initiated', {
+    recipient_id: recipientId,
+    timestamp: new Date().toISOString(),
+  })
+}
+
+export const trackProfileViewed = () => {
+  trackEvent('profile_viewed', {
+    timestamp: new Date().toISOString(),
+  })
+}
