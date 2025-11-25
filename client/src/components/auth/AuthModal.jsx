@@ -39,12 +39,14 @@ const AuthModal = ({ setShowModal, isSignUp, referralSource }) => {
   }
 
   return (
-    <div
-      className="auth-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="auth-modal-heading"
-    >
+    <div className="auth-modal-overlay" onClick={handleClick}>
+      <div
+        className="auth-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-heading"
+        onClick={(e) => e.stopPropagation()}
+      >
       <AuthModalHeader isSignUp={isSignUp} onClose={handleClick} />
 
       <AuthModalDisclaimer isSignUp={isSignUp} />
@@ -77,6 +79,7 @@ const AuthModal = ({ setShowModal, isSignUp, referralSource }) => {
           onSubmit={handleSubmit}
         />
       )}
+      </div>
     </div>
   )
 }

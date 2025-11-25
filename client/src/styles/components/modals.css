@@ -2,9 +2,22 @@
    Modals Component
    ======================================== */
 
+/* Auth Modal Overlay */
+.auth-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  z-index: 999;
+}
+
 /* Auth Modal */
 .auth-modal {
-  position: fixed;
+  position: absolute;
   left: var(--spacing-md-lg);
   right: var(--spacing-md-lg);
   top: 80px;
