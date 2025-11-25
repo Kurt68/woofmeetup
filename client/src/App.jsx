@@ -50,6 +50,7 @@ const EmailVerification = lazy(() => import('./pages/EmailVerification'))
 const PricingPage = lazy(() => import('./pages/PricingPage'))
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
 const Home = lazy(() => import('./pages/Home'))
+const PublicProfile = lazy(() => import('./pages/PublicProfile'))
 
 const LocationTracker = () => {
   const location = useLocation()
@@ -102,6 +103,15 @@ const App = () => {
                 <RedirectAuthenticatedUser>
                   <Home />
                 </RedirectAuthenticatedUser>
+              }
+            />
+
+            <Route
+              path="/profile/:userId"
+              element={
+                <ErrorBoundary>
+                  <PublicProfile />
+                </ErrorBoundary>
               }
             />
 

@@ -22,6 +22,9 @@ import {
   deleteOneUser,
   putUserSelectDistance,
   triggerScheduledDeletionJob,
+  getPublicProfile,
+  updateProfileVisibility,
+  getReferralStats,
 } from '../controllers/auth.controller.js'
 import { verifyToken } from '../middleware/verifyToken.js'
 import { checkAdminRole } from '../middleware/checkAdminRole.js'
@@ -158,6 +161,20 @@ const validateMagicBytesMiddleware = (req, res, next) => {
 // Security: Apply rate limiting to prevent DoS attacks on authentication check
 // Using dedicated checkAuthLimiter (50/5min) instead of generalLimiter to allow legitimate polling
 router.get('/check-auth', checkAuthLimiter, verifyToken, checkAuth)
+
+// Update profile visibility (public/private)
+// Requires authentication and CSRF protection
+router.patch(
+  '/profile-visibility',
+  csrfProtection,
+  verifyToken,
+  generalLimiter,
+  updateProfileVisibility
+)
+
+// Public endpoint to fetch a user's public profile for SEO and sharing
+// No authentication required - this is intentional for public profile pages
+router.get('/public-profile/:userId', generalLimiter, getPublicProfile)
 // Security: Apply authentication and stricter rate limiting to prevent unauthorized access
 // CRITICAL FIX: Added verifyToken middleware to require authentication
 // Using userEnumerationLimiter (5/5min) to prevent attackers from discovering user IDs
@@ -527,6 +544,15 @@ router.post(
   '/trigger-scheduled-deletion',
   deletionEndpointLimiter, // Rate limiting: 3 requests per hour
   triggerScheduledDeletionRoute
+)
+
+// Get referral statistics (admin only)
+router.get(
+  '/referral-stats',
+  verifyToken,
+  generalLimiter,
+  checkAdminRole,
+  getReferralStats
 )
 
 export default router

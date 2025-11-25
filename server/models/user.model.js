@@ -89,6 +89,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       required: false,
     },
+    isProfilePublic: {
+      type: Boolean,
+      default: true,
+      required: false,
+    },
     location: {
       type: Object,
       required: false,
@@ -142,6 +147,11 @@ const userSchema = new mongoose.Schema(
     isAdmin: {
       type: Boolean,
       default: false,
+    },
+    // Referral tracking
+    referral_source: {
+      type: String,
+      required: false,
     },
   },
   { timestamps: true }

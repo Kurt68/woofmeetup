@@ -118,6 +118,22 @@ Organized list of planned features, improvements, and technical debt for Woof Me
 
 ## 📊 Analytics & Insights
 
+### Social Media & Referrals
+
+**✅ Completed:**
+- Social share buttons (Twitter, Facebook, LinkedIn, WhatsApp)
+- Share URL generation with dog profile info
+- Referral source tracking during signup (`?referral=userId`)
+- Backend storage of referral source in User model
+- Admin API endpoint: `GET /api/auth/referral-stats` (requires admin role)
+- Referral stats show: top referral sources, conversion rates, signup breakdown
+
+**❌ Remaining:**
+- Admin dashboard page to view referral analytics UI
+- Referral rewards system (credits/perks for sharing)
+- Batch referral report export
+- Referral leaderboard (top shared dogs)
+
 ### User Analytics
 
 - User engagement metrics
@@ -131,6 +147,7 @@ Organized list of planned features, improvements, and technical debt for Woof Me
 - Moderation queue management
 - System health monitoring
 - Revenue tracking and reports
+- **Referral analytics view** (view referral stats from API)
 
 ---
 

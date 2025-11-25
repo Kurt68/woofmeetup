@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { toast } from 'react-hot-toast'
 import {
   checkEmail,
   checkPassword,
@@ -13,7 +14,7 @@ import { trackSignup, trackLogin } from '../../services/analyticsService'
 const SERVER_URL =
   import.meta.env.MODE === 'development' ? 'http://localhost:8000' : ''
 
-export const useAuthModal = (isSignUp) => {
+export const useAuthModal = (isSignUp, referralSource) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [userName, setUserName] = useState('')
@@ -105,8 +106,9 @@ export const useAuthModal = (isSignUp) => {
       }
 
       if (isSignUp) {
-        await signup(email, password, userName)
+        await signup(email, password, userName, referralSource)
         trackSignup('email')
+        toast.success('Your profile is now public on Woof. You can change this anytime in Account Settings.', { duration: 6000 })
         navigate('/verify-email')
       } else {
         await login(email, password)

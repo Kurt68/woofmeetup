@@ -58,11 +58,6 @@ export const fetchCsrfToken = async (force = false) => {
       const data = await response.json()
       csrfToken = data.csrfToken
       lastFetchTime = Date.now()
-
-      if (import.meta.env.MODE === 'development') {
-        console.log('🔐 CSRF token fetched and stored')
-      }
-
       return csrfToken
     } catch (error) {
       console.error('❌ Failed to fetch CSRF token:', error)
@@ -89,31 +84,13 @@ export const getCsrfToken = () => {
  * Ensure CSRF token is loaded before making authenticated requests
  * Waits for token to be fetched if it's still loading
  * Automatically refreshes if token is stale
+ * SECURITY FIX: Always fetch fresh token for each request to sync with server cookies
  * @returns {Promise<string|null>} - The CSRF token or null if failed
  */
 export const ensureCsrfToken = async () => {
-  // Check if token is stale
-  if (csrfToken && lastFetchTime) {
-    const age = Date.now() - lastFetchTime
-    if (age > TOKEN_REFRESH_INTERVAL) {
-      // Token is stale, refresh it
-      return fetchCsrfToken(true)
-    }
-    return csrfToken
-  }
-
-  // If we already have a fresh token, return it
-  if (csrfToken) {
-    return csrfToken
-  }
-
-  // If fetch is in progress, wait for it
-  if (csrfTokenPromise) {
-    return csrfTokenPromise
-  }
-
-  // Otherwise fetch it
-  return fetchCsrfToken(false)
+  // Always fetch a fresh token to ensure it matches the current CSRF cookie
+  // This prevents token/cookie mismatch that causes validation failures
+  return fetchCsrfToken(true)
 }
 
 /**

@@ -4,7 +4,7 @@ import TurnstileSection from './TurnstileSection'
 import AuthForm from './AuthForm'
 import { useAuthModal } from '../../hooks/auth'
 
-const AuthModal = ({ setShowModal, isSignUp }) => {
+const AuthModal = ({ setShowModal, isSignUp, referralSource }) => {
   const {
     // Form state
     email,
@@ -32,7 +32,7 @@ const AuthModal = ({ setShowModal, isSignUp }) => {
     handleSubmit,
     handleTurnstileSuccess,
     handleTurnstileError,
-  } = useAuthModal(isSignUp)
+  } = useAuthModal(isSignUp, referralSource)
 
   const handleClick = () => {
     setShowModal(false)

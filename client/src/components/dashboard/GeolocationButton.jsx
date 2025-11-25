@@ -21,6 +21,7 @@ const GeolocationButton = ({ userId, onLocationUpdate }) => {
 
       // Only update UI state AFTER coordinates are successfully saved
       if (response.status === 200) {
+        localStorage.setItem('lastKnownCoordinates', JSON.stringify({ longitude, latitude }))
         onLocationUpdate({ longitude, latitude })
       }
     } catch (err) {

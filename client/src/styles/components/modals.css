@@ -820,6 +820,7 @@
 .profile-modal-close {
   position: absolute;
   right: var(--spacing-md);
+  top: var(--spacing-md);
   background: none;
   border: none;
   cursor: pointer;
@@ -880,6 +881,8 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
+  align-items: center;
+  text-align: center;
 }
 
 .profile-section {

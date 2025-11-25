@@ -1,0 +1,103 @@
+.profile-share-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.profile-share-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #666;
+  margin: 0;
+}
+
+.profile-share-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.profile-share-button {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: white;
+  color: #333;
+  font-size: 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.profile-share-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.profile-share-button:active {
+  transform: translateY(-2px);
+}
+
+.profile-share-button.twitter {
+  color: #1da1f2;
+  border-color: #1da1f2;
+}
+
+.profile-share-button.twitter:hover {
+  background: #1da1f2;
+  color: white;
+}
+
+.profile-share-button.facebook {
+  color: #1877f2;
+  border-color: #1877f2;
+}
+
+.profile-share-button.facebook:hover {
+  background: #1877f2;
+  color: white;
+}
+
+.profile-share-button.whatsapp {
+  color: #25d366;
+  border-color: #25d366;
+}
+
+.profile-share-button.whatsapp:hover {
+  background: #25d366;
+  color: white;
+}
+
+.profile-share-button.copy {
+  color: #ec4899;
+  border-color: #ec4899;
+}
+
+.profile-share-button.copy:hover {
+  background: #ec4899;
+  color: white;
+}
+
+.profile-share-button.copy.copied {
+  background: #10b981;
+  color: white;
+  border-color: #10b981;
+}
+
+@media (max-width: 640px) {
+  .profile-share-buttons {
+    gap: 0.5rem;
+  }
+
+  .profile-share-button {
+    width: 44px;
+    height: 44px;
+    font-size: 1.125rem;
+  }
+}

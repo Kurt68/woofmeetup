@@ -149,6 +149,12 @@ export default defineConfig(({ mode }) => {
       },
       middlewareMode: false,
       cors: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:8000',
+          changeOrigin: true,
+        },
+      },
     },
     // Resolve configuration
     resolve: {

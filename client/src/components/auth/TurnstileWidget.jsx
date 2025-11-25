@@ -2,8 +2,14 @@ import { useEffect, useRef } from 'react'
 
 const TurnstileWidget = ({ siteKey, onSuccess, onError }) => {
   const widgetRef = useRef(null)
+  const isDev = import.meta.env.MODE === 'development' || window.location.hostname === 'localhost'
 
   useEffect(() => {
+    if (isDev) {
+      onSuccess('dev-mock-token')
+      return
+    }
+
     const loadTurnstile = () => {
       if (window.turnstile && widgetRef.current) {
         window.turnstile.render(widgetRef.current, {
@@ -35,7 +41,11 @@ const TurnstileWidget = ({ siteKey, onSuccess, onError }) => {
         window.turnstile.remove(currentWidget)
       }
     }
-  }, [siteKey, onSuccess, onError])
+  }, [siteKey, onSuccess, onError, isDev])
+
+  if (isDev) {
+    return <div ref={widgetRef} style={{ padding: '10px', fontSize: '12px', color: '#666' }}>Turnstile verification (dev mode)</div>
+  }
 
   return <div ref={widgetRef}></div>
 }

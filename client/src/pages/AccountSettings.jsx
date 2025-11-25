@@ -29,10 +29,45 @@ const MAX_RETRIES = 2
 const SCRIPT_TIMEOUT = 8000
 
 const AccountSettings = () => {
-  const { logout, user } = useAuthStore()
+  const { logout, user, updateProfileVisibility } = useAuthStore()
   const [showModal, setShowModal] = useState(false)
+  const [isProfilePublic, setIsProfilePublic] = useState(
+    user?.isProfilePublic ?? true
+  )
+  const [visibilityLoading, setVisibilityLoading] = useState(false)
+  const [showVisibilityBanner, setShowVisibilityBanner] = useState(false)
+
+  useEffect(() => {
+    const bannerDismissed = localStorage.getItem(
+      'profileVisibilityBannerDismissed'
+    )
+    if (!bannerDismissed) {
+      setShowVisibilityBanner(true)
+    }
+  }, [])
 
   const userId = user?.user_id
+
+  const handleDismissBanner = () => {
+    setShowVisibilityBanner(false)
+    localStorage.setItem('profileVisibilityBannerDismissed', 'true')
+  }
+
+  const handleVisibilityToggle = async (e) => {
+    e.preventDefault()
+    setVisibilityLoading(true)
+    try {
+      const newValue = !isProfilePublic
+      await updateProfileVisibility(userId, newValue)
+      setIsProfilePublic(newValue)
+      const status = newValue ? 'public' : 'private'
+      toast.success(`Profile is now ${status}`, { duration: 3000 })
+    } catch (err) {
+      toast.error('Failed to update profile visibility', { duration: 3000 })
+    } finally {
+      setVisibilityLoading(false)
+    }
+  }
 
   const deleteClick = () => {
     setShowModal(true)
@@ -188,8 +223,41 @@ const AccountSettings = () => {
       <div className="background-color">
         <div className="overlay">
           <Nav minimal={true} />
+
+          {showVisibilityBanner && (
+            <div className="profile-visibility-banner">
+              <div className="banner-content">
+                <p>
+                  <strong>Your profile is currently public</strong> on Woof
+                  Meetup. This helps other dog lovers discover you for meetups.
+                  You can change your privacy preference anytime using the
+                  toggle.
+                </p>
+              </div>
+              <button
+                className="banner-close-button"
+                onClick={handleDismissBanner}
+                aria-label="Dismiss banner"
+                type="button"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           <div className="account-settings">
             <Link to="/dashboard">&lt;&lt; Back to Dashboard</Link>
+            <label className="profile-visibility-toggle">
+              <input
+                type="checkbox"
+                checked={isProfilePublic}
+                onChange={handleVisibilityToggle}
+                disabled={visibilityLoading}
+              />
+              <span>
+                {isProfilePublic ? 'Profile is Public' : 'Profile is Private'}
+              </span>
+            </label>
             <Link onClick={() => handleScriptSelection('privacy')}>
               Privacy Policy
             </Link>

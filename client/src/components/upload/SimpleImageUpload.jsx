@@ -273,7 +273,7 @@ const SimpleImageUpload = ({
                 className="upload-button secondary"
               >
                 <X size={16} />
-                {uploadSuccess ? 'Upload Different Photo' : 'Remove'}
+                {uploadSuccess ? 'Upload New Photo' : 'Remove'}
               </button>
             </div>
           )}

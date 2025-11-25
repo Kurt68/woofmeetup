@@ -2,15 +2,25 @@ import { Nav } from '../components/layout'
 import { AuthModal } from '../components/auth'
 import { PageHead } from '../components/PageHead'
 import { HomeShareButtons } from '../components/share'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCookies } from 'react-cookie'
+import { useSearchParams } from 'react-router-dom'
 
 const Home = () => {
   const [showModal, setShowModal] = useState(false)
   const [isSignUp, setIsSignUp] = useState(true)
   const [cookies] = useCookies('user')
+  const [searchParams] = useSearchParams()
+  const [referralSource, setReferralSource] = useState(null)
 
   const authToken = cookies.token
+
+  useEffect(() => {
+    const referral = searchParams.get('referral')
+    if (referral) {
+      setReferralSource(referral)
+    }
+  }, [searchParams])
 
   const handleClick = () => {
     setShowModal(true)
@@ -40,7 +50,7 @@ const Home = () => {
           </button>
 
           {showModal && (
-            <AuthModal setShowModal={setShowModal} isSignUp={isSignUp} />
+            <AuthModal setShowModal={setShowModal} isSignUp={isSignUp} referralSource={referralSource} />
           )}
         </div>
         <HomeShareButtons />

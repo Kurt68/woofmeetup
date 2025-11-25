@@ -18,15 +18,19 @@ export const useAuthStore = create((set, get) => ({
   onlineUsers: [],
   socket: null,
 
-  signup: async (email, password, userName) => {
+  signup: async (email, password, userName, referralSource) => {
     set({ isLoading: true, error: null })
     try {
       await ensureCsrfToken()
-      const response = await axiosInstance.post('/api/auth/signup', {
+      const signupData = {
         email,
         password,
         userName,
-      })
+      }
+      if (referralSource) {
+        signupData.referral_source = referralSource
+      }
+      const response = await axiosInstance.post('/api/auth/signup', signupData)
       // Security Fix: JWT token is now stored in httpOnly cookies by backend
       // Removed sessionStorage usage to prevent XSS token theft
       // Backend automatically sets secure cookie, no need to store locally
@@ -218,5 +222,37 @@ export const useAuthStore = create((set, get) => ({
 
   clearError: () => {
     set({ error: null })
+  },
+
+  setUser: (userData) => {
+    set({ user: userData })
+  },
+
+  fetchPublicProfile: async (userId, coordinates) => {
+    let url = `/api/auth/public-profile/${userId}`
+    if (coordinates) {
+      const params = new URLSearchParams({
+        longitude: coordinates.longitude,
+        latitude: coordinates.latitude,
+      })
+      url += `?${params.toString()}`
+    }
+    const response = await axiosInstance.get(url)
+    return response.data.user
+  },
+
+  updateProfileVisibility: async (userId, isProfilePublic) => {
+    await ensureCsrfToken()
+    const response = await axiosInstance.patch('/api/auth/profile-visibility', {
+      userId,
+      isProfilePublic,
+    })
+    set((state) => ({
+      user: {
+        ...state.user,
+        isProfilePublic,
+      },
+    }))
+    return response.data
   },
 }))

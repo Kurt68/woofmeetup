@@ -1,5 +1,8 @@
-import { MailtrapClient } from 'mailtrap'
+import { createRequire } from 'module'
 import dotenv from 'dotenv'
+
+const require = createRequire(import.meta.url)
+const { MailtrapClient } = require('mailtrap')
 
 dotenv.config()
 

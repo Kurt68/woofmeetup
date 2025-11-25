@@ -1,4 +1,5 @@
 import { hash, compare } from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { v4 as uuidv4 } from 'uuid'
 import { isString, isArray } from 'lodash-es'
 import { User } from '../models/user.model.js'
@@ -57,7 +58,7 @@ export const signup = async (req, res) => {
     })
   }
 
-  const { email, password, userName } = req.body
+  const { email, password, userName, referral_source } = req.body
 
   const generatedUserId = uuidv4()
   const verificationToken = generatedVerificationToken()
@@ -77,6 +78,7 @@ export const signup = async (req, res) => {
       password: hashedPassword,
       verificationToken,
       verificationTokenExpiresAt: Date.now() + 24 * 60 * 60 * 1000, // 24 hours
+      referral_source,
     })
 
     await user.save()
@@ -1975,6 +1977,179 @@ export const deleteOneUser = async (req, res) => {
   }
 }
 
+export const getPublicProfile = async (req, res) => {
+  try {
+    const { userId } = req.params
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID is required',
+      })
+    }
+
+    const user = await User.findOne({ user_id: userId }).lean()
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      })
+    }
+
+    if (user.isProfilePublic === false) {
+      return res.status(403).json({
+        success: false,
+        message: 'This profile is private',
+      })
+    }
+
+    const publicProfile = {
+      _id: user._id,
+      user_id: user.user_id,
+      userName: user.userName,
+      dogs_name: user.dogs_name,
+      age: user.age,
+      userAge: user.userAge,
+      userAbout: user.userAbout,
+      about: user.about,
+      meetup_type: user.meetup_type,
+      show_meetup_type: user.show_meetup_type,
+    }
+
+    let currentUser = null
+    let lat1, lon1
+    const token = req.cookies.token
+    
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        if (decoded) {
+          currentUser = await User.findOne({ user_id: decoded.userId }).lean()
+          if (currentUser && currentUser.location && currentUser.location.coordinates) {
+            [lon1, lat1] = currentUser.location.coordinates
+          }
+        }
+      } catch (err) {
+        logInfo('auth.controller', 'Optional auth failed for public profile, continuing without distance')
+      }
+    } else if (req.query.latitude && req.query.longitude) {
+      lat1 = parseFloat(req.query.latitude)
+      lon1 = parseFloat(req.query.longitude)
+    }
+
+    if (
+      lat1 !== undefined &&
+      lon1 !== undefined &&
+      user.location &&
+      user.location.coordinates
+    ) {
+      try {
+        const [lon2, lat2] = user.location.coordinates
+        const R = 6371000
+        const dLat = ((lat2 - lat1) * Math.PI) / 180
+        const dLon = ((lon2 - lon1) * Math.PI) / 180
+        const a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLon / 2) *
+            Math.sin(dLon / 2)
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+        const distanceMeters = R * c
+        publicProfile.distance_to_other_users = Math.round(distanceMeters * 0.000621371)
+      } catch (err) {
+        logError('auth.controller', 'Error calculating distance for public profile', err)
+      }
+    }
+
+    if (user.image) {
+      try {
+        publicProfile.imageUrl = getSignedUrl({
+          url: `https://${cloudfrontDomain}/` + user.image,
+          dateLessThan: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          privateKey: getCloudFrontPrivateKey(),
+          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+        })
+      } catch (err) {
+        logError('auth.controller', 'Error generating signed URL for dog image', err)
+        publicProfile.imageUrl = user.imageUrl || null
+      }
+    }
+
+    if (user.profile_image) {
+      try {
+        publicProfile.profileImageUrl = getSignedUrl({
+          url: `https://${cloudfrontDomain}/` + user.profile_image,
+          dateLessThan: new Date(Date.now() + 24 * 60 * 60 * 1000),
+          privateKey: getCloudFrontPrivateKey(),
+          keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
+        })
+      } catch (err) {
+        logError('auth.controller', 'Error generating signed URL for user image', err)
+        publicProfile.profileImageUrl = user.profileImageUrl || null
+      }
+    }
+
+    res.json({
+      success: true,
+      user: publicProfile,
+    })
+  } catch (error) {
+    logError('auth.controller', 'Get public profile error', error)
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while fetching the profile',
+    })
+  }
+}
+
+export const updateProfileVisibility = async (req, res) => {
+  try {
+    const { userId } = req.body
+    const { isProfilePublic } = req.body
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'User ID is required',
+      })
+    }
+
+    if (typeof isProfilePublic !== 'boolean') {
+      return res.status(400).json({
+        success: false,
+        message: 'isProfilePublic must be a boolean',
+      })
+    }
+
+    const user = await User.findOneAndUpdate(
+      { user_id: userId },
+      { isProfilePublic },
+      { new: true }
+    ).lean()
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      })
+    }
+
+    res.json({
+      success: true,
+      message: `Profile is now ${isProfilePublic ? 'public' : 'private'}`,
+      isProfilePublic: user.isProfilePublic,
+    })
+  } catch (error) {
+    logError('auth.controller', 'Update profile visibility error', error)
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while updating profile visibility',
+    })
+  }
+}
+
 // Test endpoint to manually trigger scheduled deletion cron job
 export const triggerScheduledDeletionJob = async (req, res) => {
   try {
@@ -1996,6 +2171,55 @@ export const triggerScheduledDeletionJob = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to execute scheduled deletion job',
+    })
+  }
+}
+
+export const getReferralStats = async (req, res) => {
+  try {
+    const stats = await User.aggregate([
+      {
+        $group: {
+          _id: '$referral_source',
+          count: { $sum: 1 },
+          createdAt: { $min: '$createdAt' },
+        },
+      },
+      {
+        $match: {
+          _id: { $ne: null },
+        },
+      },
+      {
+        $sort: { count: -1 },
+      },
+    ])
+
+    const totalSignups = await User.countDocuments({})
+    const referralSignups = await User.countDocuments({
+      referral_source: { $ne: null },
+    })
+
+    res.json({
+      success: true,
+      data: {
+        stats,
+        summary: {
+          totalSignups,
+          referralSignups,
+          directSignups: totalSignups - referralSignups,
+          referralConversionRate: (
+            (referralSignups / totalSignups) *
+            100
+          ).toFixed(2),
+        },
+      },
+    })
+  } catch (error) {
+    logError('auth.controller', 'Get referral stats error', error)
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch referral statistics',
     })
   }
 }

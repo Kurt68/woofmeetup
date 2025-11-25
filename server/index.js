@@ -211,10 +211,15 @@ app.use((req, res, next) => {
 // SECURITY FIX #3: MISSING RATE LIMITING - Now protected from abuse
 app.get('/api/csrf-token', csrfTokenLimiter, (req, res, next) => {
   try {
-    csrfProtection(req, res, () => {
-      // CSRF protection middleware has already run and set up the token
-      // Simply return it to the client for use in subsequent requests
-      res.json({
+    csrfProtection(req, res, (err) => {
+      if (err) {
+        logError('index', 'CSRF protection error', err)
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to generate CSRF token',
+        })
+      }
+      res.status(200).json({
         success: true,
         csrfToken: req.csrfToken(),
       })
@@ -268,6 +273,10 @@ app.post('/verify-turnstile', turnstileLimiter, async (req, res) => {
     return res
       .status(400)
       .json({ success: false, message: 'No token provided' })
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    return res.json({ success: true, message: 'Turnstile verification successful (development mode)' })
   }
 
   try {
