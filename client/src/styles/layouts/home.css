@@ -34,7 +34,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
-  z-index: 100;
+  z-index: 10;
 
   @media (max-width: 640px) {
     bottom: var(--spacing-xl);
