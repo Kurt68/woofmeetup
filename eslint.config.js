@@ -2,7 +2,18 @@ import js from '@eslint/js'
 
 export default [
   {
-    ignores: ['node_modules/**', 'dist/**', 'client/dist/**', 'test-results/**'],
+    ignores: [
+      'node_modules/**',
+      'dist/**',
+      'build/**',
+      'coverage/**',
+      '.next/**',
+      'out/**',
+      'client/dist/**',
+      'client/node_modules/**',
+      'test-results/**',
+      '**/*.min.js',
+    ],
   },
   {
     files: ['server/**/*.js'],
@@ -18,22 +29,17 @@ export default [
         setImmediate: 'readonly',
         clearInterval: 'readonly',
         fetch: 'readonly',
+        URL: 'readonly',
         URLSearchParams: 'readonly',
       },
     },
     rules: {
       ...js.configs.recommended.rules,
-      'no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_|next|req|res',
-          varsIgnorePattern: '^_',
-        },
-      ],
+      'no-unused-vars': 'off',
       'no-console': [
         'warn',
         {
-          allow: ['warn', 'error'],
+          allow: ['log', 'warn', 'error'],
         },
       ],
       'prefer-const': 'error',

@@ -12,7 +12,7 @@ import { getClientUrl } from '../utilities/getClientUrl.js'
 import { checkImage } from '../utilities/checkImage.js'
 import { validateMagicBytes } from '../utilities/magicBytesValidator.js'
 import { logError, logInfo } from '../utilities/logger.js'
-import { sanitizeErrorMessage } from '../utilities/errorSanitizer.js'
+import { sanitizeErrorMessage as _sanitizeErrorMessage } from '../utilities/errorSanitizer.js'
 import { logAuthzFailure } from '../utilities/securityLogger.js'
 import { validationResult } from 'express-validator'
 import {
@@ -382,7 +382,7 @@ export const resetPassword = async (req, res) => {
         }
 
         timingSafeEqual(tokenBuffer, storedTokenBuffer)
-      } catch (error) {
+      } catch (_error) {
         // timingSafeEqual threw - tokens don't match
         // SECURITY FIX: Use random jitter (0-100ms) to prevent timing attacks
         // Random delay makes timing measurements unreliable to attackers
@@ -528,7 +528,7 @@ export const getMatches = async (req, res) => {
     let userIds
     try {
       userIds = JSON.parse(req.query.userIds)
-    } catch (parseError) {
+    } catch (_parseError) {
       return sendError(res, 'Invalid userIds format', 400)
     }
 
@@ -998,7 +998,7 @@ export const updateMatches = async (req, res) => {
       const otherUserDogName = otherUser.dogs_name
       const currentUserName = currentUser.userName
       const otherUserName = otherUser.userName
-      const currentUserEmail = currentUser.email
+      const _currentUserEmail = currentUser.email
       const otherUserEmail = otherUser.email
 
       try {
@@ -1242,7 +1242,7 @@ export const uploadProfileImage = async (req, res) => {
     }
 
     const command = new PutObjectCommand(params)
-    const s3Result = await getS3().send(command)
+    const _s3Result = await getS3().send(command)
 
     const query = { user_id: userId }
     const updateDocument = {
@@ -1518,7 +1518,7 @@ async function performImmediateDeletion(currentUser, res) {
       }
       const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
       await getCloudFront().send(invalidationCommand)
-    } catch (imageError) {
+    } catch (_imageError) {
       // Silent error handling - image deletion is non-critical for account deletion
     }
   }
@@ -1673,10 +1673,10 @@ export const deleteOneUser = async (req, res) => {
         scheduledDate =
           currentUser.subscriptionEndDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         deletionMessage = `Account scheduled for deletion on ${scheduledDate.toLocaleDateString()}. You will retain access to premium features until then.`
-      } catch (stripeError) {
+      } catch (_stripeError) {
         // Fallback to 30 days if Stripe fails
         scheduledDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-        deletionMessage = `Account scheduled for deletion in 30 days. You will retain access until then.`
+        deletionMessage = 'Account scheduled for deletion in 30 days. You will retain access until then.'
       }
     } else if (hasPurchasedCredits) {
       // User has purchased credits but no subscription - give 30 day grace period
@@ -1787,7 +1787,7 @@ export const getPublicProfile = async (req, res) => {
             ;[lon1, lat1] = currentUser.location.coordinates
           }
         }
-      } catch (err) {
+      } catch (_err) {
         logInfo(
           'auth.controller',
           'Optional auth failed for public profile, continuing without distance'

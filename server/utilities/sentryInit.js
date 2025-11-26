@@ -22,7 +22,9 @@ let isInitialized = false
  * Initialize Sentry if DSN is provided
  */
 export const initializeSentry = async () => {
-  if (isInitialized) return
+  if (isInitialized) {
+    return
+  }
 
   isInitialized = true
 
@@ -58,7 +60,9 @@ export const getSentry = () => Sentry
  * Capture an exception
  */
 export const captureException = (error, context = {}) => {
-  if (!Sentry) return
+  if (!Sentry) {
+    return
+  }
 
   try {
     Sentry.captureException(error, {
@@ -75,7 +79,9 @@ export const captureException = (error, context = {}) => {
  * Capture a message (warning, info, etc.)
  */
 export const captureMessage = (message, level = 'info', context = {}) => {
-  if (!Sentry) return
+  if (!Sentry) {
+    return
+  }
 
   try {
     Sentry.captureMessage(message, level, {

@@ -1,5 +1,5 @@
 import express from 'express'
-import { body, validationResult } from 'express-validator'
+import { body } from 'express-validator'
 import { verifyToken } from '../middleware/verifyToken.js'
 import { csrfProtection } from '../middleware/csrf.js'
 import {

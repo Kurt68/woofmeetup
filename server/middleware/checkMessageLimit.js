@@ -2,7 +2,7 @@ import { User } from '../models/user.model.js'
 import {
   sendUnauthorized,
   sendNotFound,
-  sendForbidden,
+  _sendForbidden,
   sendInternalError,
   sendError,
 } from '../utils/ApiResponse.js'
@@ -62,7 +62,7 @@ export const decrementMessageCredit = async (userId) => {
       user.totalMessagesSent += 1
       await user.save()
     }
-  } catch (error) {
+  } catch (_error) {
     // Silent error handling - credit decrement is non-critical
   }
 }

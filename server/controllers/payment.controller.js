@@ -3,7 +3,7 @@ import { Transaction } from '../models/transaction.model.js'
 import { stripeService } from '../services/stripe.service.js'
 import { logError, logInfo } from '../utilities/logger.js'
 import { getClientUrl } from '../utilities/getClientUrl.js'
-import { sanitizeErrorMessage } from '../utilities/errorSanitizer.js'
+import { sanitizeErrorMessage as _sanitizeErrorMessage } from '../utilities/errorSanitizer.js'
 import { validateRedirectUrl } from '../utilities/sanitizeInput.js'
 import { validationResult } from 'express-validator'
 import {

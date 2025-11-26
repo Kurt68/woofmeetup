@@ -10,7 +10,7 @@
  * - Production-grade alerting
  */
 
-import { logWarning, logError, logInfo } from './logger.js'
+import { logWarning, logError } from './logger.js'
 
 // Simple in-memory metrics (resets on restart)
 const metrics = {
@@ -57,7 +57,7 @@ export const trackRateLimitHit = async (endpoint, ip, limit, windowMs) => {
     try {
       const { captureRateLimitAlert } = await import('./sentryInit.js')
       captureRateLimitAlert(endpoint, ip, limit, windowMs)
-    } catch (error) {
+    } catch (_error) {
       // Sentry not available, continue
     }
 

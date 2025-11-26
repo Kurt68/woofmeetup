@@ -63,7 +63,7 @@ async function performPermanentDeletion(user) {
       }
       const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
       await cloudFront.send(invalidationCommand)
-    } catch (imageError) {
+    } catch (_imageError) {
       // Silent error handling - image deletion is non-critical for account deletion
     }
   }
@@ -98,11 +98,11 @@ async function processScheduledDeletions() {
     for (const user of usersToDelete) {
       try {
         await performPermanentDeletion(user)
-      } catch (error) {
+      } catch (_error) {
         // Silent error handling - continue processing other deletions
       }
     }
-  } catch (error) {
+  } catch (_error) {
     // Silent error handling - job will retry on next scheduled run
   }
 }

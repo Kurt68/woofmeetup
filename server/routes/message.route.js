@@ -10,6 +10,8 @@ import {
   messageSendingLimiter,
   messageDeletionLimiter,
 } from '../middleware/rateLimiter.js'
+import AppError from '../utilities/AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 import { getMessages, sendMessage, deleteMessages } from '../controllers/message.controller.js'
 
 const router = express.Router()
@@ -51,11 +53,15 @@ router.post(
   upload.single('image'),
   body('text')
     .customSanitizer((value) => {
-      if (!value) return ''
+      if (!value) {
+        return ''
+      }
       // Remove null bytes and other control characters
       return String(value)
         .trim()
+        // eslint-disable-next-line no-control-regex
         .replace(/\x00/g, '')
+        // eslint-disable-next-line no-control-regex
         .replace(/[\x01-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, '')
         .replace(/\s+/g, ' ')
         .trim()
@@ -70,22 +76,26 @@ router.post(
     .optional()
     .custom((value) => {
       // Skip validation if using multipart (image is in req.file, not req.body.image)
-      if (!value) return true
+      if (!value) {
+        return true
+      }
       // Only validate if it's a string (JSON base64 request)
-      if (typeof value !== 'string') return true
+      if (typeof value !== 'string') {
+        return true
+      }
 
       // Validate base64 format (for JSON requests)
-      const isDataUrl = /^data:image\/[a-z+\-]+;base64,/.test(value)
+      const isDataUrl = /^data:image\/[a-z+-]+;base64,/.test(value)
       const isRawBase64 = /^[A-Za-z0-9+/\s=]*$/.test(value)
       if (!isDataUrl && !isRawBase64) {
-        throw new Error('Image must be valid base64 format')
+        throw AppError.badRequest(ErrorCodes.FILE_INVALID_TYPE, 'Image must be valid base64 format')
       }
 
       // Validate size (5MB limit)
       const sizeInBytes =
         Math.ceil((value.length * 3) / 4) - (value.endsWith('==') ? 2 : value.endsWith('=') ? 1 : 0)
       if (sizeInBytes > 5 * 1024 * 1024) {
-        throw new Error('Image must not exceed 5MB')
+        throw AppError.badRequest(ErrorCodes.FILE_INVALID_TYPE, 'Image must not exceed 5MB')
       }
       return true
     }),

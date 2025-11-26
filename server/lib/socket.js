@@ -30,10 +30,10 @@ const io = new Server(server, {
   cookie:
     process.env.NODE_ENV === 'production'
       ? {
-          secure: true,
-          httpOnly: true,
-          sameSite: 'lax',
-        }
+        secure: true,
+        httpOnly: true,
+        sameSite: 'lax',
+      }
       : false,
   // Security: Set max buffer size for chat images (60% compressed to ~800KB per image)
   maxHttpBufferSize: 5 * 1024 * 1024, // 5MB max message size for compressed images
@@ -152,9 +152,13 @@ const eventRateLimiter = new SocketEventRateLimiter()
  * Security: Shows only first 4 chars and total count, never full ID
  */
 function maskUserId(userId) {
-  if (!userId) return 'UNKNOWN'
+  if (!userId) {
+    return 'UNKNOWN'
+  }
   const str = String(userId)
-  if (str.length <= 4) return '****'
+  if (str.length <= 4) {
+    return '****'
+  }
   return `${str.substring(0, 4)}...`
 }
 
@@ -302,7 +306,7 @@ function verifySocketToken(socket) {
     if (error.name === 'TokenExpiredError') {
       logInfo('socket.auth', `Token verification failed: token expired at ${error.expiredAt}`)
     } else if (error.name === 'JsonWebTokenError') {
-      logInfo('socket.auth', `Token verification failed: invalid signature`)
+      logInfo('socket.auth', 'Token verification failed: invalid signature')
     } else {
       logInfo('socket.auth', `Token verification failed: ${error.message}`)
     }
@@ -400,11 +404,15 @@ io.use((socket, next) => {
 // Get filtered online matches for a user
 async function getFilteredOnlineUsers(userId) {
   try {
-    if (!userId) return []
+    if (!userId) {
+      return []
+    }
 
     // Get user's matched users - query by user_id (UUID) not MongoDB _id
     const user = await User.findOne({ user_id: userId }).select('matches')
-    if (!user || !user.matches) return []
+    if (!user || !user.matches) {
+      return []
+    }
 
     // Extract matched user IDs
     const matchedIds = user.matches.map((m) => m.user_id || m._id)
@@ -427,11 +435,15 @@ async function getFilteredOnlineUsers(userId) {
  */
 async function getMatchedUserIds(userId) {
   try {
-    if (!userId) return []
+    if (!userId) {
+      return []
+    }
 
     // Get the user's matches
     const user = await User.findOne({ user_id: userId }).select('matches')
-    if (!user || !user.matches) return []
+    if (!user || !user.matches) {
+      return []
+    }
 
     // Return matched user IDs
     return user.matches.map((m) => m.user_id || m._id).filter(Boolean)
@@ -445,13 +457,17 @@ async function getMatchedUserIds(userId) {
  * Broadcast online status to all matched users
  * Sends updated online list to each match so they can see if this user is online/offline
  */
-async function broadcastOnlineStatusToMatches(userId, isOnline) {
+async function broadcastOnlineStatusToMatches(userId, _isOnline) {
   try {
-    if (!userId) return
+    if (!userId) {
+      return
+    }
 
     // Get all users matched with this user
     const matchedIds = await getMatchedUserIds(userId)
-    if (!matchedIds.length) return
+    if (!matchedIds.length) {
+      return
+    }
 
     // For each matched user, send them the updated online status if they're connected
     for (const matchedId of matchedIds) {
@@ -526,8 +542,12 @@ io.on(SocketEvents.CONNECTION, (socket) => {
       }
     })()
 
-    if (userId) delete userSocketMap[userId]
-    if (mongoId) delete userSocketMap[mongoId]
+    if (userId) {
+      delete userSocketMap[userId]
+    }
+    if (mongoId) {
+      delete userSocketMap[mongoId]
+    }
 
     // Security: Decrement connection counter on disconnect
     if (userId && socketConnectionTracker[userId]) {

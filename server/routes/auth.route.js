@@ -331,7 +331,7 @@ router.put(
     .trim()
     .isLength({ max: 500 })
     .withMessage('Dog description must not exceed 500 characters')
-    .matches(/^[a-zA-Z0-9\s\.\,\-\'\"\!\?]*$/)
+    .matches(/^[a-zA-Z0-9\s.,\-'"!?]*$/)
     .withMessage('Dog description contains invalid characters'),
   body('formData.userAbout')
     .notEmpty()
@@ -339,7 +339,7 @@ router.put(
     .trim()
     .isLength({ max: 500 })
     .withMessage('User description must not exceed 500 characters')
-    .matches(/^[a-zA-Z0-9\s\.\,\-\'\"\!\?]*$/)
+    .matches(/^[a-zA-Z0-9\s.,\-'"!?]*$/)
     .withMessage('User description contains invalid characters'),
   body('formData.meetup_type')
     .notEmpty()
@@ -421,7 +421,7 @@ router.patch(
     .withMessage('Dog description is required')
     .isLength({ max: 500 })
     .withMessage('Dog description must not exceed 500 characters')
-    .matches(/^[a-zA-Z0-9\s\.\,\-\'\"\!\?]*$/)
+    .matches(/^[a-zA-Z0-9\s.,\-'"!?]*$/)
     .withMessage('Dog description contains invalid characters'),
   body('formData.userAbout')
     .trim()
@@ -429,7 +429,7 @@ router.patch(
     .withMessage('About you is required')
     .isLength({ max: 500 })
     .withMessage('User description must not exceed 500 characters')
-    .matches(/^[a-zA-Z0-9\s\.\,\-\'\"\!\?]*$/)
+    .matches(/^[a-zA-Z0-9\s.,\-'"!?]*$/)
     .withMessage('User description contains invalid characters'),
   body('formData.meetup_type')
     .optional()

@@ -34,7 +34,7 @@ const ALLOWED_BASE_DIRS = {
  * @returns {object} - { isValid: boolean, normalizedPath: string, error: string }
  */
 export function validateFilePath(filePath, baseDir, options = {}) {
-  const { allowSymlinks = false, maxPathLength = 500 } = options
+  const { allowSymlinks: _allowSymlinks = false, maxPathLength = 500 } = options
 
   // Check path length to prevent buffer overflow attacks
   if (filePath.length > maxPathLength) {

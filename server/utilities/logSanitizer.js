@@ -74,7 +74,7 @@ const PARTIALLY_REDACTED_FIELDS = new Set([
  * @param {*} value - The value to redact
  * @returns {string} - [REDACTED]
  */
-export function fullyRedact(value) {
+export function fullyRedact(_value) {
   return '[REDACTED]'
 }
 
@@ -85,7 +85,9 @@ export function fullyRedact(value) {
  * @returns {string} - Partially redacted value
  */
 export function partiallyRedact(value, visibleChars = 4) {
-  if (!value) return '[REDACTED]'
+  if (!value) {
+    return '[REDACTED]'
+  }
 
   const str = String(value)
   if (str.length <= visibleChars) {

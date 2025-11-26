@@ -89,7 +89,7 @@ export const logError = (context, message, error, additionalData = null) => {
   // Sanitize additional data
   if (additionalData) {
     const sanitizedAdditionalData = sanitizeObject(additionalData)
-    console.error(`  Data:`, sanitizedAdditionalData)
+    console.error('  Data:', sanitizedAdditionalData)
   }
 }
 

@@ -200,9 +200,15 @@ app.use((req, res, next) => {
         sameSite: 'strict', // CSRF protection
       }
       // Don't override if already explicitly set to false
-      if (options.secure === false) secureOptions.secure = false
-      if (options.httpOnly === false) secureOptions.httpOnly = false
-      if (options.sameSite === false) secureOptions.sameSite = false
+      if (options.secure === false) {
+        secureOptions.secure = false
+      }
+      if (options.httpOnly === false) {
+        secureOptions.httpOnly = false
+      }
+      if (options.sameSite === false) {
+        secureOptions.sameSite = false
+      }
       return originalCookie.call(this, name, val, secureOptions)
     }
   }

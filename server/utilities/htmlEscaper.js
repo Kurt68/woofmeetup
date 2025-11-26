@@ -17,7 +17,9 @@ import { logWarning } from './logger.js'
  * @returns {string} - HTML-escaped text
  */
 export function escapeHtml(text) {
-  if (!text) return text
+  if (!text) {
+    return text
+  }
 
   const htmlEscapeMap = {
     '&': '&amp;',
@@ -28,7 +30,7 @@ export function escapeHtml(text) {
     '/': '&#x2F;',
   }
 
-  return String(text).replace(/[&<>"'\/]/g, (char) => htmlEscapeMap[char])
+  return String(text).replace(/[&<>"'/]/g, (char) => htmlEscapeMap[char])
 }
 
 /**
@@ -38,7 +40,9 @@ export function escapeHtml(text) {
  * @returns {string} - Safely escaped URL
  */
 export function escapeUrlAttribute(url) {
-  if (!url) return ''
+  if (!url) {
+    return ''
+  }
 
   // Validate URL starts with safe protocols only
   if (typeof url === 'string') {
@@ -66,7 +70,9 @@ export function escapeUrlAttribute(url) {
  * @returns {string} - Sanitized value
  */
 export function sanitizeTemplateVariable(value, context = 'text') {
-  if (!value) return value
+  if (!value) {
+    return value
+  }
 
   // Convert to string if necessary
   const str = String(value).trim()
@@ -96,7 +102,9 @@ export function sanitizeTemplateVariable(value, context = 'text') {
  * @returns {string} - Template with safe replacements
  */
 export function safeTemplateReplace(template, replacements = {}) {
-  if (!template) return template
+  if (!template) {
+    return template
+  }
 
   let result = template
 

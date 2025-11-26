@@ -6,6 +6,8 @@ import { stripeService } from '../services/stripe.service.js'
 import { awsService } from '../services/aws.service.js'
 import { logError, logInfo, logWarning } from '../utilities/logger.js'
 import { validateUserId } from '../utilities/sanitizeInput.js'
+import AppError from '../utilities/AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 import { sendSuccess, sendError } from '../utils/ApiResponse.js'
 import { sendSubscriptionWelcomeEmail, sendCreditsPurchaseEmail } from '../mailtrap/emails.js'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
@@ -148,7 +150,7 @@ async function handleCheckoutCompleted(session, eventId) {
       logError('webhook.controller', 'Missing metadata in checkout session', {
         session_id: session.id,
       })
-      throw new Error('Missing metadata in checkout session')
+      throw AppError.badRequest(ErrorCodes.PAYMENT_FAILED, 'Missing metadata in checkout session')
     }
 
     // Validate userId format (prevents NoSQL injection)
@@ -163,7 +165,7 @@ async function handleCheckoutCompleted(session, eventId) {
         credits: creditsRaw,
         session_id: session.id,
       })
-      throw new Error('Invalid credits amount - not an integer')
+      throw AppError.badRequest(ErrorCodes.PAYMENT_INVALID_AMOUNT, 'Invalid credits amount - not an integer')
     }
 
     // Enforce credits bounds (1-1000 credits max per purchase)
@@ -172,7 +174,7 @@ async function handleCheckoutCompleted(session, eventId) {
         credits,
         session_id: session.id,
       })
-      throw new Error('Invalid credits amount - out of bounds')
+      throw AppError.badRequest(ErrorCodes.PAYMENT_INVALID_AMOUNT, 'Invalid credits amount - out of bounds')
     }
 
     // Retrieve user
@@ -183,7 +185,7 @@ async function handleCheckoutCompleted(session, eventId) {
         userId,
         session_id: session.id,
       })
-      throw new Error('User not found for checkout completion')
+      throw AppError.notFound(ErrorCodes.USER_NOT_FOUND, 'User not found for checkout completion')
     }
 
     // Update user credits (increment by the credits amount)
@@ -194,7 +196,7 @@ async function handleCheckoutCompleted(session, eventId) {
     )
 
     if (!updatedUser) {
-      throw new Error('Failed to update user credits - user not found during update')
+      throw AppError.internalError(ErrorCodes.PAYMENT_FAILED, 'Failed to update user credits')
     }
 
     // Create transaction record with event ID for idempotency
@@ -251,7 +253,7 @@ async function handleSubscriptionCreated(subscription, eventId) {
         priceId: subscription.items.data[0]?.price?.id,
       }
     )
-    throw new Error('User not found for subscription creation')
+    throw AppError.notFound(ErrorCodes.USER_NOT_FOUND, 'User not found for subscription creation')
   }
 
   const priceId = subscription.items.data[0].price.id
@@ -300,14 +302,14 @@ async function handleSubscriptionCreated(subscription, eventId) {
 
 // Handle subscription updated
 // eventId is used for idempotency - prevents duplicate processing if webhook is retried
-async function handleSubscriptionUpdated(subscription, eventId) {
+async function handleSubscriptionUpdated(subscription, _eventId) {
   const user = await User.findOne({ stripeSubscriptionId: subscription.id })
 
   if (!user) {
     logError('webhook.controller', 'User not found for subscription update', {
       subscriptionId: subscription.id,
     })
-    throw new Error('User not found for subscription update')
+    throw AppError.notFound(ErrorCodes.USER_NOT_FOUND, 'User not found for subscription update')
   }
 
   user.subscriptionStatus = subscription.cancel_at_period_end ? 'canceling' : subscription.status
@@ -356,7 +358,7 @@ async function performPermanentDeletion(user) {
       }
       const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
       await cloudFrontClient.send(invalidationCommand)
-    } catch (imageError) {
+    } catch (_imageError) {
       // Silent error handling - image deletion is non-critical for account deletion
     }
   }
@@ -375,7 +377,7 @@ async function performPermanentDeletion(user) {
 
 // Handle subscription deleted
 // eventId is used for idempotency - prevents duplicate processing if webhook is retried
-async function handleSubscriptionDeleted(subscription, eventId) {
+async function handleSubscriptionDeleted(subscription, _eventId) {
   const user = await User.findOne({ stripeSubscriptionId: subscription.id })
 
   if (!user) {
@@ -406,7 +408,9 @@ async function handleSubscriptionDeleted(subscription, eventId) {
 // Handle successful invoice payment
 // eventId is used for idempotency - prevents duplicate processing if webhook is retried
 async function handleInvoicePaymentSucceeded(invoice, eventId) {
-  if (!invoice.subscription) return
+  if (!invoice.subscription) {
+    return
+  }
 
   const user = await User.findOne({ stripeCustomerId: invoice.customer })
 

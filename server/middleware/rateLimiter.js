@@ -59,7 +59,9 @@ const createLimiterWithMonitoring = (endpointName, options) => {
  * Called during server startup from server/index.js
  */
 export const initializeRedisStore = async () => {
-  if (redisInitialized) return
+  if (redisInitialized) {
+    return
+  }
 
   if (!process.env.REDIS_URL) {
     if (process.env.NODE_ENV === 'production') {

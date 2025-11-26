@@ -14,7 +14,9 @@ import { ErrorCodes } from '../constants/errorCodes.js'
  * @returns {boolean} - True if valid ObjectId format
  */
 export const isValidObjectId = (id) => {
-  if (!id) return false
+  if (!id) {
+    return false
+  }
   return mongoose.Types.ObjectId.isValid(id)
 }
 
@@ -24,7 +26,9 @@ export const isValidObjectId = (id) => {
  * @returns {boolean} - True if valid UUID v4 format
  */
 export const isValidUUID = (id) => {
-  if (typeof id !== 'string') return false
+  if (typeof id !== 'string') {
+    return false
+  }
   const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   return uuidv4Regex.test(id)
 }
@@ -37,7 +41,9 @@ export const isValidUUID = (id) => {
  */
 export const isSafeString = (input) => {
   // Must be a string, not an object or array
-  if (typeof input !== 'string') return false
+  if (typeof input !== 'string') {
+    return false
+  }
 
   // Check for common NoSQL operators
   const dangerousPatterns = [
@@ -90,7 +96,9 @@ export const validateUserId = (id, fieldName = 'userId') => {
  * @returns {boolean} - True if valid email format
  */
 export const isValidEmail = (email) => {
-  if (typeof email !== 'string') return false
+  if (typeof email !== 'string') {
+    return false
+  }
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email) && email.length <= 254
 }
@@ -231,11 +239,12 @@ export const validateRedirectUrl = (redirectUrl) => {
       /vbscript:/i, // VBScript protocol
       /on\w+\s*=/i, // Event handler attributes
       /<script/i, // Script tags
+      // eslint-disable-next-line no-control-regex
       /[\x00-\x1f\x7f]/, // Control characters
       /[<>]/, // Angle brackets
     ]
 
-    const fullUrl = url.href
+    const _fullUrl = url.href
     const pathAndSearch = url.pathname + url.search + url.hash
 
     for (const pattern of dangerousPatterns) {

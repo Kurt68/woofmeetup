@@ -57,7 +57,7 @@ export const sendMessage = async (req, res) => {
     }
 
     // Handle both FormData (multipart) and JSON payloads
-    let text = req.body.text || ''
+    const text = req.body.text || ''
     let image = req.body.image
 
     // If image came as a File/Buffer from multipart form-data
@@ -145,7 +145,7 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     })
 
-    logInfo('message.controller', `💾 Saving message from sender to receiver`)
+    logInfo('message.controller', '💾 Saving message from sender to receiver')
 
     // Run these in parallel to speed up response
     await Promise.all([newMessage.save(), decrementMessageCredit(senderId)])
@@ -268,22 +268,22 @@ export const sendMessage = async (req, res) => {
           }
 
           if (senderSocketId) {
-            logInfo('message.controller', `📤 Emitting messageImageUpdated to SENDER socket`)
+            logInfo('message.controller', '📤 Emitting messageImageUpdated to SENDER socket')
             io.to(senderSocketId).emit('messageImageUpdated', imageUpdateData)
           } else {
             logWarning(
               'message.controller',
-              `⚠️ Sender socket NOT found - image update will NOT be delivered to sender`
+              '⚠️ Sender socket NOT found - image update will NOT be delivered to sender'
             )
           }
 
           if (receiverSocketId) {
-            logInfo('message.controller', `📤 Emitting messageImageUpdated to RECEIVER socket`)
+            logInfo('message.controller', '📤 Emitting messageImageUpdated to RECEIVER socket')
             io.to(receiverSocketId).emit('messageImageUpdated', imageUpdateData)
           } else {
             logWarning(
               'message.controller',
-              `⚠️ Receiver socket NOT found - image update will NOT be delivered to receiver`
+              '⚠️ Receiver socket NOT found - image update will NOT be delivered to receiver'
             )
           }
 

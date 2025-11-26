@@ -9,10 +9,10 @@ import {
   MATCH_NOTIFICATION_TEMPLATE,
 } from './emailTemplates.js'
 import { mailtrapClient, senders } from './mailtrap.config.js'
-import fs from 'fs'
+import _fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { logError, logInfo } from '../utilities/logger.js'
+import { logError } from '../utilities/logger.js'
 import { safeTemplateReplace, sanitizeTemplateVariable } from '../utilities/htmlEscaper.js'
 import { getAllowedEmailImagePaths, safeReadFile } from '../utilities/pathValidator.js'
 import AppError from '../utilities/AppError.js'
@@ -208,7 +208,7 @@ export const sendAccountDeletionEmail = async (
     return 'http://localhost:8000'
   }
 
-  const clientUrl = getClientUrl()
+  const _clientUrl = getClientUrl()
 
   // Format deletion date
   const formattedDate = new Date(deletionDate).toLocaleDateString('en-US', {
@@ -248,17 +248,17 @@ export const sendAccountDeletionEmail = async (
     // Build deletion type and date info
     const deletionType = isImmediate ? 'Confirmed' : 'Scheduled'
     const dateInfoContent = isImmediate
-      ? `<p style="margin: 10px 0; font-size: 15px;"><strong>Status:</strong> Deleted immediately</p>`
+      ? '<p style="margin: 10px 0; font-size: 15px;"><strong>Status:</strong> Deleted immediately</p>'
       : `<p style="margin: 10px 0; font-size: 15px;"><strong>Scheduled Deletion Date:</strong> ${sanitizeTemplateVariable(
-          formattedDate,
-          'text'
-        )}</p>`
+        formattedDate,
+        'text'
+      )}</p>`
 
     // Build dynamic info content (subscription and credits info)
-    let dynamicInfo = subscriptionInfo + creditsInfo
+    const dynamicInfo = subscriptionInfo + creditsInfo
 
     // Build dynamic list content (items to void or cancel)
-    let dynamicList = voidedCreditsInfo + subscriptionCancellationInfo
+    const dynamicList = voidedCreditsInfo + subscriptionCancellationInfo
 
     // MEDIUM SECURITY FIX: Use safeTemplateReplace to HTML-escape user-controlled variables
     // Then use raw string.replace for pre-built HTML content to avoid double-escaping

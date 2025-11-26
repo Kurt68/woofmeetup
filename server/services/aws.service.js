@@ -7,6 +7,8 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront'
 import { logError, logInfo } from '../utilities/logger.js'
+import AppError from '../utilities/AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 // Validate required AWS environment variables
 const validateAwsConfig = () => {
@@ -20,7 +22,7 @@ const validateAwsConfig = () => {
 
   const missing = required.filter((key) => !process.env[key])
   if (missing.length > 0) {
-    throw new Error(`Missing AWS configuration: ${missing.join(', ')}. Configure these in .env`)
+    throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, `Missing AWS configuration: ${missing.join(', ')}. Configure these in .env`)
   }
 }
 
@@ -55,12 +57,8 @@ const initializeAwsClients = () => {
 }
 
 // Initialize clients on module import
-try {
-  initializeAwsClients()
-} catch (error) {
-  // Re-throw so startup will fail if AWS is not configured
-  throw error
-}
+// Startup will fail if AWS is not configured
+initializeAwsClients()
 
 export const getS3Client = () => s3Client
 export const getCloudFrontClient = () => cloudFrontClient
