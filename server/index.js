@@ -222,6 +222,13 @@ app.use((req, res, next) => {
 // Endpoint to retrieve CSRF token for clients
 // Clients should call this on page load to get a token for state-changing operations
 // SECURITY FIX #3: MISSING RATE LIMITING - Now protected from abuse
+// Security: API Cache Control Middleware
+// Prevents browser caching of dynamic API responses
+// Critical for real-time features: ensures fresh data is fetched on every request
+// Particularly important when Socket.io triggers re-fetches of user/match data
+// NOTE: Must be applied before API endpoints to prevent stale CSRF token responses
+app.use('/api/', noCacheApiMiddleware)
+
 app.get('/api/csrf-token', csrfTokenLimiter, (req, res, next) => {
   try {
     csrfProtection(req, res, (err) => {
@@ -240,12 +247,6 @@ app.get('/api/csrf-token', csrfTokenLimiter, (req, res, next) => {
     })
   }
 })
-
-// Security: API Cache Control Middleware
-// Prevents browser caching of dynamic API responses
-// Critical for real-time features: ensures fresh data is fetched on every request
-// Particularly important when Socket.io triggers re-fetches of user/match data
-app.use('/api/', noCacheApiMiddleware)
 
 // Security: Global Rate Limiter Middleware
 // Applies baseline rate limiting (100 requests per 15 minutes per IP) to all API endpoints
