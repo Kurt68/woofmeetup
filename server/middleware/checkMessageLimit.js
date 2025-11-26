@@ -2,7 +2,7 @@ import { User } from '../models/user.model.js'
 import {
   sendUnauthorized,
   sendNotFound,
-  _sendForbidden,
+  sendForbidden,
   sendInternalError,
   sendError,
 } from '../utils/ApiResponse.js'
