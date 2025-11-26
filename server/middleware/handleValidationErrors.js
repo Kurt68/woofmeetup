@@ -122,11 +122,7 @@ export const extractValidationErrors = (req, res, next) => {
       fieldErrors[field].push(error.msg)
     })
 
-    return res.status(400).json({
-      success: false,
-      fieldErrors,
-      timestamp: new Date().toISOString(),
-    })
+    return ApiResponse.error(res, 'Validation failed', 400, errors.array())
   }
 
   next()

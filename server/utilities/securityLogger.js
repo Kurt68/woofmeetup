@@ -99,8 +99,7 @@ export function logAuthzFailure(reason, context = {}) {
   const maskedUserId = userId ? partiallyRedact(userId, 4) : 'unknown'
 
   // IDOR attempts warrant extra attention
-  const isIdorAttempt =
-    reason === 'idor_attempt' || reason?.includes('different_user')
+  const isIdorAttempt = reason === 'idor_attempt' || reason?.includes('different_user')
   const eventType = isIdorAttempt
     ? SECURITY_EVENT_TYPES.AUTHZ_IDOR_ATTEMPT
     : SECURITY_EVENT_TYPES.AUTHZ_DENIED
@@ -200,11 +199,7 @@ export function logSuspiciousPattern(pattern, context = {}) {
   })
 
   // Alert on any suspicious pattern
-  logError(
-    'security',
-    `Suspicious pattern "${pattern}" from ${ip} on endpoint ${endpoint}`,
-    null
-  )
+  logError('security', `Suspicious pattern "${pattern}" from ${ip} on endpoint ${endpoint}`, null)
 }
 
 /**

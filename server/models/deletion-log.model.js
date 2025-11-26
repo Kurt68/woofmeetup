@@ -43,10 +43,7 @@ const deletionLogSchema = new mongoose.Schema(
 // Hash email for privacy but allow duplicate prevention
 deletionLogSchema.pre('save', function (next) {
   if (this.email && !this.emailHash) {
-    this.emailHash = crypto
-      .createHash('sha256')
-      .update(this.email.toLowerCase())
-      .digest('hex')
+    this.emailHash = crypto.createHash('sha256').update(this.email.toLowerCase()).digest('hex')
   }
   next()
 })

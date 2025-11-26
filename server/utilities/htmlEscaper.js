@@ -48,10 +48,7 @@ export function escapeUrlAttribute(url) {
       !trimmed.startsWith('https://') &&
       !trimmed.startsWith('mailto:')
     ) {
-      logWarning(
-        'htmlEscaper',
-        'Invalid URL protocol detected in email template'
-      )
+      logWarning('htmlEscaper', 'Invalid URL protocol detected in email template')
       return ''
     }
   }

@@ -33,13 +33,7 @@ export const stripeService = {
   },
 
   // Create checkout session for subscription
-  async createSubscriptionCheckout(
-    customerId,
-    priceId,
-    userId,
-    successUrl,
-    cancelUrl
-  ) {
+  async createSubscriptionCheckout(customerId, priceId, userId, successUrl, cancelUrl) {
     try {
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -66,14 +60,7 @@ export const stripeService = {
   },
 
   // Create checkout session for one-time credit purchase
-  async createCreditsCheckout(
-    customerId,
-    amount,
-    credits,
-    userId,
-    successUrl,
-    cancelUrl
-  ) {
+  async createCreditsCheckout(customerId, amount, credits, userId, successUrl, cancelUrl) {
     try {
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
@@ -126,10 +113,7 @@ export const stripeService = {
   },
 
   // Cancel subscription at period end (user keeps access until paid period expires)
-  async cancelSubscriptionAtPeriodEnd(
-    subscriptionId,
-    reason = 'user_requested'
-  ) {
+  async cancelSubscriptionAtPeriodEnd(subscriptionId, reason = 'user_requested') {
     try {
       const subscription = await stripe.subscriptions.update(subscriptionId, {
         cancel_at_period_end: true,
@@ -140,11 +124,7 @@ export const stripeService = {
       })
       return subscription
     } catch (error) {
-      logError(
-        'stripe.service',
-        'Error canceling subscription at period end',
-        error
-      )
+      logError('stripe.service', 'Error canceling subscription at period end', error)
       throw error
     }
   },
@@ -194,9 +174,7 @@ export const stripeService = {
     try {
       // Security validation: Check that signature header is present
       if (!signature) {
-        const error = new Error(
-          'Webhook signature header missing - possible attack attempt'
-        )
+        const error = new Error('Webhook signature header missing - possible attack attempt')
         error.code = 'MISSING_SIGNATURE'
         throw error
       }
@@ -222,10 +200,7 @@ export const stripeService = {
       }
 
       // Log successful webhook verification
-      logInfo(
-        'stripe.service',
-        `✅ Webhook verified: ${event.type} (ID: ${event.id})`
-      )
+      logInfo('stripe.service', `✅ Webhook verified: ${event.type} (ID: ${event.id})`)
 
       return event
     } catch (error) {
@@ -240,10 +215,7 @@ export const stripeService = {
         logError('stripe.service', 'Critical: Webhook secret not configured', {
           code: error.code,
         })
-      } else if (
-        error.message &&
-        error.message.includes('Timestamp outside the tolerance zone')
-      ) {
+      } else if (error.message && error.message.includes('Timestamp outside the tolerance zone')) {
         // This indicates a replay attack attempt or severe clock skew
         logError(
           'stripe.service',
@@ -252,10 +224,7 @@ export const stripeService = {
             message: 'Clock skew or replay attack detected',
           }
         )
-      } else if (
-        error.message &&
-        error.message.includes('No matching key version')
-      ) {
+      } else if (error.message && error.message.includes('No matching key version')) {
         // This indicates an invalid signing secret
         logError(
           'stripe.service',

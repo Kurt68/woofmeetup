@@ -28,10 +28,7 @@ export const initializeSentry = async () => {
 
   // Only enable if DSN is configured
   if (!process.env.SENTRY_DSN) {
-    logInfo(
-      'sentryInit',
-      'Disabled - set SENTRY_DSN environment variable to enable'
-    )
+    logInfo('sentryInit', 'Disabled - set SENTRY_DSN environment variable to enable')
     return
   }
 

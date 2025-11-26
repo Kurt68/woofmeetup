@@ -21,25 +21,10 @@ router.post(
   createLike
 )
 
-router.get(
-  '/',
-  verifyToken,
-  likeActionLimiter,
-  getLikes
-)
+router.get('/', verifyToken, likeActionLimiter, getLikes)
 
-router.put(
-  '/mark-as-read',
-  csrfProtection,
-  verifyToken,
-  markLikesAsRead
-)
+router.put('/mark-as-read', csrfProtection, verifyToken, markLikesAsRead)
 
-router.get(
-  '/check/:id',
-  verifyToken,
-  validateParamUserId('id'),
-  checkIfLiked
-)
+router.get('/check/:id', verifyToken, validateParamUserId('id'), checkIfLiked)
 
 export default router

@@ -4,6 +4,7 @@ import express from 'express'
 import { logSocketEvent, logSocketError, logInfo } from '../utilities/logger.js'
 import jwt from 'jsonwebtoken'
 import { User } from '../models/user.model.js'
+import { SocketEvents } from '../constants/socketEvents.js'
 
 const app = express()
 const server = http.createServer(app)
@@ -16,12 +17,7 @@ const io = new Server(server, {
         : 'https://woofmeetup.com',
     credentials: true,
     methods: ['GET', 'POST'],
-    allowedHeaders: [
-      'Content-Type',
-      'Authorization',
-      'baggage',
-      'sentry-trace',
-    ],
+    allowedHeaders: ['Content-Type', 'Authorization', 'baggage', 'sentry-trace'],
   },
   transports: ['websocket', 'polling'],
   pingInterval: 25000,
@@ -52,8 +48,7 @@ class SocketEventRateLimiter {
   constructor() {
     this.socketLimits = {} // {socketId: {eventName: {count, resetTime, bandwidth}}}
     this.WINDOW_MS = 5 * 60 * 1000 // 5 minute window
-    this.MAX_EVENTS_PER_WINDOW =
-      process.env.NODE_ENV === 'production' ? 50 : 500
+    this.MAX_EVENTS_PER_WINDOW = process.env.NODE_ENV === 'production' ? 50 : 500
     this.MAX_BANDWIDTH_MB = process.env.NODE_ENV === 'production' ? 10 : 100 // MB per window
     // Cleanup interval for old entries (every 10 minutes)
     this.cleanupInterval = setInterval(() => this.cleanup(), 10 * 60 * 1000)
@@ -177,10 +172,7 @@ export function getReceiverSocketId(userId) {
   const userCount = uniqueSocketIds.size
 
   if (socketId) {
-    logInfo(
-      'socket.lookup',
-      `✅ User ${maskedId} found online (${userCount} total online)`
-    )
+    logInfo('socket.lookup', `✅ User ${maskedId} found online (${userCount} total online)`)
   } else {
     // Debug: Show what users ARE in the map
     const mappedUserIds = Object.keys(userSocketMap).slice(0, 5)
@@ -237,9 +229,7 @@ function checkConnectionRateLimit(userId) {
   if (userTracker.count >= MAX_CONNECTIONS_PER_USER) {
     logSocketError(
       'socket.ratelimit',
-      new Error(
-        `User ${userId} exceeded max socket connections (${MAX_CONNECTIONS_PER_USER})`
-      )
+      new Error(`User ${userId} exceeded max socket connections (${MAX_CONNECTIONS_PER_USER})`)
     )
     return false
   }
@@ -302,10 +292,7 @@ function verifySocketToken(socket) {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET)
     if (!decoded || !decoded.userId) {
-      logInfo(
-        'socket.auth',
-        'Token decoded but no userId found - token payload invalid'
-      )
+      logInfo('socket.auth', 'Token decoded but no userId found - token payload invalid')
       return null
     }
 
@@ -313,10 +300,7 @@ function verifySocketToken(socket) {
   } catch (error) {
     // Log specific JWT errors
     if (error.name === 'TokenExpiredError') {
-      logInfo(
-        'socket.auth',
-        `Token verification failed: token expired at ${error.expiredAt}`
-      )
+      logInfo('socket.auth', `Token verification failed: token expired at ${error.expiredAt}`)
     } else if (error.name === 'JsonWebTokenError') {
       logInfo('socket.auth', `Token verification failed: invalid signature`)
     } else {
@@ -337,14 +321,10 @@ function createSocketEventValidator(eventName, validator) {
       try {
         // Security: Check rate limits on incoming events
         const payloadSize = JSON.stringify(data).length
-        if (
-          !eventRateLimiter.checkRateLimit(socket.id, eventName, payloadSize)
-        ) {
+        if (!eventRateLimiter.checkRateLimit(socket.id, eventName, payloadSize)) {
           logSocketError(
             'socket.event.ratelimit',
-            new Error(
-              `Rate limit exceeded for event: ${eventName} on socket ${socket.id}`
-            )
+            new Error(`Rate limit exceeded for event: ${eventName} on socket ${socket.id}`)
           )
           const errorMsg = 'Event rate limit exceeded'
           if (callback && typeof callback === 'function') {
@@ -393,10 +373,7 @@ io.use((socket, next) => {
   const tokenData = verifySocketToken(socket)
 
   if (!tokenData) {
-    logSocketError(
-      'socket.auth',
-      new Error('Authentication failed - invalid or missing token')
-    )
+    logSocketError('socket.auth', new Error('Authentication failed - invalid or missing token'))
     return next(new Error('Authentication failed: Invalid or missing token'))
   }
 
@@ -405,13 +382,9 @@ io.use((socket, next) => {
     const maskedId = maskUserId(tokenData.userId)
     logSocketError(
       'socket.auth',
-      new Error(
-        `Rate limit exceeded for user ${maskedId}: Too many simultaneous connections`
-      )
+      new Error(`Rate limit exceeded for user ${maskedId}: Too many simultaneous connections`)
     )
-    return next(
-      new Error('Rate limit exceeded: Too many simultaneous connections')
-    )
+    return next(new Error('Rate limit exceeded: Too many simultaneous connections'))
   }
 
   // Attach verified userId and mongoId to socket.data for use in handlers
@@ -488,7 +461,7 @@ async function broadcastOnlineStatusToMatches(userId, isOnline) {
           // Get filtered online list for this matched user
           const filteredOnlineUsers = await getFilteredOnlineUsers(matchedId)
           // Emit to the matched user's socket
-          io.to(matchedSocketId).emit('getOnlineUsers', filteredOnlineUsers)
+          io.to(matchedSocketId).emit(SocketEvents.GET_ONLINE_USERS, filteredOnlineUsers)
         } catch (error) {
           logSocketError('socket.broadcast.error', error)
         }
@@ -499,7 +472,7 @@ async function broadcastOnlineStatusToMatches(userId, isOnline) {
   }
 }
 
-io.on('connection', (socket) => {
+io.on(SocketEvents.CONNECTION, (socket) => {
   // Use verified userId and mongoId from authentication middleware
   const userId = socket.data.userId
   const mongoId = socket.data.mongoId
@@ -511,11 +484,7 @@ io.on('connection', (socket) => {
   userSocketMap[mongoId] = socket.id
   userSocketMap[userId] = socket.id
 
-  logSocketEvent(
-    'User connected',
-    `${maskedUserId}/${maskedMongoId}`,
-    socket.id
-  )
+  logSocketEvent('User connected', `${maskedUserId}/${maskedMongoId}`, socket.id)
   // Count unique socket IDs (each user has one socket, but two map entries)
   const uniqueConnected = new Set(Object.values(userSocketMap))
   logInfo(
@@ -531,10 +500,10 @@ io.on('connection', (socket) => {
   ;(async () => {
     try {
       const filteredOnlineUsers = await getFilteredOnlineUsers(userId)
-      socket.emit('getOnlineUsers', filteredOnlineUsers)
+      socket.emit(SocketEvents.GET_ONLINE_USERS, filteredOnlineUsers)
     } catch (error) {
       logSocketError('socket.connect.filter', error)
-      socket.emit('getOnlineUsers', []) // Fallback to empty list
+      socket.emit(SocketEvents.GET_ONLINE_USERS, []) // Fallback to empty list
     }
 
     // Real-time update: Notify all matched users that this user is now online
@@ -545,12 +514,8 @@ io.on('connection', (socket) => {
     }
   })()
 
-  socket.on('disconnect', () => {
-    logSocketEvent(
-      'User disconnected',
-      `${maskedUserId}/${maskedMongoId}`,
-      socket.id
-    )
+  socket.on(SocketEvents.DISCONNECT, () => {
+    logSocketEvent('User disconnected', `${maskedUserId}/${maskedMongoId}`, socket.id)
 
     // Real-time update: Notify matched users before removing from map
     ;(async () => {
@@ -566,10 +531,7 @@ io.on('connection', (socket) => {
 
     // Security: Decrement connection counter on disconnect
     if (userId && socketConnectionTracker[userId]) {
-      socketConnectionTracker[userId].count = Math.max(
-        0,
-        socketConnectionTracker[userId].count - 1
-      )
+      socketConnectionTracker[userId].count = Math.max(0, socketConnectionTracker[userId].count - 1)
     }
 
     // Security: Remove socket from event rate limiter on disconnect
@@ -584,17 +546,10 @@ io.on('connection', (socket) => {
     )
   })
 
-  socket.on('error', (error) => {
+  socket.on(SocketEvents.ERROR, (error) => {
     const maskedId = maskUserId(userId)
     logSocketError(`socket.error[${maskedId}]`, error)
   })
 })
 
-export {
-  io,
-  app,
-  server,
-  eventRateLimiter,
-  createSocketEventValidator,
-  maskUserId,
-}
+export { io, app, server, eventRateLimiter, createSocketEventValidator, maskUserId }

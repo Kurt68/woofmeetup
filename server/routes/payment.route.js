@@ -41,26 +41,11 @@ router.post(
     .withMessage('packageType must be one of: small, medium, large'),
   createCreditsCheckout
 )
-router.post(
-  '/cancel-subscription',
-  csrfProtection,
-  verifyToken,
-  cancelSubscription
-)
-router.post(
-  '/reactivate-subscription',
-  csrfProtection,
-  verifyToken,
-  reactivateSubscription
-)
+router.post('/cancel-subscription', csrfProtection, verifyToken, cancelSubscription)
+router.post('/reactivate-subscription', csrfProtection, verifyToken, reactivateSubscription)
 router.get('/subscription-status', verifyToken, getSubscriptionStatus)
 router.get('/payment-history', verifyToken, getPaymentHistory)
-router.post(
-  '/create-portal-session',
-  csrfProtection,
-  verifyToken,
-  createPortalSession
-)
+router.post('/create-portal-session', csrfProtection, verifyToken, createPortalSession)
 router.get('/credit-packages', getCreditPackages)
 
 export default router

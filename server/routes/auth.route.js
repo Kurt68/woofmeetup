@@ -28,6 +28,7 @@ import {
 } from '../controllers/auth.controller.js'
 import { verifyToken } from '../middleware/verifyToken.js'
 import { checkAdminRole } from '../middleware/checkAdminRole.js'
+import { sendValidationError } from '../utils/ApiResponse.js'
 import {
   deletionEndpointLimiter,
   loginLimiter,
@@ -78,17 +79,10 @@ const upload = multer({
     // Normalize MIME type to lowercase to handle browser inconsistencies (e.g., image/JPG vs image/jpg)
     // Instead of checking startsWith('image/'), explicitly allow only known types
     const normalizedMimeType = file.mimetype.toLowerCase()
-    console.log(
-      `[DEBUG] File upload - original MIME: ${file.mimetype}, normalized: ${normalizedMimeType}, filename: ${file.originalname}`
-    )
 
     if (!ALLOWED_IMAGE_MIME_TYPES.includes(normalizedMimeType)) {
       return cb(
-        new Error(
-          `Invalid file type. Allowed types: ${ALLOWED_IMAGE_MIME_TYPES.join(
-            ', '
-          )}`
-        ),
+        new Error(`Invalid file type. Allowed types: ${ALLOWED_IMAGE_MIME_TYPES.join(', ')}`),
         false
       )
     }
@@ -113,10 +107,11 @@ const multerErrorHandler = (middleware) => {
   return (req, res, next) => {
     middleware(req, res, (err) => {
       if (err) {
-        return res.status(400).json({
-          success: false,
-          message: err.message || 'File upload validation failed',
-        })
+        return sendValidationError(
+          res,
+          [{ path: 'file', msg: err.message || 'File upload validation failed' }],
+          'File upload failed'
+        )
       }
       next()
     })
@@ -132,29 +127,15 @@ const validateMagicBytesMiddleware = (req, res, next) => {
   }
 
   const normalizedMimeType = req.file.mimetype.toLowerCase()
-  console.log(
-    `[DEBUG validateMagicBytesMiddleware] File buffer size: ${req.file.buffer.length}, MIME: ${normalizedMimeType}`
-  )
-  console.log(
-    `[DEBUG validateMagicBytesMiddleware] Magic bytes (first 4): ${req.file.buffer
-      .slice(0, 4)
-      .toString('hex')}`
-  )
 
   if (!validateMagicBytes(req.file.buffer, normalizedMimeType)) {
-    console.log(
-      `[DEBUG validateMagicBytesMiddleware] Magic bytes validation failed for MIME type: ${normalizedMimeType}`
+    return sendValidationError(
+      res,
+      [{ path: 'file', msg: 'File content does not match declared type. Possible spoofed file.' }],
+      'Invalid file'
     )
-    return res.status(400).json({
-      success: false,
-      message:
-        'File content does not match declared type. Possible spoofed file.',
-    })
   }
 
-  console.log(
-    `[DEBUG validateMagicBytesMiddleware] Magic bytes validation passed`
-  )
   next()
 }
 
@@ -178,21 +159,9 @@ router.get('/public-profile/:userId', generalLimiter, getPublicProfile)
 // Security: Apply authentication and stricter rate limiting to prevent unauthorized access
 // CRITICAL FIX: Added verifyToken middleware to require authentication
 // Using userEnumerationLimiter (5/5min) to prevent attackers from discovering user IDs
-router.get(
-  '/users',
-  verifyToken,
-  userEnumerationLimiter,
-  validatePaginationParams(100),
-  getMatches
-)
+router.get('/users', verifyToken, userEnumerationLimiter, validatePaginationParams(100), getMatches)
 // Security: Apply rate limiting and validate query parameters to prevent NoSQL injection and unauthorized access
-router.get(
-  '/user',
-  verifyToken,
-  generalLimiter,
-  validateQueryUserId('userId'),
-  getUser
-)
+router.get('/user', verifyToken, generalLimiter, validateQueryUserId('userId'), getUser)
 // Security: Apply rate limiting, validate pagination and distance parameters to prevent DoS and injection attacks
 router.get(
   '/meetup-type-users',
@@ -249,9 +218,7 @@ router.post(
     .isLength({ min: 1, max: 50 })
     .withMessage('Username must be between 1 and 50 characters')
     .matches(/^[a-zA-Z0-9_-]+$/)
-    .withMessage(
-      'Username can only contain letters, numbers, underscores, and hyphens'
-    ),
+    .withMessage('Username can only contain letters, numbers, underscores, and hyphens'),
   signup
 )
 
@@ -379,18 +346,11 @@ router.put(
     .withMessage('meetup_type is required')
     .isIn(['Play Dates', 'Exercise Buddy', 'Walk Companion'])
     .withMessage('Invalid meetup type'),
-  body('formData.show_meetup_type')
-    .isBoolean()
-    .withMessage('show_meetup_type must be a boolean'),
+  body('formData.show_meetup_type').isBoolean().withMessage('show_meetup_type must be a boolean'),
   body('formData.meetup_interest')
     .notEmpty()
     .withMessage('meetup_interest is required')
-    .isIn([
-      'Play Dates',
-      'Exercise Buddy',
-      'Walk Companion',
-      'Show all meetup activites',
-    ])
+    .isIn(['Play Dates', 'Exercise Buddy', 'Walk Companion', 'Show all meetup activites'])
     .withMessage('Invalid meetup interest'),
   body('formData.current_user_search_radius')
     .isInt({ min: 1, max: 100 })
@@ -431,12 +391,7 @@ router.put(
   validateMagicBytesMiddleware,
   uploadProfileImage
 )
-router.put(
-  '/user-select-distance',
-  csrfProtection,
-  verifyToken,
-  putUserSelectDistance
-)
+router.put('/user-select-distance', csrfProtection, verifyToken, putUserSelectDistance)
 
 // Security: Add comprehensive input validation to profile update endpoint
 // Prevents injection attacks, XSS, and data integrity issues
@@ -486,12 +441,7 @@ router.patch(
     .withMessage('show_meetup_type must be a boolean'),
   body('formData.meetup_interest')
     .optional()
-    .isIn([
-      'Play Dates',
-      'Exercise Buddy',
-      'Walk Companion',
-      'Show all meetup activites',
-    ])
+    .isIn(['Play Dates', 'Exercise Buddy', 'Walk Companion', 'Show all meetup activites'])
     .withMessage('Invalid meetup interest'),
   body('formData.current_user_search_radius')
     .optional({ checkFalsy: true })
@@ -501,13 +451,7 @@ router.patch(
 )
 
 // Security: Apply CSRF protection, validate query parameters to prevent NoSQL injection and unauthorized image deletion
-router.delete(
-  '/image',
-  csrfProtection,
-  verifyToken,
-  validateQueryUserId('userId'),
-  deleteImage
-)
+router.delete('/image', csrfProtection, verifyToken, validateQueryUserId('userId'), deleteImage)
 // Security: Apply CSRF protection, validate query parameters to prevent NoSQL injection and unauthorized account deletion
 router.delete(
   '/delete-one-user',
@@ -547,12 +491,6 @@ router.post(
 )
 
 // Get referral statistics (admin only)
-router.get(
-  '/referral-stats',
-  verifyToken,
-  generalLimiter,
-  checkAdminRole,
-  getReferralStats
-)
+router.get('/referral-stats', verifyToken, generalLimiter, checkAdminRole, getReferralStats)
 
 export default router

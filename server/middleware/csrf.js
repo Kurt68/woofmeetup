@@ -1,5 +1,6 @@
 import csrf from 'csurf'
 import { logCSRFViolation } from '../utilities/securityLogger.js'
+import { sendSuccess, sendForbidden } from '../utils/ApiResponse.js'
 
 // Security: CSRF protection middleware using csurf
 // Uses double-submit cookie pattern for API security
@@ -18,10 +19,7 @@ export const csrfProtection = csrf({
 
 // Middleware to return CSRF token to client
 export const getCsrfToken = (req, res) => {
-  res.json({
-    success: true,
-    csrfToken: req.csrfToken(),
-  })
+  sendSuccess(res, { csrfToken: req.csrfToken() })
 }
 
 // Error handler for CSRF failures
@@ -36,11 +34,7 @@ export const csrfErrorHandler = (err, req, res, next) => {
       reason: 'invalid_or_missing_token',
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'CSRF token validation failed - request rejected',
-      code: 'CSRF_TOKEN_INVALID',
-    })
+    return sendForbidden(res, 'CSRF token validation failed')
   }
   next(err)
 }

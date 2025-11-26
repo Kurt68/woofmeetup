@@ -55,11 +55,10 @@ export const getClientUrl = (req = null) => {
 
   // SECURITY: Validate URL against whitelist
   if (!ALLOWED_REDIRECT_URLS.includes(url)) {
-    logError(
-      'getClientUrl',
-      'Invalid CLIENT_URL - not in whitelist, using fallback',
-      { attemptedUrl: url, allowedUrls: ALLOWED_REDIRECT_URLS }
-    )
+    logError('getClientUrl', 'Invalid CLIENT_URL - not in whitelist, using fallback', {
+      attemptedUrl: url,
+      allowedUrls: ALLOWED_REDIRECT_URLS,
+    })
 
     // Use safe fallback based on environment
     return process.env.NODE_ENV === 'production'

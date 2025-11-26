@@ -1,39 +1,35 @@
 import { User } from '../models/user.model.js'
-import { logError } from '../utilities/logger.js'
+import {
+  sendUnauthorized,
+  sendNotFound,
+  sendForbidden,
+  sendInternalError,
+} from '../utils/ApiResponse.js'
 
 export const checkAdminRole = async (req, res, next) => {
   try {
     // verifyToken middleware should have already set req.userId
     if (!req.userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Unauthorized - no user ID found',
-      })
+      return sendUnauthorized(res, 'Unauthorized - no user ID found')
     }
 
     const user = await User.findOne({ user_id: req.userId })
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      })
+      return sendNotFound(res, 'User')
     }
 
     if (!user.isAdmin) {
-      return res.status(403).json({
-        success: false,
-        message: 'Forbidden - Admin access required',
-      })
+      return sendForbidden(res, 'Admin access required')
     }
 
     // User is admin, proceed to next middleware/controller
     next()
   } catch (error) {
-    logError('checkAdminRole.middleware', 'Error checking admin role', error)
-    return res.status(500).json({
-      success: false,
-      message: 'Server error while checking admin role',
+    return sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req.userId,
     })
   }
 }

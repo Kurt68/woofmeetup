@@ -37,6 +37,7 @@ import {
 import { csrfProtection, csrfErrorHandler } from './middleware/csrf.js'
 import { initializeSentry } from './utilities/sentryInit.js'
 import { noCacheApiMiddleware } from './middleware/noCacheApi.js'
+import { sendSuccess, sendError, sendInternalError } from './utils/ApiResponse.js'
 
 const PORT = process.env.PORT || 8000
 const __dirname = path.resolve()
@@ -49,11 +50,12 @@ app.use((req, res, next) => {
   if (process.env.NODE_ENV === 'production') {
     const host = req.headers.host
     const isLocalhost = host.includes('localhost') || host.includes('127.0.0.1')
-    const isWebhook = req.path === '/api/payments/webhook' || req.path.startsWith('/api/payments/webhook/')
+    const isWebhook =
+      req.path === '/api/payments/webhook' || req.path.startsWith('/api/payments/webhook/')
 
     // Debug logging for webhook requests
     if (isWebhook) {
-      console.log('[WEBHOOK DEBUG] Path:', req.path, '| Method:', req.method, '| Skipping HTTPS check')
+      logInfo('webhook', `Path: ${req.path} | Method: ${req.method} | Skipping HTTPS check`)
     }
 
     // Skip HTTPS enforcement for localhost (for local testing) and webhook endpoints
@@ -108,7 +110,12 @@ app.use(
           'https://challenges.cloudflare.com',
         ],
         // Allow inline styles - necessary for React apps with style={{}} inline styles
-        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://challenges.cloudflare.com'],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com',
+          'https://challenges.cloudflare.com',
+        ],
         // styleSrcElem specifically handles <style> tags and inline style attributes
         styleSrcElem: [
           "'self'",
@@ -213,22 +220,17 @@ app.get('/api/csrf-token', csrfTokenLimiter, (req, res, next) => {
   try {
     csrfProtection(req, res, (err) => {
       if (err) {
-        logError('index', 'CSRF protection error', err)
-        return res.status(500).json({
-          success: false,
-          message: 'Failed to generate CSRF token',
+        return sendInternalError(res, err, {
+          method: req.method,
+          path: req.path,
         })
       }
-      res.status(200).json({
-        success: true,
-        csrfToken: req.csrfToken(),
-      })
+      sendSuccess(res, { csrfToken: req.csrfToken() })
     })
   } catch (err) {
-    logError('index', 'Error generating CSRF token', err)
-    res.status(500).json({
-      success: false,
-      message: 'Failed to generate CSRF token',
+    return sendInternalError(res, err, {
+      method: req.method,
+      path: req.path,
     })
   }
 })
@@ -270,48 +272,42 @@ app.post('/verify-turnstile', turnstileLimiter, async (req, res) => {
   const { token } = req.body
 
   if (!token) {
-    return res
-      .status(400)
-      .json({ success: false, message: 'No token provided' })
+    return sendError(res, 'No token provided', 400)
   }
 
   if (process.env.NODE_ENV === 'development') {
-    return res.json({ success: true, message: 'Turnstile verification successful (development mode)' })
+    return sendSuccess(res, {}, 'Turnstile verification successful (development mode)')
   }
 
   try {
-    const response = await fetch(
-      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          secret: process.env.TURNSTILE_SECRET_KEY,
-          response: token,
-        }),
-      }
-    )
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        secret: process.env.TURNSTILE_SECRET_KEY,
+        response: token,
+      }),
+    })
 
     const data = await response.json()
 
     if (data.success) {
-      res.json({ success: true, message: 'Turnstile verification successful' })
+      sendSuccess(res, {}, 'Turnstile verification successful')
     } else {
-      console.error('Turnstile verification failed:', {
+      logError('turnstile', 'Verification failed', {
         errorCodes: data['error-codes'],
         secretKey: process.env.TURNSTILE_SECRET_KEY?.substring(0, 20) + '...',
         fullResponse: data,
       })
-      res.status(400).json({
-        success: false,
-        message: 'Turnstile verification failed',
-        errors: data['error-codes'],
-      })
+      sendError(res, 'Turnstile verification failed', 400, data['error-codes'])
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Internal server error' })
+    return sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+    })
   }
 })
 
@@ -352,10 +348,7 @@ server.listen(PORT, async () => {
     await preloadModel()
   } catch (error) {
     logError('server.init', 'Failed to initialize nudity detection', error)
-    logInfo(
-      'server.init',
-      'Server will continue, but content moderation will fail requests'
-    )
+    logInfo('server.init', 'Server will continue, but content moderation will fail requests')
   }
   logInfo('server.init', `🚀 Server is running on port: ${PORT}`)
 })

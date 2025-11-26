@@ -4,15 +4,8 @@
  * SECURITY FIX #6: Moved from auth.controller.js to avoid repeated credential loading
  */
 
-import {
-  S3Client,
-  PutObjectCommand,
-  DeleteObjectCommand,
-} from '@aws-sdk/client-s3'
-import {
-  CloudFrontClient,
-  CreateInvalidationCommand,
-} from '@aws-sdk/client-cloudfront'
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront'
 import { logError, logInfo } from '../utilities/logger.js'
 
 // Validate required AWS environment variables
@@ -27,11 +20,7 @@ const validateAwsConfig = () => {
 
   const missing = required.filter((key) => !process.env[key])
   if (missing.length > 0) {
-    throw new Error(
-      `Missing AWS configuration: ${missing.join(
-        ', '
-      )}. Configure these in .env`
-    )
+    throw new Error(`Missing AWS configuration: ${missing.join(', ')}. Configure these in .env`)
   }
 }
 
@@ -142,10 +131,7 @@ export const awsService = {
       })
 
       const result = await cloudFrontClient.send(params)
-      logInfo(
-        'aws.service',
-        `CloudFront invalidation created: ${result.Invalidation.Id}`
-      )
+      logInfo('aws.service', `CloudFront invalidation created: ${result.Invalidation.Id}`)
       return result
     } catch (error) {
       logError('aws.service', 'CloudFront invalidation failed', error, {

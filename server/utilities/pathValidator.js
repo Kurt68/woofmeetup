@@ -12,6 +12,8 @@
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import AppError from './AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -100,17 +102,25 @@ export function safeReadFile(filePath, baseDir) {
   const validation = validateFilePath(filePath, baseDir)
 
   if (!validation.isValid) {
-    throw new Error(`Invalid file path: ${validation.error}`)
+    throw AppError.badRequest(ErrorCodes.FILE_SPOOFED, {
+      reason: validation.error,
+      filePath,
+    })
   }
 
   // Additional safety: verify file exists and is a regular file
   if (!fs.existsSync(validation.fullPath)) {
-    throw new Error('File not found')
+    throw AppError.notFound(ErrorCodes.FILE_NOT_FOUND, {
+      filePath,
+    })
   }
 
   const stats = fs.statSync(validation.fullPath)
   if (!stats.isFile()) {
-    throw new Error('Path is not a regular file')
+    throw AppError.badRequest(ErrorCodes.FILE_INVALID_TYPE, {
+      reason: 'Path is not a regular file',
+      filePath,
+    })
   }
 
   return fs.readFileSync(validation.fullPath)

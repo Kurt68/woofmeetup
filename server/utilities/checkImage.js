@@ -1,5 +1,7 @@
 import OpenAI from 'openai'
 import { logError, logInfo, logWarning } from './logger.js'
+import AppError from './AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 let openai
 
@@ -9,7 +11,10 @@ let openai
 export async function preloadModel() {
   try {
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY not found in environment variables')
+      throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+        service: 'OpenAI',
+        reason: 'API key not configured',
+      })
     }
 
     openai = new OpenAI({
@@ -34,18 +39,16 @@ export async function preloadModel() {
 export async function checkImage(imageBuffer) {
   try {
     if (!openai) {
-      throw new Error(
-        'OpenAI client not initialized. Call preloadModel() first.'
-      )
+      throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+        service: 'OpenAI',
+        reason: 'Client not initialized',
+      })
     }
 
     // Convert buffer to base64
     const base64Image = imageBuffer.toString('base64')
 
-    logInfo(
-      'checkImage',
-      'Analyzing image for content and dog classification...'
-    )
+    logInfo('checkImage', 'Analyzing image for content and dog classification...')
 
     // Use OpenAI Vision API to check for inappropriate content and identify dogs
     const response = await openai.chat.completions.create({
@@ -105,9 +108,10 @@ Rules:
     logInfo('checkImage', 'OpenAI response received')
 
     if (!content) {
-      throw new Error(
-        'Empty response from OpenAI - model may not support vision or request was rejected'
-      )
+      throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+        service: 'OpenAI Vision',
+        reason: 'Empty response from API',
+      })
     }
 
     let result
@@ -115,7 +119,10 @@ Rules:
       // Extract JSON from response (may be wrapped in markdown code blocks)
       const jsonMatch = content.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
-        throw new Error('No JSON found in response')
+        throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+          service: 'OpenAI Vision',
+          reason: 'Invalid response format - no JSON found',
+        })
       }
       result = JSON.parse(jsonMatch[0])
     } catch (parseError) {
@@ -141,9 +148,9 @@ Rules:
     if (isNude) {
       logInfo(
         'checkImage',
-        `⚠️ Inappropriate content detected! Confidence: ${(
-          confidence * 100
-        ).toFixed(1)}% - ${reason}`
+        `⚠️ Inappropriate content detected! Confidence: ${(confidence * 100).toFixed(
+          1
+        )}% - ${reason}`
       )
     } else if (isDog) {
       logInfo(
@@ -153,10 +160,7 @@ Rules:
           .join(', ')}`
       )
     } else {
-      logInfo(
-        'checkImage',
-        '✓ Image analyzed - no dogs or inappropriate content detected'
-      )
+      logInfo('checkImage', '✓ Image analyzed - no dogs or inappropriate content detected')
     }
 
     return {
@@ -170,10 +174,7 @@ Rules:
     logError('checkImage', 'Error during image analysis with OpenAI', error)
 
     // Allow upload with warning if detection fails
-    logWarning(
-      'checkImage',
-      'Image analysis check failed, allowing upload with warning'
-    )
+    logWarning('checkImage', 'Image analysis check failed, allowing upload with warning')
     return {
       isNude: false,
       isDog: false,

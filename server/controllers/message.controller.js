@@ -4,7 +4,12 @@ import { validationResult } from 'express-validator'
 import cloudinary from '../lib/cloudinary.js'
 import { getReceiverSocketId, io } from '../lib/socket.js'
 import { decrementMessageCredit } from '../middleware/checkMessageLimit.js'
-import { sendError } from '../middleware/errorHandler.js'
+import {
+  sendSuccess,
+  sendError,
+  sendValidationError,
+  sendInternalError,
+} from '../utils/ApiResponse.js'
 import { checkImage } from '../utilities/checkImage.js'
 import { validateUserId } from '../utilities/sanitizeInput.js'
 import { logError, logInfo, logWarning } from '../utilities/logger.js'
@@ -25,33 +30,36 @@ export const getMessages = async (req, res) => {
       ],
     })
 
-    res.status(200).json(messages)
+    sendSuccess(res, messages, null, 200)
   } catch (error) {
     logError('message.controller', 'Failed to get messages', error)
-    sendError(res, 500, 'Failed to retrieve messages')
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req._id,
+    })
   }
 }
 
 // Send messages
 export const sendMessage = async (req, res) => {
   try {
-    logInfo('message.controller', `📥 sendMessage called - body keys: ${Object.keys(req.body).join(', ')}, file: ${req.file ? `${req.file.originalname} (${req.file.size}b)` : 'none'}`)
-    
+    logInfo(
+      'message.controller',
+      `📥 sendMessage called - body keys: ${Object.keys(req.body).join(', ')}, file: ${req.file ? `${req.file.originalname} (${req.file.size}b)` : 'none'}`
+    )
+
     // Check for validation errors
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
       logInfo('message.controller', `❌ Validation errors: ${JSON.stringify(errors.array())}`)
-      return res.status(400).json({
-        success: false,
-        message: 'Validation failed',
-        errors: errors.array(),
-      })
+      return sendValidationError(res, errors.array())
     }
 
     // Handle both FormData (multipart) and JSON payloads
     let text = req.body.text || ''
     let image = req.body.image
-    
+
     // If image came as a File/Buffer from multipart form-data
     if (req.file) {
       image = req.file.buffer
@@ -83,11 +91,11 @@ export const sendMessage = async (req, res) => {
           // Handle base64 string (from JSON)
           isBase64String = true
           if (image.length === 0) {
-            return res.status(400).json({
-              success: false,
-              message: 'Invalid image format: image must be a base64 encoded string',
-              code: 'INVALID_IMAGE_FORMAT',
-            })
+            return sendError(
+              res,
+              'Invalid image format: image must be a base64 encoded string',
+              400
+            )
           }
 
           // Extract base64 data (handle both data:image/type;base64,... and raw base64)
@@ -105,21 +113,13 @@ export const sendMessage = async (req, res) => {
           const cleaned = extracted.replace(/\s/g, '')
 
           if (!base64Regex.test(extracted) || cleaned.length === 0) {
-            return res.status(400).json({
-              success: false,
-              message: 'Invalid image format: image must be valid base64',
-              code: 'INVALID_BASE64',
-            })
+            return sendError(res, 'Invalid image format: image must be valid base64', 400)
           }
 
           base64Data = cleaned
           isSvg = image.includes('image/svg+xml') || image.includes('svg+xml')
         } else {
-          return res.status(400).json({
-            success: false,
-            message: 'Invalid image format: must be base64 string or binary data',
-            code: 'INVALID_IMAGE_FORMAT',
-          })
+          return sendError(res, 'Invalid image format: must be base64 string or binary data', 400)
         }
 
         // Store image data for async background processing
@@ -134,12 +134,7 @@ export const sendMessage = async (req, res) => {
         imageUrl = null
       } catch (error) {
         logError('message.controller', 'Image upload failed', error)
-
-        return res.status(400).json({
-          success: false,
-          message: error.message || 'Failed to upload image. Please try again.',
-          code: 'IMAGE_UPLOAD_FAILED',
-        })
+        return sendError(res, error.message || 'Failed to upload image. Please try again.', 400)
       }
     }
 
@@ -150,25 +145,16 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     })
 
-    logInfo(
-      'message.controller',
-      `💾 Saving message from sender to receiver`
-    )
-    
+    logInfo('message.controller', `💾 Saving message from sender to receiver`)
+
     // Run these in parallel to speed up response
-    await Promise.all([
-      newMessage.save(),
-      decrementMessageCredit(senderId),
-    ])
-    logInfo(
-      'message.controller',
-      `✅ Message saved to database: ${newMessage._id}`
-    )
+    await Promise.all([newMessage.save(), decrementMessageCredit(senderId)])
+    logInfo('message.controller', `✅ Message saved to database: ${newMessage._id}`)
 
     // Emit with acknowledgment - wait for client confirmation
     // First try direct lookup, then try to find user by _id and use their user_id
     let receiverSocketId = getReceiverSocketId(receiverId)
-    
+
     if (!receiverSocketId) {
       // Try looking up the user by _id to get their user_id for socket lookup
       try {
@@ -184,7 +170,7 @@ export const sendMessage = async (req, res) => {
         logError('message.controller', 'Failed to lookup receiver user', error)
       }
     }
-    
+
     logInfo(
       'message.controller',
       `Attempting to send message to receiver: ${receiverId}, SocketId: ${
@@ -198,15 +184,15 @@ export const sendMessage = async (req, res) => {
         }
       })
     } else {
-      logInfo(
-        'message.controller',
-        `⚠️ Receiver ${receiverId} not found in online users map`
-      )
+      logInfo('message.controller', `⚠️ Receiver ${receiverId} not found in online users map`)
     }
 
     const requestEnd = Date.now()
-    logInfo('message.controller', `⏱️ POST request processed in ${requestEnd - requestStart}ms before response`)
-    res.status(201).json(newMessage)
+    logInfo(
+      'message.controller',
+      `⏱️ POST request processed in ${requestEnd - requestStart}ms before response`
+    )
+    sendSuccess(res, newMessage, null, 201)
 
     // Process image ASYNCHRONOUSLY in background (don't block response)
     if (image && rawImageData) {
@@ -228,13 +214,13 @@ export const sendMessage = async (req, res) => {
           if (Buffer.isBuffer(image)) {
             const mimeType = rawImageData.isSvg ? 'image/svg+xml' : 'image/jpeg'
             uploadData = `data:${mimeType};base64,${rawImageData.base64Data}`
-            logInfo('message.controller', `📤 Converted Buffer to data URL for Cloudinary (${mimeType})`)
+            logInfo(
+              'message.controller',
+              `📤 Converted Buffer to data URL for Cloudinary (${mimeType})`
+            )
           }
 
-          const uploadResponse = await cloudinary.uploader.upload(
-            uploadData,
-            uploadOptions
-          )
+          const uploadResponse = await cloudinary.uploader.upload(uploadData, uploadOptions)
           const uploadedImageUrl = uploadResponse.secure_url
           logInfo('message.controller', '✅ Cloudinary upload complete')
 
@@ -250,19 +236,31 @@ export const sendMessage = async (req, res) => {
             imageUrl: uploadedImageUrl,
           }
 
-          logInfo('message.controller', `🔍 Looking up socket IDs - Sender: ${senderId}, Receiver: ${receiverId}`)
-          
+          logInfo(
+            'message.controller',
+            `🔍 Looking up socket IDs - Sender: ${senderId}, Receiver: ${receiverId}`
+          )
+
           let senderSocketId = getReceiverSocketId(senderId)
-          logInfo('message.controller', `🔍 Sender lookup by _id (${senderId}): ${senderSocketId ? senderSocketId.substring(0, 8) + '...' : 'NOT FOUND'}`)
-          
+          logInfo(
+            'message.controller',
+            `🔍 Sender lookup by _id (${senderId}): ${senderSocketId ? senderSocketId.substring(0, 8) + '...' : 'NOT FOUND'}`
+          )
+
           if (!senderSocketId) {
             try {
               const senderUser = await User.findById(senderId).select('user_id')
               if (senderUser && senderUser.user_id) {
                 senderSocketId = getReceiverSocketId(senderUser.user_id)
-                logInfo('message.controller', `🔍 Sender lookup by user_id (${senderUser.user_id}): ${senderSocketId ? senderSocketId.substring(0, 8) + '...' : 'NOT FOUND'}`)
+                logInfo(
+                  'message.controller',
+                  `🔍 Sender lookup by user_id (${senderUser.user_id}): ${senderSocketId ? senderSocketId.substring(0, 8) + '...' : 'NOT FOUND'}`
+                )
               } else {
-                logWarning('message.controller', `⚠️ Sender user not found in DB with _id: ${senderId}`)
+                logWarning(
+                  'message.controller',
+                  `⚠️ Sender user not found in DB with _id: ${senderId}`
+                )
               }
             } catch (error) {
               logError('message.controller', 'Failed to lookup sender user', error)
@@ -273,14 +271,20 @@ export const sendMessage = async (req, res) => {
             logInfo('message.controller', `📤 Emitting messageImageUpdated to SENDER socket`)
             io.to(senderSocketId).emit('messageImageUpdated', imageUpdateData)
           } else {
-            logWarning('message.controller', `⚠️ Sender socket NOT found - image update will NOT be delivered to sender`)
+            logWarning(
+              'message.controller',
+              `⚠️ Sender socket NOT found - image update will NOT be delivered to sender`
+            )
           }
-          
+
           if (receiverSocketId) {
             logInfo('message.controller', `📤 Emitting messageImageUpdated to RECEIVER socket`)
             io.to(receiverSocketId).emit('messageImageUpdated', imageUpdateData)
           } else {
-            logWarning('message.controller', `⚠️ Receiver socket NOT found - image update will NOT be delivered to receiver`)
+            logWarning(
+              'message.controller',
+              `⚠️ Receiver socket NOT found - image update will NOT be delivered to receiver`
+            )
           }
 
           // Check image for nudity ASYNCHRONOUSLY (non-blocking)
@@ -296,11 +300,7 @@ export const sendMessage = async (req, res) => {
                 }
               })
               .catch((error) => {
-                logError(
-                  'message.controller',
-                  'Background nudity check failed',
-                  error
-                )
+                logError('message.controller', 'Background nudity check failed', error)
               })
           }
         } catch (error) {
@@ -310,7 +310,11 @@ export const sendMessage = async (req, res) => {
     }
   } catch (error) {
     logError('message.controller', 'Failed to send message', error)
-    sendError(res, 500, 'Failed to send message')
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req._id,
+    })
   }
 }
 
@@ -332,7 +336,7 @@ export const deleteMessages = async (req, res) => {
 
     // Notify the other user that chat has been cleared via Socket.IO (with acknowledgment)
     let receiverSocketId = getReceiverSocketId(userChattingWithId)
-    
+
     if (!receiverSocketId) {
       // Try looking up the user by _id to get their user_id for socket lookup
       try {
@@ -344,7 +348,7 @@ export const deleteMessages = async (req, res) => {
         logError('message.controller', 'Failed to lookup receiver for chat clear', error)
       }
     }
-    
+
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('chatCleared', { userId: myId }, (ack) => {
         if (ack) {
@@ -353,12 +357,13 @@ export const deleteMessages = async (req, res) => {
       })
     }
 
-    res.status(200).json({
-      message: 'Messages cleared successfully',
-      deletedCount: result.deletedCount,
-    })
+    sendSuccess(res, { deletedCount: result.deletedCount }, 'Messages cleared successfully', 200)
   } catch (error) {
     logError('message.controller', 'Failed to delete messages', error)
-    sendError(res, 500, 'Failed to delete messages')
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req._id,
+    })
   }
 }

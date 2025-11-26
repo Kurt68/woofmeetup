@@ -13,14 +13,10 @@ import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { logError, logInfo } from '../utilities/logger.js'
-import {
-  safeTemplateReplace,
-  sanitizeTemplateVariable,
-} from '../utilities/htmlEscaper.js'
-import {
-  getAllowedEmailImagePaths,
-  safeReadFile,
-} from '../utilities/pathValidator.js'
+import { safeTemplateReplace, sanitizeTemplateVariable } from '../utilities/htmlEscaper.js'
+import { getAllowedEmailImagePaths, safeReadFile } from '../utilities/pathValidator.js'
+import AppError from '../utilities/AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 // Get current directory for ES modules
 const __filename = fileURLToPath(import.meta.url)
@@ -59,15 +55,16 @@ export const sendVerificationEmail = async (email, verificationToken) => {
       from: senders.verification,
       to: recipient,
       subject: 'Verify your email',
-      html: VERIFICATION_EMAIL_TEMPLATE.replace(
-        '{verificationCode}',
-        verificationToken
-      ),
+      html: VERIFICATION_EMAIL_TEMPLATE.replace('{verificationCode}', verificationToken),
       category: 'Email Verification',
       attachments,
     })
   } catch (error) {
-    throw new Error(`Error sending verification email: ${error}`)
+    throw AppError.internalError(ErrorCodes.EMAIL_VERIFICATION_FAILED, {
+      emailType: 'verification',
+      recipientEmail: email,
+      originalError: error.message,
+    })
   }
 }
 
@@ -89,7 +86,11 @@ export const sendWelcomeEmail = async (email, userName) => {
       },
     })
   } catch (error) {
-    throw new Error(`Error sending welcome email: ${error}`)
+    throw AppError.internalError(ErrorCodes.EMAIL_SEND_FAILED, {
+      emailType: 'welcome',
+      recipientEmail: email,
+      originalError: error.message,
+    })
   }
 }
 
@@ -111,7 +112,11 @@ export const sendPasswordResetEmail = async (email, resetURL) => {
       attachments,
     })
   } catch (error) {
-    throw new Error(`Error sending password reset email: ${error}`)
+    throw AppError.internalError(ErrorCodes.EMAIL_SEND_FAILED, {
+      emailType: 'passwordReset',
+      recipientEmail: email,
+      originalError: error.message,
+    })
   }
 }
 
@@ -131,15 +136,15 @@ export const sendResetSuccessEmail = async (email) => {
       attachments,
     })
   } catch (error) {
-    throw new Error(`Error sending password reset success email: ${error}`)
+    throw AppError.internalError(ErrorCodes.EMAIL_SEND_FAILED, {
+      emailType: 'resetSuccess',
+      recipientEmail: email,
+      originalError: error.message,
+    })
   }
 }
 
-export const sendSubscriptionWelcomeEmail = async (
-  email,
-  userName,
-  planType
-) => {
+export const sendSubscriptionWelcomeEmail = async (email, userName, planType) => {
   const recipient = [{ email }]
 
   // Determine client URL based on environment
@@ -284,13 +289,7 @@ export const sendAccountDeletionEmail = async (
   }
 }
 
-export const sendCreditsPurchaseEmail = async (
-  email,
-  userName,
-  credits,
-  newBalance,
-  amount
-) => {
+export const sendCreditsPurchaseEmail = async (email, userName, credits, newBalance, amount) => {
   const recipient = [{ email }]
 
   try {

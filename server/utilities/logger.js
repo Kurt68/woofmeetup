@@ -10,11 +10,7 @@
  * - Error stack traces (in production)
  */
 
-import {
-  sanitizeObject,
-  sanitizeError,
-  partiallyRedact,
-} from './logSanitizer.js'
+import { sanitizeObject, sanitizeError, partiallyRedact } from './logSanitizer.js'
 
 const LOG_LEVELS = {
   INFO: '📘',
@@ -41,12 +37,7 @@ const formatLog = (level, context, message, data = null) => {
  * @param {*} data - Optional additional data (automatically sanitized)
  */
 export const logInfo = (context, message, data = null) => {
-  const { logEntry, sanitizedData } = formatLog(
-    LOG_LEVELS.INFO,
-    context,
-    message,
-    data
-  )
+  const { logEntry, sanitizedData } = formatLog(LOG_LEVELS.INFO, context, message, data)
   console.log(logEntry, sanitizedData ? sanitizedData : '')
 }
 
@@ -57,12 +48,7 @@ export const logInfo = (context, message, data = null) => {
  * @param {*} data - Optional additional data (automatically sanitized)
  */
 export const logSuccess = (context, message, data = null) => {
-  const { logEntry, sanitizedData } = formatLog(
-    LOG_LEVELS.SUCCESS,
-    context,
-    message,
-    data
-  )
+  const { logEntry, sanitizedData } = formatLog(LOG_LEVELS.SUCCESS, context, message, data)
   console.log(logEntry, sanitizedData ? sanitizedData : '')
 }
 
@@ -73,12 +59,7 @@ export const logSuccess = (context, message, data = null) => {
  * @param {*} data - Optional additional data (automatically sanitized)
  */
 export const logWarning = (context, message, data = null) => {
-  const { logEntry, sanitizedData } = formatLog(
-    LOG_LEVELS.WARNING,
-    context,
-    message,
-    data
-  )
+  const { logEntry, sanitizedData } = formatLog(LOG_LEVELS.WARNING, context, message, data)
   console.warn(logEntry, sanitizedData ? sanitizedData : '')
 }
 
@@ -122,10 +103,7 @@ export const logError = (context, message, error, additionalData = null) => {
 export const logSocketEvent = (event, userId, socketId) => {
   const maskedUserId = partiallyRedact(userId, 4)
   const maskedSocketId = partiallyRedact(socketId, 4)
-  logInfo(
-    'socket.io',
-    `${event} - userId: ${maskedUserId}, socketId: ${maskedSocketId}`
-  )
+  logInfo('socket.io', `${event} - userId: ${maskedUserId}, socketId: ${maskedSocketId}`)
 }
 
 /**

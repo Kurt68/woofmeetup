@@ -50,9 +50,7 @@ export const trackRateLimitHit = async (endpoint, ip, limit, windowMs) => {
   })
 
   // Check if we should alert (multiple hits on same endpoint)
-  const hitsOnEndpoint = metrics.rateLimitHits.filter(
-    (hit) => hit.endpoint === endpoint
-  ).length
+  const hitsOnEndpoint = metrics.rateLimitHits.filter((hit) => hit.endpoint === endpoint).length
 
   if (hitsOnEndpoint >= MAX_RATE_LIMIT_HITS_PER_WINDOW) {
     // Send alert to Sentry

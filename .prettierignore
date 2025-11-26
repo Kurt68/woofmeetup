@@ -1,0 +1,15 @@
+node_modules/
+dist/
+build/
+coverage/
+.next/
+out/
+client/dist/
+client/node_modules/
+test-results/
+*.min.js
+.git/
+.vscode/
+.idea/
+package-lock.json
+yarn.lock

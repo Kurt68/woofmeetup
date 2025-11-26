@@ -33,44 +33,17 @@ export const validateMagicBytes = (buffer, mimeType) => {
 
   // Normalize MIME type to lowercase to handle browser inconsistencies (e.g., image/JPG vs image/jpg)
   const normalizedMimeType = mimeType.toLowerCase()
-  console.log(
-    `[DEBUG validateMagicBytes] Input MIME: ${mimeType}, Normalized: ${normalizedMimeType}`
-  )
 
   // Get expected magic bytes for this MIME type
   const expectedBytes = MAGIC_BYTES[normalizedMimeType]
-  console.log(
-    `[DEBUG validateMagicBytes] Expected bytes for ${normalizedMimeType}: ${
-      expectedBytes
-        ? expectedBytes.map((b) => '0x' + b.toString(16)).join(' ')
-        : 'NOT FOUND'
-    }`
-  )
 
   if (!expectedBytes) {
-    console.log(
-      `[DEBUG validateMagicBytes] MIME type not in MAGIC_BYTES dict. Available keys: ${Object.keys(
-        MAGIC_BYTES
-      ).join(', ')}`
-    )
     return false // MIME type not in allowed list
   }
 
   // Check if buffer starts with expected magic bytes
-  const actualBytes = Array.from(buffer.slice(0, expectedBytes.length))
-  console.log(
-    `[DEBUG validateMagicBytes] Actual bytes: ${actualBytes
-      .map((b) => '0x' + b.toString(16))
-      .join(' ')}`
-  )
-
   for (let i = 0; i < expectedBytes.length; i++) {
     if (buffer[i] !== expectedBytes[i]) {
-      console.log(
-        `[DEBUG validateMagicBytes] Byte mismatch at position ${i}: expected 0x${expectedBytes[
-          i
-        ].toString(16)}, got 0x${buffer[i].toString(16)}`
-      )
       return false
     }
   }
@@ -83,9 +56,6 @@ export const validateMagicBytes = (buffer, mimeType) => {
     }
   }
 
-  console.log(
-    `[DEBUG validateMagicBytes] Validation passed for ${normalizedMimeType}`
-  )
   return true
 }
 
@@ -107,12 +77,7 @@ export const detectMimeTypeFromMagicBytes = (buffer) => {
   }
 
   // Check PNG (0x89 50 4E 47)
-  if (
-    buffer[0] === 0x89 &&
-    buffer[1] === 0x50 &&
-    buffer[2] === 0x4e &&
-    buffer[3] === 0x47
-  ) {
+  if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
     return 'image/png'
   }
 

@@ -3,21 +3,14 @@ import { body } from 'express-validator'
 import multer from 'multer'
 import { verifyToken } from '../middleware/verifyToken.js'
 import { checkMessageLimit } from '../middleware/checkMessageLimit.js'
-import {
-  validateParamUserId,
-  validatePaginationParams,
-} from '../middleware/validateInput.js'
+import { validateParamUserId, validatePaginationParams } from '../middleware/validateInput.js'
 import { csrfProtection } from '../middleware/csrf.js'
 import {
   messageRetrievalLimiter,
   messageSendingLimiter,
   messageDeletionLimiter,
 } from '../middleware/rateLimiter.js'
-import {
-  getMessages,
-  sendMessage,
-  deleteMessages,
-} from '../controllers/message.controller.js'
+import { getMessages, sendMessage, deleteMessages } from '../controllers/message.controller.js'
 
 const router = express.Router()
 
@@ -25,13 +18,7 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    const allowedMimes = [
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'image/svg+xml',
-      'image/webp',
-    ]
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml', 'image/webp']
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true)
     } else {
@@ -86,18 +73,17 @@ router.post(
       if (!value) return true
       // Only validate if it's a string (JSON base64 request)
       if (typeof value !== 'string') return true
-      
+
       // Validate base64 format (for JSON requests)
       const isDataUrl = /^data:image\/[a-z+\-]+;base64,/.test(value)
       const isRawBase64 = /^[A-Za-z0-9+/\s=]*$/.test(value)
       if (!isDataUrl && !isRawBase64) {
         throw new Error('Image must be valid base64 format')
       }
-      
+
       // Validate size (5MB limit)
       const sizeInBytes =
-        Math.ceil((value.length * 3) / 4) -
-        (value.endsWith('==') ? 2 : value.endsWith('=') ? 1 : 0)
+        Math.ceil((value.length * 3) / 4) - (value.endsWith('==') ? 2 : value.endsWith('=') ? 1 : 0)
       if (sizeInBytes > 5 * 1024 * 1024) {
         throw new Error('Image must not exceed 5MB')
       }

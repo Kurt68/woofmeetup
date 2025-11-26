@@ -42,14 +42,7 @@ export const sendSuccess = (res, data, message = null, statusCode = 200) => {
  * @param {number} total - Total items count
  * @param {string} message - Optional message
  */
-export const sendPaginated = (
-  res,
-  data,
-  page,
-  limit,
-  total,
-  message = null
-) => {
+export const sendPaginated = (res, data, page, limit, total, message = null) => {
   const pages = Math.ceil(total / limit)
 
   return res.status(200).json({
@@ -90,11 +83,7 @@ export const sendError = (res, message, statusCode = 400, errors = null) => {
  * @param {Array} validationErrors - express-validator errors array
  * @param {string} message - Optional override message
  */
-export const sendValidationError = (
-  res,
-  validationErrors,
-  message = 'Validation failed'
-) => {
+export const sendValidationError = (res, validationErrors, message = 'Validation failed') => {
   return sendError(res, message, 400, validationErrors)
 }
 
@@ -106,11 +95,7 @@ export const sendValidationError = (
  */
 export const sendInternalError = (res, error, context = {}) => {
   // Log full error server-side for debugging
-  logError(
-    'ApiResponse',
-    `Internal server error [${context.method} ${context.path}]`,
-    error
-  )
+  logError('ApiResponse', `Internal server error [${context.method} ${context.path}]`, error)
 
   // Sanitize message before sending to client (prevent info disclosure)
   const sanitizedMessage = sanitizeErrorMessage(error)

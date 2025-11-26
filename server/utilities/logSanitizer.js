@@ -152,8 +152,7 @@ export function sanitizeValue(fieldName, value) {
     // CVC/CVV pattern (3-4 digits)
     if (
       fieldName &&
-      (fieldName.toLowerCase().includes('cvc') ||
-        fieldName.toLowerCase().includes('cvv'))
+      (fieldName.toLowerCase().includes('cvc') || fieldName.toLowerCase().includes('cvv'))
     ) {
       if (value.match(/^\d{3,4}$/)) {
         return '[REDACTED]'
@@ -162,9 +161,7 @@ export function sanitizeValue(fieldName, value) {
 
     // UUID or ObjectId pattern
     if (
-      value.match(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      ) ||
+      value.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i) ||
       value.match(/^[0-9a-f]{24}$/)
     ) {
       return partiallyRedact(value, 4)
@@ -252,18 +249,9 @@ export function sanitizeError(error) {
     /user[_-]?id[:\s]*[0-9a-f-]{36,}/gi,
     'userId: [REDACTED]'
   )
-  sanitizedMessage = sanitizedMessage.replace(
-    /token[:\s]*[a-z0-9.]{50,}/gi,
-    'token: [REDACTED]'
-  )
-  sanitizedMessage = sanitizedMessage.replace(
-    /password[:\s]*\S+/gi,
-    'password: [REDACTED]'
-  )
-  sanitizedMessage = sanitizedMessage.replace(
-    /email[:\s]*\S+@\S+/gi,
-    'email: [REDACTED]'
-  )
+  sanitizedMessage = sanitizedMessage.replace(/token[:\s]*[a-z0-9.]{50,}/gi, 'token: [REDACTED]')
+  sanitizedMessage = sanitizedMessage.replace(/password[:\s]*\S+/gi, 'password: [REDACTED]')
+  sanitizedMessage = sanitizedMessage.replace(/email[:\s]*\S+@\S+/gi, 'email: [REDACTED]')
   sanitizedMessage = sanitizedMessage.replace(
     /stripe[_-]?[a-z_]*[:\s]*[a-z0-9_]{20,}/gi,
     'stripe_data: [REDACTED]'
@@ -276,10 +264,7 @@ export function sanitizeError(error) {
     sanitizedStack = '[STACK_TRACE_REMOVED_IN_PRODUCTION]'
   } else {
     // In development, remove only sensitive paths
-    sanitizedStack = sanitizedStack.replace(
-      /\/[^:\s]+\/[^:\s]+\//g,
-      '/[PATH_REDACTED]/'
-    )
+    sanitizedStack = sanitizedStack.replace(/\/[^:\s]+\/[^:\s]+\//g, '/[PATH_REDACTED]/')
   }
 
   // Create base error object

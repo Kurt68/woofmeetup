@@ -2,6 +2,7 @@ import rateLimit from 'express-rate-limit'
 import { logWarning, logInfo } from '../utilities/logger.js'
 import { trackRateLimitHit } from '../utilities/monitoring.js'
 import { logRateLimitExceeded } from '../utilities/securityLogger.js'
+import { sendRateLimitError } from '../utils/ApiResponse.js'
 
 /**
  * Security: Rate Limiting Middleware
@@ -45,7 +46,8 @@ const createLimiterWithMonitoring = (endpointName, options) => {
       trackRateLimitHit(endpointName, ip, options.max, options.windowMs)
 
       // Send the rate limit response
-      res.status(429).json(options.message)
+      const message = options.message?.message || 'Rate limit exceeded'
+      sendRateLimitError(res, message, Math.ceil(options.windowMs / 1000))
     },
   })
 
@@ -98,17 +100,10 @@ export const initializeRedisStore = async () => {
       prefix: 'rate-limit:',
     })
 
-    logInfo(
-      'rate-limiter',
-      'Redis store initialized for distributed rate limiting'
-    )
+    logInfo('rate-limiter', 'Redis store initialized for distributed rate limiting')
     redisInitialized = true
   } catch (error) {
-    logWarning(
-      'rate-limiter',
-      'Redis store not available, using in-memory store',
-      error.message
-    )
+    logWarning('rate-limiter', 'Redis store not available, using in-memory store', error.message)
     redisInitialized = true
   }
 }
@@ -143,8 +138,7 @@ const _loginLimiter = createLimiterWithMonitoring('login', {
   max: loginMaxAttempts,
   message: {
     success: false,
-    message:
-      'Too many login attempts from this IP, please try again after 15 minutes',
+    message: 'Too many login attempts from this IP, please try again after 15 minutes',
     code: 'LOGIN_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -154,8 +148,7 @@ const _loginLimiter = createLimiterWithMonitoring('login', {
   skipFailedRequests: false,
 })
 
-export const loginLimiter =
-  process.env.NODE_ENV === 'production' ? _loginLimiter : bypassMiddleware
+export const loginLimiter = process.env.NODE_ENV === 'production' ? _loginLimiter : bypassMiddleware
 
 // Rate limiter for signup endpoint - Prevents account enumeration and spam
 // Security: Max 3 attempts per hour per IP in production
@@ -174,8 +167,7 @@ const _signupLimiter = createLimiterWithMonitoring('signup', {
   max: signupMaxAttempts,
   message: {
     success: false,
-    message:
-      'Too many signup attempts from this IP, please try again after 1 hour',
+    message: 'Too many signup attempts from this IP, please try again after 1 hour',
     code: 'SIGNUP_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -203,8 +195,7 @@ const _passwordResetLimiter = createLimiterWithMonitoring('password-reset', {
   max: passwordResetMaxAttempts,
   message: {
     success: false,
-    message:
-      'Too many password reset attempts from this IP, please try again after 1 hour',
+    message: 'Too many password reset attempts from this IP, please try again after 1 hour',
     code: 'PASSWORD_RESET_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -214,9 +205,7 @@ const _passwordResetLimiter = createLimiterWithMonitoring('password-reset', {
 })
 
 export const passwordResetLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _passwordResetLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _passwordResetLimiter : bypassMiddleware
 
 // Rate limiter for forgot password endpoint - Prevents account enumeration
 // Security: Max 3 attempts per hour per IP (production only)
@@ -234,8 +223,7 @@ const _forgotPasswordLimiter = createLimiterWithMonitoring('forgot-password', {
   max: forgotPasswordMaxAttempts,
   message: {
     success: false,
-    message:
-      'Too many password reset requests from this IP, please try again after 1 hour',
+    message: 'Too many password reset requests from this IP, please try again after 1 hour',
     code: 'FORGOT_PASSWORD_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -245,9 +233,7 @@ const _forgotPasswordLimiter = createLimiterWithMonitoring('forgot-password', {
 })
 
 export const forgotPasswordLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _forgotPasswordLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _forgotPasswordLimiter : bypassMiddleware
 
 // Rate limiter for email verification endpoint - Prevents brute force verification
 // Security: Max 5 attempts per 15 minutes per IP (production only)
@@ -265,8 +251,7 @@ const _verifyEmailLimiter = createLimiterWithMonitoring('verify-email', {
   max: verifyEmailMax,
   message: {
     success: false,
-    message:
-      'Too many email verification attempts from this IP, please try again after 15 minutes',
+    message: 'Too many email verification attempts from this IP, please try again after 15 minutes',
     code: 'VERIFY_EMAIL_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -281,61 +266,48 @@ export const verifyEmailLimiter =
 
 // Stricter rate limiter for deletion endpoints
 // NOTE: Disabled in development mode for faster testing
-const _deletionEndpointLimiter = createLimiterWithMonitoring(
-  'deletion-endpoint',
-  {
-    windowMs: 60 * 60 * 1000, // 1 hour
-    max: 3,
-    message: {
-      success: false,
-      message:
-        'Too many deletion requests from this IP, please try again after 1 hour',
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-  }
-)
+const _deletionEndpointLimiter = createLimiterWithMonitoring('deletion-endpoint', {
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  message: {
+    success: false,
+    message: 'Too many deletion requests from this IP, please try again after 1 hour',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
 
 export const deletionEndpointLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _deletionEndpointLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _deletionEndpointLimiter : bypassMiddleware
 
 // Rate limiter for message retrieval endpoints - Prevents message enumeration and DoS
 // Security: Max 10 messages per 5 minutes per IP (production only)
 // Reduced from 30 to prevent user enumeration attacks via message endpoint scanning
 // NOTE: Disabled in development mode for faster testing
 // Configurable via environment variables for production tuning
-const messageRetrievalWindowMs = process.env
-  .MESSAGE_RETRIEVAL_RATE_LIMIT_WINDOW_MS
+const messageRetrievalWindowMs = process.env.MESSAGE_RETRIEVAL_RATE_LIMIT_WINDOW_MS
   ? parseInt(process.env.MESSAGE_RETRIEVAL_RATE_LIMIT_WINDOW_MS, 10)
   : 5 * 60 * 1000
 const messageRetrievalMaxAttempts = process.env.MESSAGE_RETRIEVAL_RATE_LIMIT_MAX
   ? parseInt(process.env.MESSAGE_RETRIEVAL_RATE_LIMIT_MAX, 10)
   : 10
 
-const _messageRetrievalLimiter = createLimiterWithMonitoring(
-  'message-retrieval',
-  {
-    windowMs: messageRetrievalWindowMs,
-    max: messageRetrievalMaxAttempts,
-    message: {
-      success: false,
-      message:
-        'Too many message requests from this IP, please try again after 5 minutes',
-      code: 'MESSAGE_RATE_LIMIT_EXCEEDED',
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
-  }
-)
+const _messageRetrievalLimiter = createLimiterWithMonitoring('message-retrieval', {
+  windowMs: messageRetrievalWindowMs,
+  max: messageRetrievalMaxAttempts,
+  message: {
+    success: false,
+    message: 'Too many message requests from this IP, please try again after 5 minutes',
+    code: 'MESSAGE_RATE_LIMIT_EXCEEDED',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  skipFailedRequests: false,
+})
 
 export const messageRetrievalLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _messageRetrievalLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _messageRetrievalLimiter : bypassMiddleware
 
 // Rate limiter for message sending endpoints - Prevents spam and resource abuse
 // Security: Max 5 messages per 5 minutes per IP (production only)
@@ -353,8 +325,7 @@ const _messageSendingLimiter = createLimiterWithMonitoring('message-sending', {
   max: messageSendingMaxAttempts,
   message: {
     success: false,
-    message:
-      'Too many messages sent from this IP, please try again after 5 minutes',
+    message: 'Too many messages sent from this IP, please try again after 5 minutes',
     code: 'MESSAGE_SENDING_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -365,44 +336,35 @@ const _messageSendingLimiter = createLimiterWithMonitoring('message-sending', {
 })
 
 export const messageSendingLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _messageSendingLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _messageSendingLimiter : bypassMiddleware
 
 // Rate limiter for message deletion endpoints - Prevents message scrubbing attacks
 // Security: Max 10 deletions per 5 minutes per IP (production only)
 // NOTE: Disabled in development mode for faster testing
 // Configurable via environment variables for production tuning
-const messageDeletionWindowMs = process.env
-  .MESSAGE_DELETION_RATE_LIMIT_WINDOW_MS
+const messageDeletionWindowMs = process.env.MESSAGE_DELETION_RATE_LIMIT_WINDOW_MS
   ? parseInt(process.env.MESSAGE_DELETION_RATE_LIMIT_WINDOW_MS, 10)
   : 5 * 60 * 1000
 const messageDeletionMaxAttempts = process.env.MESSAGE_DELETION_RATE_LIMIT_MAX
   ? parseInt(process.env.MESSAGE_DELETION_RATE_LIMIT_MAX, 10)
   : 10
 
-const _messageDeletionLimiter = createLimiterWithMonitoring(
-  'message-deletion',
-  {
-    windowMs: messageDeletionWindowMs,
-    max: messageDeletionMaxAttempts,
-    message: {
-      success: false,
-      message:
-        'Too many message deletions from this IP, please try again after 5 minutes',
-      code: 'MESSAGE_DELETION_RATE_LIMIT_EXCEEDED',
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
-  }
-)
+const _messageDeletionLimiter = createLimiterWithMonitoring('message-deletion', {
+  windowMs: messageDeletionWindowMs,
+  max: messageDeletionMaxAttempts,
+  message: {
+    success: false,
+    message: 'Too many message deletions from this IP, please try again after 5 minutes',
+    code: 'MESSAGE_DELETION_RATE_LIMIT_EXCEEDED',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  skipFailedRequests: false,
+})
 
 export const messageDeletionLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _messageDeletionLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _messageDeletionLimiter : bypassMiddleware
 
 // Rate limiter for Turnstile verification endpoint - Prevents brute force CAPTCHA bypass
 // Security: Failed attempts are rate limited per IP (production only)
@@ -420,8 +382,7 @@ const _turnstileLimiter = createLimiterWithMonitoring('turnstile', {
   max: turnstileMaxAttempts,
   message: {
     success: false,
-    message:
-      'Too many verification attempts from this IP, please try again after 15 minutes',
+    message: 'Too many verification attempts from this IP, please try again after 15 minutes',
     code: 'TURNSTILE_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -544,28 +505,23 @@ const USERS_RATE_LIMIT_WINDOW_MS = process.env.USERS_RATE_LIMIT_WINDOW_MS
   : 5 * 60 * 1000
 
 // Create the actual rate limiter (production only)
-const _userEnumerationLimiter = createLimiterWithMonitoring(
-  'user-enumeration',
-  {
-    windowMs: USERS_RATE_LIMIT_WINDOW_MS,
-    max: USERS_RATE_LIMIT_MAX,
-    message: {
-      success: false,
-      message: 'Too many user queries from this IP, please try again later',
-      code: 'USER_ENUMERATION_RATE_LIMIT_EXCEEDED',
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipSuccessfulRequests: false,
-    skipFailedRequests: false,
-  }
-)
+const _userEnumerationLimiter = createLimiterWithMonitoring('user-enumeration', {
+  windowMs: USERS_RATE_LIMIT_WINDOW_MS,
+  max: USERS_RATE_LIMIT_MAX,
+  message: {
+    success: false,
+    message: 'Too many user queries from this IP, please try again later',
+    code: 'USER_ENUMERATION_RATE_LIMIT_EXCEEDED',
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: false,
+  skipFailedRequests: false,
+})
 
 // Export: Use bypass in development, real limiter in production
 export const userEnumerationLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _userEnumerationLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _userEnumerationLimiter : bypassMiddleware
 
 // Rate limiter for /api/auth/addcoordinates endpoint
 // Security: Prevents abuse of location update endpoint
@@ -574,8 +530,7 @@ export const userEnumerationLimiter =
 const ADDCOORDINATES_RATE_LIMIT_MAX = process.env.ADDCOORDINATES_RATE_LIMIT_MAX
   ? parseInt(process.env.ADDCOORDINATES_RATE_LIMIT_MAX)
   : 10
-const ADDCOORDINATES_RATE_LIMIT_WINDOW_MS = process.env
-  .ADDCOORDINATES_RATE_LIMIT_WINDOW_MS
+const ADDCOORDINATES_RATE_LIMIT_WINDOW_MS = process.env.ADDCOORDINATES_RATE_LIMIT_WINDOW_MS
   ? parseInt(process.env.ADDCOORDINATES_RATE_LIMIT_WINDOW_MS)
   : 5 * 60 * 1000
 
@@ -585,8 +540,7 @@ const _addCoordinatesLimiter = createLimiterWithMonitoring('add-coordinates', {
   max: ADDCOORDINATES_RATE_LIMIT_MAX,
   message: {
     success: false,
-    message:
-      'Too many location update requests from this IP, please try again later',
+    message: 'Too many location update requests from this IP, please try again later',
     code: 'ADDCOORDINATES_RATE_LIMIT_EXCEEDED',
   },
   standardHeaders: true,
@@ -597,9 +551,7 @@ const _addCoordinatesLimiter = createLimiterWithMonitoring('add-coordinates', {
 
 // Export: Use bypass in development, real limiter in production
 export const addCoordinatesLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _addCoordinatesLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _addCoordinatesLimiter : bypassMiddleware
 
 // Rate limiter for /api/likes endpoint
 // Security: Prevents abuse of like functionality and spam
@@ -626,6 +578,4 @@ const _likeActionLimiter = createLimiterWithMonitoring('like-action', {
 })
 
 export const likeActionLimiter =
-  process.env.NODE_ENV === 'production'
-    ? _likeActionLimiter
-    : bypassMiddleware
+  process.env.NODE_ENV === 'production' ? _likeActionLimiter : bypassMiddleware

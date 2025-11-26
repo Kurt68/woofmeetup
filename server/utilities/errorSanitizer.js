@@ -37,20 +37,12 @@ export const sanitizeErrorMessage = (error, context = 'unknown') => {
   }
 
   // Authentication/JWT errors
-  if (
-    message.includes('JWT') ||
-    message.includes('jwt') ||
-    message.includes('token')
-  ) {
+  if (message.includes('JWT') || message.includes('jwt') || message.includes('token')) {
     return 'Authentication error'
   }
 
   // File system errors
-  if (
-    message.includes('ENOENT') ||
-    message.includes('EACCES') ||
-    message.includes('File')
-  ) {
+  if (message.includes('ENOENT') || message.includes('EACCES') || message.includes('File')) {
     return 'File operation failed'
   }
 
@@ -65,11 +57,7 @@ export const sanitizeErrorMessage = (error, context = 'unknown') => {
   }
 
   // Email service errors
-  if (
-    message.includes('Mailtrap') ||
-    message.includes('SMTP') ||
-    message.includes('Email')
-  ) {
+  if (message.includes('Mailtrap') || message.includes('SMTP') || message.includes('Email')) {
     return 'Email service error'
   }
 
@@ -91,11 +79,7 @@ export const sanitizeErrorMessage = (error, context = 'unknown') => {
  * @param {number} statusCode - HTTP status code (default: 500)
  * @returns {object} - Sanitized error response object
  */
-export const createSanitizedErrorResponse = (
-  error,
-  context = 'unknown',
-  statusCode = 500
-) => {
+export const createSanitizedErrorResponse = (error, context = 'unknown', statusCode = 500) => {
   return {
     success: false,
     message: sanitizeErrorMessage(error, context),

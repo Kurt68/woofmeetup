@@ -1,4 +1,11 @@
 import { User } from '../models/user.model.js'
+import {
+  sendUnauthorized,
+  sendNotFound,
+  sendForbidden,
+  sendInternalError,
+  sendError,
+} from '../utils/ApiResponse.js'
 
 export const checkMessageLimit = async (req, res, next) => {
   try {
@@ -7,15 +14,12 @@ export const checkMessageLimit = async (req, res, next) => {
     const userId = req._id
 
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: 'Unauthorized - user ID not found',
-      })
+      return sendUnauthorized(res, 'User ID not found')
     }
 
     const user = await User.findById(userId)
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' })
+      return sendNotFound(res, 'User')
     }
 
     // Premium and VIP users have unlimited messages
@@ -25,18 +29,19 @@ export const checkMessageLimit = async (req, res, next) => {
 
     // Free users need credits
     if (user.messageCredits <= 0) {
-      return res.status(403).json({
-        success: false,
-        message: 'Insufficient message credits',
-        needsCredits: true,
-        currentCredits: user.messageCredits,
-      })
+      return sendError(res, 'Insufficient message credits', 403, [
+        { message: 'needsCredits', value: true, currentCredits: user.messageCredits },
+      ])
     }
 
     // User has credits, proceed
     next()
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    return sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req._id,
+    })
   }
 }
 

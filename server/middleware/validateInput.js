@@ -9,6 +9,9 @@ import {
   isValidEmail,
   validateResetToken,
 } from '../utilities/sanitizeInput.js'
+import { sendValidationError, sendError } from '../utils/ApiResponse.js'
+import { AppError } from '../utilities/AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 /**
  * Middleware to validate user ID from request parameters
@@ -21,11 +24,14 @@ export const validateParamUserId = (paramName = 'id') => {
       validateUserId(userId, `param.${paramName}`)
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid input format',
-        error: error.message,
-      })
+      if (error instanceof AppError) {
+        return sendError(res, error.message, error.statusCode, error.details)
+      }
+      return sendValidationError(
+        res,
+        [{ path: paramName, msg: error.message }],
+        'Invalid input format'
+      )
     }
   }
 }
@@ -45,11 +51,14 @@ export const validateQueryUserId = (queryParamName = 'userId') => {
       }
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid input format',
-        error: error.message,
-      })
+      if (error instanceof AppError) {
+        return sendError(res, error.message, error.statusCode, error.details)
+      }
+      return sendValidationError(
+        res,
+        [{ path: queryParamName, msg: error.message }],
+        'Invalid input format'
+      )
     }
   }
 }
@@ -58,9 +67,7 @@ export const validateQueryUserId = (queryParamName = 'userId') => {
  * Middleware to validate user IDs from request body
  * Protects against NoSQL injection via POST/PUT body
  */
-export const validateBodyUserIds = (
-  fieldNames = ['userId', 'matchedUserId']
-) => {
+export const validateBodyUserIds = (fieldNames = ['userId', 'matchedUserId']) => {
   return (req, res, next) => {
     try {
       for (const fieldName of fieldNames) {
@@ -70,11 +77,14 @@ export const validateBodyUserIds = (
       }
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid input format',
-        error: error.message,
-      })
+      if (error instanceof AppError) {
+        return sendError(res, error.message, error.statusCode, error.details)
+      }
+      return sendValidationError(
+        res,
+        [{ path: 'body', msg: error.message }],
+        'Invalid input format'
+      )
     }
   }
 }
@@ -88,24 +98,36 @@ export const validateEmailInput = (fieldName = 'email') => {
       const email = req.body[fieldName]
 
       if (!email) {
-        throw new Error(`${fieldName} is required`)
+        throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+          field: fieldName,
+          reason: 'required',
+        })
       }
 
       if (!isSafeString(email)) {
-        throw new Error(`Invalid ${fieldName} format`)
+        throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+          field: fieldName,
+          reason: 'unsafe_format',
+        })
       }
 
       if (!isValidEmail(email)) {
-        throw new Error(`Invalid email format`)
+        throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+          field: fieldName,
+          reason: 'invalid_email_format',
+        })
       }
 
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid email format',
-        error: error.message,
-      })
+      if (error instanceof AppError) {
+        return sendError(res, error.message, error.statusCode, error.details)
+      }
+      return sendValidationError(
+        res,
+        [{ path: fieldName, msg: error.message }],
+        'Invalid email format'
+      )
     }
   }
 }
@@ -123,11 +145,14 @@ export const validateResetTokenParam = (paramName = 'token') => {
       validateResetToken(token, `param.${paramName}`)
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid input format',
-        error: error.message,
-      })
+      if (error instanceof AppError) {
+        return sendError(res, error.message, error.statusCode, error.details)
+      }
+      return sendValidationError(
+        res,
+        [{ path: paramName, msg: error.message }],
+        'Invalid input format'
+      )
     }
   }
 }
@@ -149,28 +174,28 @@ export const validatePaginationParams = (maxLimit = 100) => {
 
       // Check if values are valid numbers
       if (isNaN(validatedLimit) || validatedLimit < 1) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid pagination parameters',
-          error: 'limit must be a positive integer',
-        })
+        return sendValidationError(
+          res,
+          [{ path: 'limit', msg: 'limit must be a positive integer' }],
+          'Invalid pagination parameters'
+        )
       }
 
       if (isNaN(validatedSkip) || validatedSkip < 0) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid pagination parameters',
-          error: 'skip must be a non-negative integer',
-        })
+        return sendValidationError(
+          res,
+          [{ path: 'skip', msg: 'skip must be a non-negative integer' }],
+          'Invalid pagination parameters'
+        )
       }
 
       // Enforce maximum limit to prevent abuse
       if (validatedLimit > maxLimit) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid pagination parameters',
-          error: `limit cannot exceed ${maxLimit}`,
-        })
+        return sendValidationError(
+          res,
+          [{ path: 'limit', msg: `limit cannot exceed ${maxLimit}` }],
+          'Invalid pagination parameters'
+        )
       }
 
       // Attach validated values to request for use in controllers
@@ -181,11 +206,11 @@ export const validatePaginationParams = (maxLimit = 100) => {
 
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid pagination parameters',
-        error: error.message,
-      })
+      return sendValidationError(
+        res,
+        [{ path: 'pagination', msg: error.message }],
+        'Invalid pagination parameters'
+      )
     }
   }
 }
@@ -218,20 +243,20 @@ export const validateNumericRangeQuery = (
 
       // Check if valid number
       if (isNaN(parsedValue)) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid query parameters',
-          error: `${fieldName} must be a valid number`,
-        })
+        return sendValidationError(
+          res,
+          [{ path: queryParamName, msg: `${fieldName} must be a valid number` }],
+          'Invalid query parameters'
+        )
       }
 
       // Check range bounds
       if (parsedValue < min || parsedValue > max) {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid query parameters',
-          error: `${fieldName} must be between ${min} and ${max}`,
-        })
+        return sendValidationError(
+          res,
+          [{ path: queryParamName, msg: `${fieldName} must be between ${min} and ${max}` }],
+          'Invalid query parameters'
+        )
       }
 
       // Attach validated value to request
@@ -240,11 +265,11 @@ export const validateNumericRangeQuery = (
 
       next()
     } catch (error) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid query parameters',
-        error: error.message,
-      })
+      return sendValidationError(
+        res,
+        [{ path: queryParamName, msg: error.message }],
+        'Invalid query parameters'
+      )
     }
   }
 }

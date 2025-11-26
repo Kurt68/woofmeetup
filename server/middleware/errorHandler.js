@@ -10,32 +10,21 @@
  */
 
 import { logError } from '../utilities/logger.js'
-import { sanitizeErrorMessage } from '../utilities/errorSanitizer.js'
-
-export const sendError = (res, statusCode, message) => {
-  return res.status(statusCode).json({
-    success: false,
-    message,
-    error: true,
-  })
-}
+import { sendInternalError, sendError } from '../utils/ApiResponse.js'
 
 export const handleAsyncError = (fn) => {
   return (req, res, next) => {
     Promise.resolve(fn(req, res, next)).catch((err) => {
-      logError(
-        'errorHandler.middleware',
-        `[${req.method} ${req.path}] Request error`,
-        err
-      )
+      logError('errorHandler.middleware', `[${req.method} ${req.path}] Request error`, err)
 
-      // SECURITY: Sanitize error message to prevent information disclosure
-      const sanitizedMessage = sanitizeErrorMessage(
-        err,
-        `${req.method} ${req.path}`
-      )
+      if (err.statusCode && err.statusCode !== 500) {
+        return sendError(res, err.message, err.statusCode)
+      }
 
-      sendError(res, err.statusCode || 500, sanitizedMessage)
+      return sendInternalError(res, err, {
+        method: req.method,
+        path: req.path,
+      })
     })
   }
 }

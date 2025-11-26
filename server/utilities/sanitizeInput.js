@@ -5,6 +5,8 @@
 
 import mongoose from 'mongoose'
 import { logWarning } from './logger.js'
+import { AppError } from './AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 /**
  * Validates if a string is a valid MongoDB ObjectId
@@ -23,8 +25,7 @@ export const isValidObjectId = (id) => {
  */
 export const isValidUUID = (id) => {
   if (typeof id !== 'string') return false
-  const uuidv4Regex =
-    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  const uuidv4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
   return uuidv4Regex.test(id)
 }
 
@@ -55,20 +56,29 @@ export const isSafeString = (input) => {
  * @param {*} id - The ID to validate
  * @param {string} fieldName - Name of field for error messages
  * @returns {string} - The validated ID
- * @throws {Error} - If ID format is invalid
+ * @throws {AppError} - If ID format is invalid
  */
 export const validateUserId = (id, fieldName = 'userId') => {
   if (!id) {
-    throw new Error(`${fieldName} is required`)
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: fieldName,
+      reason: 'required',
+    })
   }
 
   if (!isSafeString(id)) {
-    throw new Error(`Invalid ${fieldName} format`)
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: fieldName,
+      reason: 'unsafe_format',
+    })
   }
 
   // Accept both MongoDB ObjectId and UUID formats
   if (!isValidObjectId(id) && !isValidUUID(id)) {
-    throw new Error(`${fieldName} must be a valid MongoDB ID or UUID`)
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: fieldName,
+      reason: 'invalid_id_format',
+    })
   }
 
   return id
@@ -101,10 +111,7 @@ export const sanitizeObject = (obj) => {
   for (const key in obj) {
     // Skip keys that start with $ (NoSQL operators)
     if (key.startsWith('$')) {
-      logWarning(
-        'sanitizeInput',
-        `Blocked attempt to use NoSQL operator: ${key}`
-      )
+      logWarning('sanitizeInput', `Blocked attempt to use NoSQL operator: ${key}`)
       continue
     }
 
@@ -160,21 +167,30 @@ export const validatePagination = (limit = 10, skip = 0, maxLimit = 100) => {
  * @param {*} token - The token to validate
  * @param {string} fieldName - Name of field for error messages
  * @returns {string} - The validated token
- * @throws {Error} - If token format is invalid
+ * @throws {AppError} - If token format is invalid
  */
 export const validateResetToken = (token, fieldName = 'resetToken') => {
   if (!token) {
-    throw new Error(`${fieldName} is required`)
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: fieldName,
+      reason: 'required',
+    })
   }
 
   if (typeof token !== 'string') {
-    throw new Error(`${fieldName} must be a string`)
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: fieldName,
+      reason: 'must_be_string',
+    })
   }
 
   // Reset tokens are 40-char hex strings: randomBytes(20).toString('hex')
   const hexTokenRegex = /^[a-f0-9]{40}$/i
   if (!hexTokenRegex.test(token)) {
-    throw new Error(`Invalid ${fieldName} format`)
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: fieldName,
+      reason: 'invalid_token_format',
+    })
   }
 
   return token
@@ -186,11 +202,14 @@ export const validateResetToken = (token, fieldName = 'resetToken') => {
  * Validates that URLs contain no dangerous patterns that could be exploited
  * @param {string} redirectUrl - The full redirect URL to validate
  * @returns {boolean} - True if URL is safe
- * @throws {Error} - If URL contains dangerous patterns
+ * @throws {AppError} - If URL contains dangerous patterns
  */
 export const validateRedirectUrl = (redirectUrl) => {
   if (!redirectUrl || typeof redirectUrl !== 'string') {
-    throw new Error('Redirect URL must be a non-empty string')
+    throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+      field: 'redirectUrl',
+      reason: 'required_non_empty_string',
+    })
   }
 
   try {
@@ -199,7 +218,10 @@ export const validateRedirectUrl = (redirectUrl) => {
 
     // Ensure protocol is http or https only
     if (!['http:', 'https:'].includes(url.protocol)) {
-      throw new Error('Invalid redirect URL protocol')
+      throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+        field: 'redirectUrl',
+        reason: 'invalid_protocol',
+      })
     }
 
     // Check for dangerous patterns in pathname and search
@@ -218,20 +240,32 @@ export const validateRedirectUrl = (redirectUrl) => {
 
     for (const pattern of dangerousPatterns) {
       if (pattern.test(pathAndSearch)) {
-        throw new Error('Redirect URL contains dangerous characters')
+        throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+          field: 'redirectUrl',
+          reason: 'dangerous_characters',
+        })
       }
     }
 
     // Ensure URL doesn't have multiple forward slashes that could bypass validation
     // Allow // only for protocol (http:// or https://)
     if (pathAndSearch.includes('//')) {
-      throw new Error('Invalid redirect URL path')
+      throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+        field: 'redirectUrl',
+        reason: 'invalid_path',
+      })
     }
 
     return true
   } catch (error) {
+    if (error instanceof AppError) {
+      throw error
+    }
     if (error.message.startsWith('Invalid URL')) {
-      throw new Error('Redirect URL is malformed')
+      throw AppError.badRequest(ErrorCodes.INVALID_INPUT, {
+        field: 'redirectUrl',
+        reason: 'malformed_url',
+      })
     }
     throw error
   }

@@ -6,6 +6,8 @@
  */
 
 import { logError, logInfo, logWarning } from './logger.js'
+import AppError from './AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 /**
  * List of required environment variables
@@ -37,8 +39,8 @@ const PRODUCTION_ONLY_ENV_VARS = [
  * List of optional environment variables with defaults
  */
 const OPTIONAL_ENV_VARS = {
-  'CLIENT_URL': 'http://localhost:5173',
-  'REDIS_URL': null, // Optional for single-server deployments
+  CLIENT_URL: 'http://localhost:5173',
+  REDIS_URL: null, // Optional for single-server deployments
 }
 
 /**
@@ -105,15 +107,12 @@ export const validateEnvironmentVariables = () => {
 
   // Throw error if any required variables are missing
   if (errors.length > 0) {
-    const errorMsg = `Environment validation failed:\n${errors
-      .map((e) => `  - ${e}`)
-      .join('\n')}`
-    logError(
-      'env-validator',
-      'Environment validation failed',
-      new Error(errorMsg)
-    )
-    throw new Error(errorMsg)
+    const errorMsg = `Environment validation failed:\n${errors.map((e) => `  - ${e}`).join('\n')}`
+    logError('env-validator', 'Environment validation failed', new Error(errorMsg))
+    throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+      reason: 'Missing required environment variables',
+      details: errors,
+    })
   }
 
   logInfo(

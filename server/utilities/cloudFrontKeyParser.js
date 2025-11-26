@@ -1,4 +1,6 @@
 import { logError } from './logger.js'
+import AppError from './AppError.js'
+import { ErrorCodes } from '../constants/errorCodes.js'
 
 /**
  * Parse CloudFront private key from environment variable
@@ -11,7 +13,10 @@ import { logError } from './logger.js'
  */
 export const parseCloudFrontPrivateKey = (keyFromEnv) => {
   if (!keyFromEnv) {
-    throw new Error('CLOUDFRONT_PRIVATE_KEY environment variable is not set')
+    throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+      service: 'CloudFront',
+      reason: 'Private key not configured',
+    })
   }
 
   // If the key contains literal \n sequences, convert them to actual newlines
@@ -24,19 +29,19 @@ export const parseCloudFrontPrivateKey = (keyFromEnv) => {
   }
 
   // Validate that the key has proper PEM format (supports both RSA and PKCS#8 formats)
-  const hasBeginMarker = processedKey.includes('BEGIN') && 
+  const hasBeginMarker =
+    processedKey.includes('BEGIN') &&
     (processedKey.includes('PRIVATE KEY') || processedKey.includes('RSA PRIVATE KEY'))
-  const hasEndMarker = processedKey.includes('END') && 
+  const hasEndMarker =
+    processedKey.includes('END') &&
     (processedKey.includes('PRIVATE KEY') || processedKey.includes('RSA PRIVATE KEY'))
-  
+
   if (!hasBeginMarker || !hasEndMarker) {
-    logError(
-      'cloudFrontKeyParser',
-      'Invalid CloudFront private key format - missing PEM markers'
-    )
-    throw new Error(
-      'Invalid CloudFront private key format. Must be a valid PEM-formatted private key.'
-    )
+    logError('cloudFrontKeyParser', 'Invalid CloudFront private key format - missing PEM markers')
+    throw AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+      service: 'CloudFront',
+      reason: 'Invalid private key format - missing PEM markers',
+    })
   }
 
   return processedKey
@@ -54,9 +59,10 @@ export const getCloudFrontPrivateKey = () => {
   if (!cachedPrivateKey) {
     try {
       if (!process.env.CLOUDFRONT_PRIVATE_KEY) {
-        const error = new Error(
-          'CLOUDFRONT_PRIVATE_KEY environment variable is not set - CloudFront signed URLs will not be generated'
-        )
+        const error = AppError.internalError(ErrorCodes.EXTERNAL_SERVICE_ERROR, {
+          service: 'CloudFront',
+          reason: 'Private key not configured',
+        })
         logError('cloudFrontKeyParser', 'CloudFront private key not configured', {
           nodeEnv: process.env.NODE_ENV,
           hasKey: !!process.env.CLOUDFRONT_PRIVATE_KEY,

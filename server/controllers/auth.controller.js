@@ -15,6 +15,18 @@ import { logError, logInfo } from '../utilities/logger.js'
 import { sanitizeErrorMessage } from '../utilities/errorSanitizer.js'
 import { logAuthzFailure } from '../utilities/securityLogger.js'
 import { validationResult } from 'express-validator'
+import {
+  sendSuccess,
+  sendError,
+  sendValidationError,
+  sendInternalError,
+} from '../utils/ApiResponse.js'
+import {
+  withTransaction,
+  updateOneWithSession,
+  deleteOneWithSession,
+  createWithSession,
+} from '../utilities/transaction.js'
 import { stripeService } from '../services/stripe.service.js'
 import { io, getReceiverSocketId } from '../lib/socket.js'
 import { validateUserId } from '../utilities/sanitizeInput.js'
@@ -51,11 +63,7 @@ const cloudfrontDomain = process.env.CLOUDFRONT_DOMAIN
 export const signup = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array(),
-    })
+    return sendValidationError(res, errors.array())
   }
 
   const { email, password, userName, referral_source } = req.body
@@ -68,7 +76,7 @@ export const signup = async (req, res) => {
     const existingUser = await User.findOne({ email })
 
     if (existingUser) {
-      return res.status(409).send('User already exists. Please login')
+      return sendError(res, 'User already exists. Please login', 409)
     }
 
     const user = new User({
@@ -83,32 +91,31 @@ export const signup = async (req, res) => {
 
     await user.save()
 
-    const token = generateTokenAndSetCookie(
-      res,
-      user.user_id,
-      user._id,
-      user.email
-    )
+    const token = generateTokenAndSetCookie(res, user.user_id, user._id, user.email)
 
     // Send verification email (non-blocking - don't fail signup if email fails)
     sendVerificationEmail(user.email, verificationToken).catch((error) => {
       logError('auth.controller', 'Failed to send verification email', error)
     })
 
-    res.status(201).json({
-      success: true,
-      message: 'User created successfuly',
-      token,
-      user: {
-        ...user._doc,
-        password: undefined,
+    sendSuccess(
+      res,
+      {
+        token,
+        user: {
+          ...user._doc,
+          password: undefined,
+        },
       },
-    })
+      'User created successfuly',
+      201
+    )
   } catch (error) {
     logError('auth.controller', 'Signup error', error)
-    res
-      .status(500)
-      .json({ success: false, message: 'An error occurred during signup' })
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+    })
   }
 }
 
@@ -116,37 +123,21 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array(),
-    })
+    return sendValidationError(res, errors.array())
   }
 
   const { email, password } = req.body
   try {
     const user = await User.findOne({ email })
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: 'User does not exist. Please create an account.',
-        })
+      return sendError(res, 'User does not exist. Please create an account.', 400)
     }
     const isPasswordValid = await compare(password, user.password)
     if (!isPasswordValid) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Invalid credentials' })
+      return sendError(res, 'Invalid credentials', 400)
     }
 
-    const token = generateTokenAndSetCookie(
-      res,
-      user.user_id,
-      user._id,
-      user.email
-    )
+    const token = generateTokenAndSetCookie(res, user.user_id, user._id, user.email)
 
     user.lastLogin = new Date()
     await user.save()
@@ -164,11 +155,7 @@ export const login = async (req, res) => {
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         })
       } catch (error) {
-        logError(
-          'auth.controller',
-          'Failed to generate dog image URL during login',
-          error
-        )
+        logError('auth.controller', 'Failed to generate dog image URL during login', error)
       }
     }
 
@@ -182,28 +169,28 @@ export const login = async (req, res) => {
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         })
       } catch (error) {
-        logError(
-          'auth.controller',
-          'Failed to generate profile image URL',
-          error
-        )
+        logError('auth.controller', 'Failed to generate profile image URL', error)
       }
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Logged in successfully',
-      token,
-      user: {
-        ...userObj,
-        password: undefined,
+    sendSuccess(
+      res,
+      {
+        token,
+        user: {
+          ...userObj,
+          password: undefined,
+        },
       },
-    })
+      'Logged in successfully',
+      200
+    )
   } catch (error) {
     logError('auth.controller', 'Login error', error)
-    res
-      .status(500)
-      .json({ success: false, message: 'An error occurred during login' })
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+    })
   }
 }
 // Logout
@@ -216,7 +203,7 @@ export const logout = async (req, res) => {
     path: '/',
   })
 
-  res.status(200).json({ success: true, message: 'Logged out successfully' })
+  sendSuccess(res, null, 'Logged out successfully', 200)
 }
 
 // Verify email
@@ -228,10 +215,7 @@ export const verifyEmail = async (req, res) => {
       verificationTokenExpiresAt: { $gt: Date.now() },
     })
     if (!user) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid or expired verificaiton code',
-      })
+      return sendError(res, 'Invalid or expired verificaiton code', 400)
     }
     user.isVerified = true
     user.verificationToken = undefined
@@ -279,16 +263,22 @@ export const verifyEmail = async (req, res) => {
       }
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Email verified successfuly',
-      user: {
-        ...userObj,
-        password: undefined,
+    sendSuccess(
+      res,
+      {
+        user: {
+          ...userObj,
+          password: undefined,
+        },
       },
-    })
+      'Email verified successfuly',
+      200
+    )
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' })
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+    })
   }
 }
 
@@ -296,11 +286,7 @@ export const verifyEmail = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array(),
-    })
+    return sendValidationError(res, errors.array())
   }
 
   const { email } = req.body
@@ -309,11 +295,12 @@ export const forgotPassword = async (req, res) => {
 
     if (!user) {
       // Don't reveal if email exists (prevents account enumeration)
-      return res.status(200).json({
-        success: true,
-        message:
-          'If an account exists with this email, you will receive password reset instructions',
-      })
+      return sendSuccess(
+        res,
+        null,
+        'If an account exists with this email, you will receive password reset instructions',
+        200
+      )
     }
 
     // Generate reset token with 30-minute expiration for better security
@@ -327,34 +314,29 @@ export const forgotPassword = async (req, res) => {
     await user.save()
 
     // send email
-    await sendPasswordResetEmail(
-      user.email,
-      `${getClientUrl(req)}/reset-password/${resetToken}`
-    )
+    await sendPasswordResetEmail(user.email, `${getClientUrl(req)}/reset-password/${resetToken}`)
 
-    res.status(200).json({
-      success: true,
-      message:
-        'If an account exists with this email, you will receive password reset instructions',
-    })
+    sendSuccess(
+      res,
+      null,
+      'If an account exists with this email, you will receive password reset instructions',
+      200
+    )
   } catch (error) {
     logError('auth.controller', 'Forgot password error', error)
-    res.status(500).json({
-      success: true,
-      message:
-        'If an account exists with this email, you will receive password reset instructions',
-    })
+    sendSuccess(
+      res,
+      null,
+      'If an account exists with this email, you will receive password reset instructions',
+      200
+    )
   }
 }
 // Reset password
 export const resetPassword = async (req, res) => {
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array(),
-    })
+    return sendValidationError(res, errors.array())
   }
 
   try {
@@ -381,9 +363,7 @@ export const resetPassword = async (req, res) => {
       // Random jitter (0-100ms) makes timing measurements less reliable
       // This prevents attackers from determining token validity by measuring response time
       await new Promise((resolve) => setTimeout(resolve, Math.random() * 100))
-      return res
-        .status(400)
-        .json({ success: false, message: 'Invalid or expired reset token' })
+      return sendError(res, 'Invalid or expired reset token', 400)
     }
 
     // Constant-time comparison of tokens to prevent timing attacks
@@ -397,12 +377,8 @@ export const resetPassword = async (req, res) => {
         if (tokenBuffer.length !== storedTokenBuffer.length) {
           // SECURITY FIX: Use random jitter (0-100ms) to prevent timing attacks
           // Random delay makes timing measurements unreliable to attackers
-          await new Promise((resolve) =>
-            setTimeout(resolve, Math.random() * 100)
-          )
-          return res
-            .status(400)
-            .json({ success: false, message: 'Invalid or expired reset token' })
+          await new Promise((resolve) => setTimeout(resolve, Math.random() * 100))
+          return sendError(res, 'Invalid or expired reset token', 400)
         }
 
         timingSafeEqual(tokenBuffer, storedTokenBuffer)
@@ -411,9 +387,7 @@ export const resetPassword = async (req, res) => {
         // SECURITY FIX: Use random jitter (0-100ms) to prevent timing attacks
         // Random delay makes timing measurements unreliable to attackers
         await new Promise((resolve) => setTimeout(resolve, Math.random() * 100))
-        return res
-          .status(400)
-          .json({ success: false, message: 'Invalid or expired reset token' })
+        return sendError(res, 'Invalid or expired reset token', 400)
       }
     }
 
@@ -431,22 +405,17 @@ export const resetPassword = async (req, res) => {
     )
 
     if (!updatedUser) {
-      return res.status(500).json({
-        success: false,
-        message: 'An error occurred while resetting your password',
-      })
+      return sendError(res, 'An error occurred while resetting your password', 500)
     }
 
     await sendResetSuccessEmail(updatedUser.email)
 
-    res
-      .status(200)
-      .json({ success: true, message: 'Password reset successful' })
+    sendSuccess(res, null, 'Password reset successful', 200)
   } catch (error) {
     logError('auth.controller', 'Reset password error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while resetting your password',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -456,7 +425,7 @@ export const checkAuth = async (req, res) => {
   try {
     const user = await User.findOne({ user_id: req.userId }).select('-password') // dont' select password
     if (!user) {
-      return res.status(400).json({ success: false, message: 'User not found' })
+      return sendError(res, 'User not found', 400)
     }
 
     // Convert to plain object to add computed properties
@@ -472,11 +441,7 @@ export const checkAuth = async (req, res) => {
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         })
       } catch (error) {
-        logError(
-          'auth.controller',
-          'Failed to generate dog image URL during checkAuth',
-          error
-        )
+        logError('auth.controller', 'Failed to generate dog image URL during checkAuth', error)
       }
     }
 
@@ -490,23 +455,20 @@ export const checkAuth = async (req, res) => {
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         })
       } catch (error) {
-        logError(
-          'auth.controller',
-          'Failed to generate profile image URL during checkAuth',
-          error
-        )
+        logError('auth.controller', 'Failed to generate profile image URL during checkAuth', error)
       }
     }
 
     // Get token from cookies for Socket.io authentication
     const token = req.cookies.token
 
-    res.status(200).json({ success: true, token, user: userObj })
+    sendSuccess(res, { token, user: userObj }, null, 200)
   } catch (error) {
     logError('auth.controller', 'Check auth error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while checking authentication',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req.userId,
     })
   }
 }
@@ -522,10 +484,7 @@ export const putUserSelectDistance = async (req, res) => {
 
   // Authorization check: Ensure user can only modify their own search distance
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
@@ -538,10 +497,7 @@ export const putUserSelectDistance = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot modify other user search distance',
-    })
+    return sendError(res, 'Forbidden - cannot modify other user search distance', 403)
   }
 
   try {
@@ -552,87 +508,60 @@ export const putUserSelectDistance = async (req, res) => {
       },
     }
     const insertedDistance = await User.updateOne(query, updateDocument)
-    res.json(insertedDistance)
+    sendSuccess(res, insertedDistance, null, 200)
   } catch (error) {
     logError('auth.controller', 'Put user select distance error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while updating search distance',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req.userId,
     })
   }
 }
 // Get all Users that swiped right for each other for the current user in the database. (for MatchesDisplay.jsx)
 export const getMatches = async (req, res) => {
   try {
-    // HIGH SECURITY FIX: Comprehensive input validation for userIds array
-    // Prevent DoS attacks through oversized arrays and malformed data
     if (!req.query.userIds) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'userIds parameter required' })
+      return sendError(res, 'userIds parameter required', 400)
     }
 
     let userIds
     try {
       userIds = JSON.parse(req.query.userIds)
     } catch (parseError) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Invalid userIds format' })
+      return sendError(res, 'Invalid userIds format', 400)
     }
 
-    // Validate it's an array
     if (!isArray(userIds)) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'userIds must be an array' })
+      return sendError(res, 'userIds must be an array', 400)
     }
 
-    // HIGH SECURITY FIX: Enforce maximum array size to prevent DoS attacks
-    // Limit to 100 user IDs per request to prevent resource exhaustion
     const MAX_USER_IDS = 100
     if (userIds.length === 0 || userIds.length > MAX_USER_IDS) {
-      return res.status(400).json({
-        success: false,
-        message: `userIds array must contain between 1 and ${MAX_USER_IDS} items`,
-      })
+      return sendError(res, `userIds array must contain between 1 and ${MAX_USER_IDS} items`, 400)
     }
 
-    // HIGH SECURITY FIX: Validate each element in the array
-    // Ensure all elements are strings and are valid user IDs
     for (let i = 0; i < userIds.length; i++) {
       const id = userIds[i]
 
-      // Verify each element is a string
       if (!isString(id)) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid userIds format - element at index ${i} is not a string`,
-        })
+        return sendError(res, `Invalid userIds format - element at index ${i} is not a string`, 400)
       }
 
-      // Validate ID format (should be a valid UUID or MongoDB ObjectId)
       if (!id.match(/^[a-f0-9-]{36}$|^[a-f0-9]{24}$/)) {
-        return res.status(400).json({
-          success: false,
-          message: `Invalid user ID format at index ${i}`,
-        })
+        return sendError(res, `Invalid user ID format at index ${i}`, 400)
       }
 
-      // Prevent empty strings
       if (id.trim().length === 0) {
-        return res.status(400).json({
-          success: false,
-          message: `Empty user ID at index ${i}`,
-        })
+        return sendError(res, `Empty user ID at index ${i}`, 400)
       }
     }
 
     const pipeline = [
       {
-        '$match': {
-          'user_id': {
-            '$in': userIds,
+        $match: {
+          user_id: {
+            $in: userIds,
           },
         },
       },
@@ -663,44 +592,35 @@ export const getMatches = async (req, res) => {
         try {
           user.imageUrl = getSignedUrl({
             url: `https://${cloudfrontDomain}/` + user.image,
-            dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+            dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24),
             privateKey: getCloudFrontPrivateKey(),
             keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
           })
         } catch (error) {
-          logError(
-            'auth.controller',
-            'Failed to generate dog image URL in getMatches',
-            error
-          )
+          logError('auth.controller', 'Failed to generate dog image URL in getMatches', error)
         }
       }
 
-      // Generate signed URL for profile image if it exists
       if (user.profile_image) {
         try {
           user.profileImageUrl = getSignedUrl({
             url: `https://${cloudfrontDomain}/` + user.profile_image,
-            dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+            dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24),
             privateKey: getCloudFrontPrivateKey(),
             keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
           })
         } catch (error) {
-          logError(
-            'auth.controller',
-            'Failed to generate profile image URL in getMatches',
-            error
-          )
+          logError('auth.controller', 'Failed to generate profile image URL in getMatches', error)
         }
       }
     }
 
-    res.json(foundUsers)
+    sendSuccess(res, { users: foundUsers })
   } catch (error) {
     logError('auth.controller', 'Get matches error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while fetching matches',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -708,20 +628,13 @@ export const getMatches = async (req, res) => {
 export const getUser = async (req, res) => {
   const userId = req.query.userId
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user
   const targetUserId = userId || req.userId
 
-  // Authorization check: Ensure user can only fetch their own data
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -730,10 +643,7 @@ export const getUser = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot access other user data',
-    })
+    return sendError(res, 'Forbidden - cannot access other user data', 403)
   }
 
   try {
@@ -742,56 +652,42 @@ export const getUser = async (req, res) => {
     const userDoc = await User.findOne(query)
 
     if (!userDoc) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      })
+      return sendError(res, 'User not found', 404)
     }
 
-    // Convert Mongoose document to plain object so we can add new properties
     const user = userDoc.toObject()
 
-    // Generate signed URL for dog image if it exists
     if (user.image) {
       try {
         user.imageUrl = getSignedUrl({
           url: `https://${cloudfrontDomain}/` + user.image,
-          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24),
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         })
       } catch (error) {
-        logError(
-          'auth.controller',
-          'Failed to generate dog image URL in getUser',
-          error
-        )
+        logError('auth.controller', 'Failed to generate dog image URL in getUser', error)
       }
     }
 
-    // Generate signed URL for profile image if it exists
     if (user.profile_image) {
       try {
         user.profileImageUrl = getSignedUrl({
           url: `https://${cloudfrontDomain}/` + user.profile_image,
-          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
+          dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24),
           privateKey: getCloudFrontPrivateKey(),
           keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         })
       } catch (error) {
-        logError(
-          'auth.controller',
-          'Failed to generate profile image URL in getUser',
-          error
-        )
+        logError('auth.controller', 'Failed to generate profile image URL in getUser', error)
       }
     }
-    res.json(user)
+    sendSuccess(res, user)
   } catch (error) {
     logError('auth.controller', 'Get user error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while fetching user information',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -799,25 +695,17 @@ export const getUser = async (req, res) => {
 // show all meetup activites to the user along with current_user_search_radius from the Database
 export const getMeetupTypeUsers = async (req, res) => {
   const { userId } = req.query
-  // Use validated numeric value from middleware, fallback to parsing if not present
   const overrideRadius =
     req.validatedQuery?.selectDistance ||
     (req.query.selectDistance ? parseInt(req.query.selectDistance) : undefined)
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user
   const targetUserId = userId || req.userId
 
-  // Authorization check: Ensure user can only query their own meetup type users
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -826,27 +714,18 @@ export const getMeetupTypeUsers = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot query other user meetup data',
-    })
+    return sendError(res, 'Forbidden - cannot query other user meetup data', 403)
   }
 
   try {
-    // Use authenticated user ID
     const queryUserId = targetUserId
-    // First, get the current user to access their location and preferences
     const currentUser = await User.findOne({ user_id: queryUserId })
     if (!currentUser) {
-      return res.status(404).json({ success: false, message: 'User not found' })
+      return sendError(res, 'User not found', 404)
     }
 
-    // Ensure the user has location data
     if (!currentUser.location || !currentUser.location.coordinates) {
-      return res.status(400).json({
-        success: false,
-        message: 'User location not available. Please update your location.',
-      })
+      return sendError(res, 'User location not available. Please update your location.', 400)
     }
 
     // Determine the search radius to use (in miles)
@@ -884,9 +763,7 @@ export const getMeetupTypeUsers = async (req, res) => {
       {
         $addFields: {
           distance_to_other_users: {
-            $round: [
-              { $multiply: ['$distance_to_other_users_meters', 0.000621371] },
-            ], // Convert meters to miles
+            $round: [{ $multiply: ['$distance_to_other_users_meters', 0.000621371] }], // Convert meters to miles
           },
         },
       },
@@ -979,12 +856,12 @@ export const getMeetupTypeUsers = async (req, res) => {
       }
     }
 
-    res.json(foundUsers)
+    sendSuccess(res, { users: foundUsers })
   } catch (error) {
     logError('auth.controller', 'Get meetup type users error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while fetching users by meetup type',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -992,20 +869,13 @@ export const getMeetupTypeUsers = async (req, res) => {
 export const getCurrentPosition = async (req, res) => {
   const { userId, longitude, latitude } = req.body
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user to prevent privilege escalation
   const targetUserId = userId || req.userId
 
-  // Authorization check: Ensure user can only update their own location
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -1014,10 +884,7 @@ export const getCurrentPosition = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot update other user location',
-    })
+    return sendError(res, 'Forbidden - cannot update other user location', 403)
   }
 
   try {
@@ -1031,43 +898,31 @@ export const getCurrentPosition = async (req, res) => {
 
     const userCoordinates = await User.updateOne(query, updateDocument)
 
-    res.json({ userCoordinates })
+    sendSuccess(res, { userCoordinates })
   } catch (error) {
     logError('auth.controller', 'Get current position error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while fetching location',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
 // Put new user profile info in database
 export const putUser = async (req, res) => {
-  // Security: Check for validation errors from express-validator middleware
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array(),
-    })
+    return sendValidationError(res, errors.array())
   }
 
   const formData = req.body.formData
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user
   const targetUserId = formData.user_id || req.userId
 
-  // Authorization check: Ensure user can only modify their own profile
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -1076,10 +931,7 @@ export const putUser = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot modify other user profile',
-    })
+    return sendError(res, 'Forbidden - cannot modify other user profile', 403)
   }
 
   try {
@@ -1101,12 +953,12 @@ export const putUser = async (req, res) => {
     }
 
     const insertedUser = await User.updateOne(query, updateDocument)
-    res.json(insertedUser)
+    sendSuccess(res, insertedUser)
   } catch (error) {
     logError('auth.controller', 'Put user error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while updating user information',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -1114,11 +966,9 @@ export const putUser = async (req, res) => {
 export const updateMatches = async (req, res) => {
   const { userId, matchedUserId } = req.body
 
-  // SECURITY: Ensure user can only update their own matches
   const targetUserId = userId || req.userId
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -1127,14 +977,10 @@ export const updateMatches = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot update matches for another user',
-    })
+    return sendError(res, 'Forbidden - cannot update matches for another user', 403)
   }
 
   try {
-    // Validate user IDs to prevent NoSQL injection (defense in depth)
     validateUserId(userId, 'userId')
     validateUserId(matchedUserId, 'matchedUserId')
 
@@ -1144,7 +990,6 @@ export const updateMatches = async (req, res) => {
     }
     const user = await User.updateOne(query, updateDocument)
 
-    // Fetch current user and matched user for email notifications
     const currentUser = await User.findOne({ user_id: userId })
     const otherUser = await User.findOne({ user_id: matchedUserId })
 
@@ -1156,7 +1001,6 @@ export const updateMatches = async (req, res) => {
       const currentUserEmail = currentUser.email
       const otherUserEmail = otherUser.email
 
-      // Send match notification email to the matched user (one-sided match)
       try {
         await sendMatchNotificationEmail(
           otherUserEmail,
@@ -1171,13 +1015,9 @@ export const updateMatches = async (req, res) => {
       }
     }
 
-    // Check if the other user also has this user in their matches (mutual match)
     const matchedUser = await User.findOne({ user_id: matchedUserId })
-    const isMutualMatch = matchedUser?.matches?.some(
-      (match) => match.user_id === userId
-    )
+    const isMutualMatch = matchedUser?.matches?.some((match) => match.user_id === userId)
 
-    // If mutual match, notify both users via Socket.IO
     if (isMutualMatch) {
       const matchedUserSocketId = getReceiverSocketId(matchedUserId)
       const currentUserSocketId = getReceiverSocketId(userId)
@@ -1196,12 +1036,12 @@ export const updateMatches = async (req, res) => {
       }
     }
 
-    res.json(user)
+    sendSuccess(res, user)
   } catch (error) {
     logError('auth.controller', 'Update matches error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while updating matches',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -1222,10 +1062,7 @@ export const removeMatch = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot remove matches for another user',
-    })
+    return sendError(res, 'Forbidden - cannot remove matches for another user', 403)
   }
 
   try {
@@ -1233,19 +1070,22 @@ export const removeMatch = async (req, res) => {
     validateUserId(userId, 'userId')
     validateUserId(matchedUserId, 'matchedUserId')
 
-    // Remove the match from both users
-    const query = { user_id: userId }
-    const updateDocument = {
-      $pull: { matches: { user_id: matchedUserId } },
-    }
-    await User.updateOne(query, updateDocument)
+    // Use transaction to ensure both users are updated atomically
+    await withTransaction(async (session) => {
+      // Remove the match from both users
+      const query = { user_id: userId }
+      const updateDocument = {
+        $pull: { matches: { user_id: matchedUserId } },
+      }
+      await updateOneWithSession(User, query, updateDocument, session)
 
-    // Also remove from the other user's matches
-    const otherUserQuery = { user_id: matchedUserId }
-    const otherUserUpdateDocument = {
-      $pull: { matches: { user_id: userId } },
-    }
-    await User.updateOne(otherUserQuery, otherUserUpdateDocument)
+      // Also remove from the other user's matches
+      const otherUserQuery = { user_id: matchedUserId }
+      const otherUserUpdateDocument = {
+        $pull: { matches: { user_id: userId } },
+      }
+      await updateOneWithSession(User, otherUserQuery, otherUserUpdateDocument, session)
+    })
 
     // Fetch updated user data to return
     const updatedUser = await User.findOne({ user_id: userId })
@@ -1267,16 +1107,13 @@ export const removeMatch = async (req, res) => {
       })
     }
 
-    res.json({
-      success: true,
-      message: 'Match removed successfully',
-      user: updatedUser,
-    })
+    sendSuccess(res, updatedUser, 'Match removed successfully', 200)
   } catch (error) {
     logError('auth.controller', 'Remove match error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while removing match',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req.userId,
     })
   }
 }
@@ -1289,31 +1126,23 @@ export const uploadImage = async (req, res) => {
 
   // Check if file was uploaded and passed validation
   if (!req.file) {
-    return res.status(400).json({
-      success: false,
-      message: 'No file uploaded or file validation failed',
-    })
+    return sendError(res, 'No file uploaded or file validation failed', 400)
   }
 
   try {
-    // SECURITY FIX: Magic bytes validation to prevent file spoofing
-    // Checks actual file signature instead of relying on MIME type header alone
-    // This prevents attackers from uploading executables renamed as images
     const normalizedMimeType = req.file.mimetype.toLowerCase()
     if (!validateMagicBytes(req.file.buffer, normalizedMimeType)) {
-      return res.status(400).json({
-        success: false,
-        message: `File content does not match declared type (${normalizedMimeType}). Possible spoofed file.`,
-      })
+      return sendError(
+        res,
+        `File content does not match declared type (${normalizedMimeType}). Possible spoofed file.`,
+        400
+      )
     }
 
-    // Check image contains a dog before processing
     const imageCheck = await checkImage(req.file.buffer)
 
     if (!imageCheck.isDog) {
-      return res.status(400).json({
-        success: false,
-        message: 'This is not a dog please upload an image of your dog.',
+      return sendError(res, 'This is not a dog please upload an image of your dog.', 400, {
         code: 'NO_DOG_DETECTED',
         reason: imageCheck.reason,
         dogBreeds: [],
@@ -1357,17 +1186,16 @@ export const uploadImage = async (req, res) => {
       )
     }
 
-    res.json({
-      success: true,
+    sendSuccess(res, {
       image: insertedImage,
-      image_name: image_name, // Include the actual image name for debugging
+      image_name: image_name,
       dogBreeds: imageCheck.dogBreeds,
     })
   } catch (error) {
     logError('auth.controller', 'uploadImage error', error)
-    res.status(400).json({
-      success: false,
-      message: sanitizeErrorMessage(error, 'uploadImage'),
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -1380,25 +1208,22 @@ export const uploadProfileImage = async (req, res) => {
   const userId = req.userId
 
   try {
-    // SECURITY FIX: Check if file was successfully uploaded by multer
     if (!req.file) {
-      return res.status(400).json({
-        success: false,
-        message: 'No file uploaded or file validation failed',
-      })
+      return sendError(res, 'No file uploaded or file validation failed', 400)
     }
 
-    // Check image for nudity before processing
     const imageCheck = await checkImage(req.file.buffer)
 
     if (imageCheck.isNude) {
-      return res.status(400).json({
-        success: false,
-        message:
-          'Profile photo rejected: This app is family-oriented. Please upload a non-nude photo.',
-        code: 'NUDITY_DETECTED',
-        confidence: imageCheck.confidence,
-      })
+      return sendError(
+        res,
+        'Profile photo rejected: This app is family-oriented. Please upload a non-nude photo.',
+        400,
+        {
+          code: 'NUDITY_DETECTED',
+          confidence: imageCheck.confidence,
+        }
+      )
     }
 
     const buffer = await sharp(req.file.buffer)
@@ -1436,30 +1261,24 @@ export const uploadProfileImage = async (req, res) => {
       )
     }
 
-    // Generate signed URL for immediate response
     let imageURL = null
     try {
       imageURL = getSignedUrl({
         url: `https://${cloudfrontDomain}/${imageName}`,
         keyPairId: process.env.CLOUDFRONT_KEY_PAIR_ID,
         privateKey: getCloudFrontPrivateKey(),
-        dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // 24 hours
+        dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24),
       })
     } catch (error) {
-      logError(
-        'auth.controller',
-        'Failed to generate signed URL in uploadProfileImage',
-        error
-      )
-      // Continue with null URL rather than crashing
+      logError('auth.controller', 'Failed to generate signed URL in uploadProfileImage', error)
     }
 
-    res.json({ success: true, imageURL, insertedImage })
+    sendSuccess(res, { imageURL, insertedImage })
   } catch (error) {
     logError('auth.controller', 'Upload profile image error', error)
-    res.status(400).json({
-      success: false,
-      message: 'Failed to upload profile image',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -1468,23 +1287,14 @@ export const uploadProfileImage = async (req, res) => {
 export const getCurrentUserProfile = async (req, res) => {
   const userId = req.query.userId
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user
   const targetUserId = userId || req.userId
 
-  // Authorization check: Ensure user can only fetch their own profile
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot access other user profile',
-    })
+    return sendError(res, 'Forbidden - cannot access other user profile', 403)
   }
 
   try {
@@ -1505,20 +1315,14 @@ export const getCurrentUserProfile = async (req, res) => {
           currentUserProfile.image = null
         } else {
           currentUserProfile.image = getSignedUrl({
-            url:
-              `https://${cloudfrontDomain}/` +
-              currentUserProfile.image,
+            url: `https://${cloudfrontDomain}/` + currentUserProfile.image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: privateKey,
             keyPairId: keyPairId,
           })
         }
       } catch (signError) {
-        logError(
-          'auth.controller',
-          'Failed to generate signed URL for dog image',
-          signError
-        )
+        logError('auth.controller', 'Failed to generate signed URL for dog image', signError)
         // If signed URL generation fails, set to null so frontend knows it failed
         currentUserProfile.image = null
       }
@@ -1531,73 +1335,51 @@ export const getCurrentUserProfile = async (req, res) => {
         const keyPairId = process.env.CLOUDFRONT_KEY_PAIR_ID
 
         if (!keyPairId) {
-          logError(
-            'auth.controller',
-            'CloudFront key pair ID missing for profile image',
-            {
-              hasKeyPairId: !!keyPairId,
-            }
-          )
+          logError('auth.controller', 'CloudFront key pair ID missing for profile image', {
+            hasKeyPairId: !!keyPairId,
+          })
           currentUserProfile.profile_image = null
         } else {
           currentUserProfile.profile_image = getSignedUrl({
-            url:
-              `https://${cloudfrontDomain}/` +
-              currentUserProfile.profile_image,
+            url: `https://${cloudfrontDomain}/` + currentUserProfile.profile_image,
             dateLessThan: new Date(Date.now() + 1000 * 60 * 60 * 24), // expire in 1 day
             privateKey: privateKey,
             keyPairId: keyPairId,
           })
         }
       } catch (signError) {
-        logError(
-          'auth.controller',
-          'Failed to generate signed URL for profile image',
-          signError
-        )
+        logError('auth.controller', 'Failed to generate signed URL for profile image', signError)
         // If signed URL generation fails, set to null so frontend knows it failed
         currentUserProfile.profile_image = null
       }
     }
 
-    res.json(currentUserProfile)
+    sendSuccess(res, currentUserProfile)
   } catch (error) {
     logError('auth.controller', 'Get current user profile error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while fetching your profile',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
 
 // Patch existing user profile info in database (for EditDogProfile.jsx)
 export const patchCurrentUserProfile = async (req, res) => {
-  // Security: Check for validation errors from express-validator middleware
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation failed',
-      errors: errors.array(),
-    })
+    return sendValidationError(res, errors.array())
   }
 
   const formData = req.body.formData
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user
   const targetUserId = formData.user_id || req.userId
 
-  // Authorization check: Ensure user can only modify their own profile
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -1606,10 +1388,7 @@ export const patchCurrentUserProfile = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot modify other user profile',
-    })
+    return sendError(res, 'Forbidden - cannot modify other user profile', 403)
   }
 
   try {
@@ -1637,12 +1416,12 @@ export const patchCurrentUserProfile = async (req, res) => {
       })
     }
 
-    res.json(insertedUser)
+    sendSuccess(res, insertedUser)
   } catch (error) {
     logError('auth.controller', 'Patch current user profile error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while updating your profile',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -1651,20 +1430,13 @@ export const patchCurrentUserProfile = async (req, res) => {
 export const deleteImage = async (req, res) => {
   const userId = req.query.userId
 
-  // SECURITY FIX #5: INCOMPLETE AUTHORIZATION - Require user_id from authenticated token
-  // CRITICAL: Must validate userId against authenticated user
   const targetUserId = userId || req.userId
 
-  // Authorization check: Ensure user can only delete their own image
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
-    // Log authorization failure for IDOR attempt
     logAuthzFailure('idor_attempt', {
       userId: req.userId,
       endpoint: req.path,
@@ -1673,10 +1445,7 @@ export const deleteImage = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot delete other user image',
-    })
+    return sendError(res, 'Forbidden - cannot delete other user image', 403)
   }
 
   try {
@@ -1698,7 +1467,6 @@ export const deleteImage = async (req, res) => {
     const command = new DeleteObjectCommand(deleteParams)
     await getS3().send(command)
 
-    // Invalidate the cloud front cache for that image
     const invalidationParams = {
       DistributionId: process.env.CLOUD_FRONT_DIST_ID,
       InvalidationBatch: {
@@ -1709,17 +1477,15 @@ export const deleteImage = async (req, res) => {
         },
       },
     }
-    const invalidationCommand = new CreateInvalidationCommand(
-      invalidationParams
-    )
+    const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
     await getCloudFront().send(invalidationCommand)
 
-    res.json(user)
+    sendSuccess(res, user)
   } catch (error) {
     logError('auth.controller', 'Delete image error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while deleting image',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -1728,17 +1494,6 @@ export const deleteImage = async (req, res) => {
 async function performImmediateDeletion(currentUser, res) {
   const query = { user_id: currentUser.user_id }
   const voidedCredits = currentUser.messageCredits || 0
-
-  // Log deletion for audit trail
-  await DeletionLog.create({
-    userId: currentUser.user_id,
-    email: currentUser.email,
-    deletedAt: new Date(),
-    hadActiveSubscription: false,
-    voidedCredits: voidedCredits,
-    stripeCustomerId: currentUser.stripeCustomerId,
-    subscriptionEndDate: null,
-  })
 
   // Delete user image from S3
   if (currentUser.image) {
@@ -1761,9 +1516,7 @@ async function performImmediateDeletion(currentUser, res) {
           },
         },
       }
-      const invalidationCommand = new CreateInvalidationCommand(
-        invalidationParams
-      )
+      const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
       await getCloudFront().send(invalidationCommand)
     } catch (imageError) {
       // Silent error handling - image deletion is non-critical for account deletion
@@ -1780,13 +1533,35 @@ async function performImmediateDeletion(currentUser, res) {
     matches: currentUser.user_id,
   })
 
-  // Remove from other users' matches
-  await User.updateMany(
-    { matches: currentUser.user_id },
-    { $pull: { matches: currentUser.user_id } }
-  )
+  // Perform critical deletion operations atomically
+  await withTransaction(async (session) => {
+    // Remove from other users' matches
+    await User.updateMany(
+      { matches: currentUser.user_id },
+      { $pull: { matches: currentUser.user_id } },
+      { session }
+    )
 
-  // Notify all matched users that this user deleted their account
+    // Log deletion for audit trail
+    await createWithSession(
+      DeletionLog,
+      {
+        userId: currentUser.user_id,
+        email: currentUser.email,
+        deletedAt: new Date(),
+        hadActiveSubscription: false,
+        voidedCredits: voidedCredits,
+        stripeCustomerId: currentUser.stripeCustomerId,
+        subscriptionEndDate: null,
+      },
+      session
+    )
+
+    // Delete user account
+    await deleteOneWithSession(User, query, session)
+  })
+
+  // Notify all matched users that this user deleted their account (non-critical side effect)
   matchedUsers.forEach((matchedUser) => {
     const matchedUserSocketId = getReceiverSocketId(matchedUser.user_id)
     if (matchedUserSocketId) {
@@ -1796,7 +1571,7 @@ async function performImmediateDeletion(currentUser, res) {
     }
   })
 
-  // Send account deletion email
+  // Send account deletion email (non-critical side effect)
   try {
     await sendAccountDeletionEmail(
       currentUser.email,
@@ -1814,14 +1589,7 @@ async function performImmediateDeletion(currentUser, res) {
     )
   }
 
-  // Delete user account
-  await User.deleteOne(query)
-  res.json({
-    success: true,
-    scheduled: false,
-    message: 'Account deleted immediately',
-    creditsVoided: voidedCredits,
-  })
+  sendSuccess(res, { creditsVoided: voidedCredits }, 'Account deleted immediately', 200)
 }
 
 // Delete one user from database (or schedule deletion)
@@ -1834,10 +1602,7 @@ export const deleteOneUser = async (req, res) => {
 
   // Authorization check: Ensure user can only delete their own account
   if (!targetUserId) {
-    return res.status(401).json({
-      success: false,
-      message: 'Authentication required - user ID not found',
-    })
+    return sendError(res, 'Authentication required - user ID not found', 401)
   }
 
   if (targetUserId !== req.userId) {
@@ -1850,10 +1615,7 @@ export const deleteOneUser = async (req, res) => {
       ip: req.ip,
     })
 
-    return res.status(403).json({
-      success: false,
-      message: 'Forbidden - cannot delete other user account',
-    })
+    return sendError(res, 'Forbidden - cannot delete other user account', 403)
   }
 
   try {
@@ -1862,20 +1624,20 @@ export const deleteOneUser = async (req, res) => {
     const currentUser = await User.findOne(query)
 
     if (!currentUser) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      })
+      return sendError(res, 'User not found', 404)
     }
 
     if (currentUser.pendingDeletion) {
-      return res.json({
-        success: true,
-        scheduled: true,
-        message: 'Your account deletion is already scheduled.',
-        scheduledDeletionDate: currentUser.scheduledDeletionDate,
-        retainAccess: true,
-      })
+      return sendSuccess(
+        res,
+        {
+          scheduled: true,
+          scheduledDeletionDate: currentUser.scheduledDeletionDate,
+          retainAccess: true,
+        },
+        'Your account deletion is already scheduled.',
+        200
+      )
     }
 
     // ============================================
@@ -1883,8 +1645,7 @@ export const deleteOneUser = async (req, res) => {
     // ============================================
     const hasActiveSubscription = !!currentUser.stripeSubscriptionId
     // Check if user has purchased credits (more than default 10 or has Stripe customer ID with credits)
-    const hasPurchasedCredits =
-      currentUser.stripeCustomerId && currentUser.messageCredits > 10
+    const hasPurchasedCredits = currentUser.stripeCustomerId && currentUser.messageCredits > 10
     const isFreeUser = !hasActiveSubscription && !hasPurchasedCredits
 
     // ============================================
@@ -1910,8 +1671,7 @@ export const deleteOneUser = async (req, res) => {
         )
         // Schedule deletion for when subscription ends
         scheduledDate =
-          currentUser.subscriptionEndDate ||
-          new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          currentUser.subscriptionEndDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
         deletionMessage = `Account scheduled for deletion on ${scheduledDate.toLocaleDateString()}. You will retain access to premium features until then.`
       } catch (stripeError) {
         // Fallback to 30 days if Stripe fails
@@ -1924,22 +1684,28 @@ export const deleteOneUser = async (req, res) => {
       deletionMessage = `Account scheduled for deletion in 30 days. You can continue using your ${currentUser.messageCredits} remaining credits until then.`
     }
 
-    // Mark account for deletion
-    currentUser.pendingDeletion = true
-    currentUser.scheduledDeletionDate = scheduledDate
-    currentUser.deletionReason = 'user_requested'
-    await currentUser.save()
+    // Mark account for deletion (atomic with log creation)
+    await withTransaction(async (session) => {
+      currentUser.pendingDeletion = true
+      currentUser.scheduledDeletionDate = scheduledDate
+      currentUser.deletionReason = 'user_requested'
+      await currentUser.save({ session })
 
-    // Log scheduled deletion for audit trail
-    await DeletionLog.create({
-      userId: currentUser.user_id,
-      email: currentUser.email,
-      deletedAt: null, // Not deleted yet
-      scheduledDeletionDate: scheduledDate,
-      hadActiveSubscription: hasActiveSubscription,
-      voidedCredits: 0, // Credits not voided yet
-      stripeCustomerId: currentUser.stripeCustomerId,
-      subscriptionEndDate: currentUser.subscriptionEndDate,
+      // Log scheduled deletion for audit trail
+      await createWithSession(
+        DeletionLog,
+        {
+          userId: currentUser.user_id,
+          email: currentUser.email,
+          deletedAt: null, // Not deleted yet
+          scheduledDeletionDate: scheduledDate,
+          hadActiveSubscription: hasActiveSubscription,
+          voidedCredits: 0, // Credits not voided yet
+          stripeCustomerId: currentUser.stripeCustomerId,
+          subscriptionEndDate: currentUser.subscriptionEndDate,
+        },
+        session
+      )
     })
 
     // Send account deletion email
@@ -1953,26 +1719,26 @@ export const deleteOneUser = async (req, res) => {
         currentUser.messageCredits
       )
     } catch (emailError) {
-      logError(
-        'auth.controller',
-        'Failed to send account deletion email',
-        emailError
-      )
+      logError('auth.controller', 'Failed to send account deletion email', emailError)
       // Continue execution even if email fails
     }
 
-    res.json({
-      success: true,
-      scheduled: true,
-      message: deletionMessage,
-      scheduledDeletionDate: scheduledDate,
-      retainAccess: true,
-    })
+    sendSuccess(
+      res,
+      {
+        scheduled: true,
+        scheduledDeletionDate: scheduledDate,
+        retainAccess: true,
+      },
+      deletionMessage,
+      200
+    )
   } catch (error) {
     logError('auth.controller', 'Delete one user error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while scheduling account deletion',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
+      userId: req.userId,
     })
   }
 }
@@ -1982,26 +1748,17 @@ export const getPublicProfile = async (req, res) => {
     const { userId } = req.params
 
     if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'User ID is required',
-      })
+      return sendError(res, 'User ID is required', 400)
     }
 
     const user = await User.findOne({ user_id: userId }).lean()
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      })
+      return sendError(res, 'User not found', 404)
     }
 
     if (user.isProfilePublic === false) {
-      return res.status(403).json({
-        success: false,
-        message: 'This profile is private',
-      })
+      return sendError(res, 'This profile is private', 403)
     }
 
     const publicProfile = {
@@ -2020,30 +1777,28 @@ export const getPublicProfile = async (req, res) => {
     let currentUser = null
     let lat1, lon1
     const token = req.cookies.token
-    
+
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         if (decoded) {
           currentUser = await User.findOne({ user_id: decoded.userId }).lean()
           if (currentUser && currentUser.location && currentUser.location.coordinates) {
-            [lon1, lat1] = currentUser.location.coordinates
+            ;[lon1, lat1] = currentUser.location.coordinates
           }
         }
       } catch (err) {
-        logInfo('auth.controller', 'Optional auth failed for public profile, continuing without distance')
+        logInfo(
+          'auth.controller',
+          'Optional auth failed for public profile, continuing without distance'
+        )
       }
     } else if (req.query.latitude && req.query.longitude) {
       lat1 = parseFloat(req.query.latitude)
       lon1 = parseFloat(req.query.longitude)
     }
 
-    if (
-      lat1 !== undefined &&
-      lon1 !== undefined &&
-      user.location &&
-      user.location.coordinates
-    ) {
+    if (lat1 !== undefined && lon1 !== undefined && user.location && user.location.coordinates) {
       try {
         const [lon2, lat2] = user.location.coordinates
         const R = 6371000
@@ -2091,15 +1846,12 @@ export const getPublicProfile = async (req, res) => {
       }
     }
 
-    res.json({
-      success: true,
-      user: publicProfile,
-    })
+    sendSuccess(res, { user: publicProfile })
   } catch (error) {
     logError('auth.controller', 'Get public profile error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while fetching the profile',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -2110,17 +1862,11 @@ export const updateProfileVisibility = async (req, res) => {
     const { isProfilePublic } = req.body
 
     if (!userId) {
-      return res.status(400).json({
-        success: false,
-        message: 'User ID is required',
-      })
+      return sendError(res, 'User ID is required', 400)
     }
 
     if (typeof isProfilePublic !== 'boolean') {
-      return res.status(400).json({
-        success: false,
-        message: 'isProfilePublic must be a boolean',
-      })
+      return sendError(res, 'isProfilePublic must be a boolean', 400)
     }
 
     const user = await User.findOneAndUpdate(
@@ -2130,22 +1876,21 @@ export const updateProfileVisibility = async (req, res) => {
     ).lean()
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-      })
+      return sendError(res, 'User not found', 404)
     }
 
-    res.json({
-      success: true,
-      message: `Profile is now ${isProfilePublic ? 'public' : 'private'}`,
-      isProfilePublic: user.isProfilePublic,
-    })
+    sendSuccess(
+      res,
+      {
+        isProfilePublic: user.isProfilePublic,
+      },
+      `Profile is now ${isProfilePublic ? 'public' : 'private'}`
+    )
   } catch (error) {
     logError('auth.controller', 'Update profile visibility error', error)
-    res.status(500).json({
-      success: false,
-      message: 'An error occurred while updating profile visibility',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -2153,24 +1898,22 @@ export const updateProfileVisibility = async (req, res) => {
 // Test endpoint to manually trigger scheduled deletion cron job
 export const triggerScheduledDeletionJob = async (req, res) => {
   try {
-    // Import the function dynamically to avoid circular dependencies
-    const { runScheduledDeletionNow } = await import(
-      '../jobs/scheduledDeletion.job.js'
-    )
+    const { runScheduledDeletionNow } = await import('../jobs/scheduledDeletion.job.js')
 
-    // Run the scheduled deletion job
     await runScheduledDeletionNow()
 
-    res.json({
-      success: true,
-      message: 'Scheduled deletion job executed successfully',
-      timestamp: new Date().toISOString(),
-    })
+    sendSuccess(
+      res,
+      {
+        timestamp: new Date().toISOString(),
+      },
+      'Scheduled deletion job executed successfully'
+    )
   } catch (error) {
     logError('auth.controller', 'Trigger scheduled deletion job error', error)
-    res.status(500).json({
-      success: false,
-      message: 'Failed to execute scheduled deletion job',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }
@@ -2200,26 +1943,20 @@ export const getReferralStats = async (req, res) => {
       referral_source: { $ne: null },
     })
 
-    res.json({
-      success: true,
-      data: {
-        stats,
-        summary: {
-          totalSignups,
-          referralSignups,
-          directSignups: totalSignups - referralSignups,
-          referralConversionRate: (
-            (referralSignups / totalSignups) *
-            100
-          ).toFixed(2),
-        },
+    sendSuccess(res, {
+      stats,
+      summary: {
+        totalSignups,
+        referralSignups,
+        directSignups: totalSignups - referralSignups,
+        referralConversionRate: ((referralSignups / totalSignups) * 100).toFixed(2),
       },
     })
   } catch (error) {
     logError('auth.controller', 'Get referral stats error', error)
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch referral statistics',
+    sendInternalError(res, error, {
+      method: req.method,
+      path: req.path,
     })
   }
 }

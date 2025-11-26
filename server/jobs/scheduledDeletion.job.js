@@ -3,10 +3,7 @@ import { User } from '../models/user.model.js'
 import { DeletionLog } from '../models/deletion-log.model.js'
 import Message from '../models/message.model.js'
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3'
-import {
-  CloudFrontClient,
-  CreateInvalidationCommand,
-} from '@aws-sdk/client-cloudfront'
+import { CloudFrontClient, CreateInvalidationCommand } from '@aws-sdk/client-cloudfront'
 
 const bucketName = process.env.AWS_BUCKET_NAME
 const bucketRegion = process.env.AWS_BUCKET_REGION
@@ -64,9 +61,7 @@ async function performPermanentDeletion(user) {
           },
         },
       }
-      const invalidationCommand = new CreateInvalidationCommand(
-        invalidationParams
-      )
+      const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
       await cloudFront.send(invalidationCommand)
     } catch (imageError) {
       // Silent error handling - image deletion is non-critical for account deletion
@@ -79,10 +74,7 @@ async function performPermanentDeletion(user) {
   })
 
   // Remove from other users' matches
-  await User.updateMany(
-    { matches: user.user_id },
-    { $pull: { matches: user.user_id } }
-  )
+  await User.updateMany({ matches: user.user_id }, { $pull: { matches: user.user_id } })
 
   // Delete user account
   await User.deleteOne({ user_id: user.user_id })

@@ -6,10 +6,8 @@ import { stripeService } from '../services/stripe.service.js'
 import { awsService } from '../services/aws.service.js'
 import { logError, logInfo, logWarning } from '../utilities/logger.js'
 import { validateUserId } from '../utilities/sanitizeInput.js'
-import {
-  sendSubscriptionWelcomeEmail,
-  sendCreditsPurchaseEmail,
-} from '../mailtrap/emails.js'
+import { sendSuccess, sendError } from '../utils/ApiResponse.js'
+import { sendSubscriptionWelcomeEmail, sendCreditsPurchaseEmail } from '../mailtrap/emails.js'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
 import { CreateInvalidationCommand } from '@aws-sdk/client-cloudfront'
 
@@ -39,7 +37,7 @@ export const handleStripeWebhook = async (req, res) => {
       'webhook.controller',
       'Security Alert: Webhook received without signature header - rejecting'
     )
-    return res.status(400).send('Webhook signature header missing')
+    return sendError(res, 'Webhook signature header missing', 400)
   }
 
   let event
@@ -60,7 +58,7 @@ export const handleStripeWebhook = async (req, res) => {
     )
     // Return 400 (not 401) as per Stripe webhook best practices
     // Stripe will retry webhooks that receive 400 errors
-    return res.status(400).send('Invalid webhook signature')
+    return sendError(res, 'Invalid webhook signature', 400)
   }
 
   try {
@@ -80,15 +78,13 @@ export const handleStripeWebhook = async (req, res) => {
         `Webhook already processed (idempotency): ${event.type} - Event ID: ${eventId}`
       )
       // Return 200 to acknowledge receipt and prevent Stripe from retrying
-      return res.json({ received: true, isDuplicate: true })
+      return sendSuccess(res, { received: true, isDuplicate: true }, null, 200)
     }
 
     // Log incoming webhook for audit trail
     logInfo(
       'webhook.controller',
-      `Processing webhook: ${
-        event.type
-      } (Event ID: ${eventId}, Timestamp: ${new Date(
+      `Processing webhook: ${event.type} (Event ID: ${eventId}, Timestamp: ${new Date(
         event.created * 1000
       ).toISOString()})`
     )
@@ -129,7 +125,7 @@ export const handleStripeWebhook = async (req, res) => {
     }
 
     // Acknowledge successful processing to Stripe
-    res.json({ received: true })
+    sendSuccess(res, { received: true }, null, 200)
   } catch (error) {
     // Log webhook processing errors for monitoring/debugging
     logError('webhook.controller', 'Error processing webhook event', {
@@ -138,7 +134,7 @@ export const handleStripeWebhook = async (req, res) => {
       error: error.message,
     })
     // Return 500 to signal Stripe to retry
-    res.status(500).json({ error: 'Webhook handler failed' })
+    sendError(res, 'Webhook handler failed', 500)
   }
 }
 
@@ -163,21 +159,19 @@ async function handleCheckoutCompleted(session, eventId) {
     const credits = parseInt(creditsRaw, 10)
 
     if (!Number.isInteger(credits)) {
-      logError(
-        'webhook.controller',
-        'Invalid credits amount - not an integer',
-        { credits: creditsRaw, session_id: session.id }
-      )
+      logError('webhook.controller', 'Invalid credits amount - not an integer', {
+        credits: creditsRaw,
+        session_id: session.id,
+      })
       throw new Error('Invalid credits amount - not an integer')
     }
 
     // Enforce credits bounds (1-1000 credits max per purchase)
     if (credits < 1 || credits > 1000) {
-      logError(
-        'webhook.controller',
-        'Invalid credits amount - out of bounds',
-        { credits, session_id: session.id }
-      )
+      logError('webhook.controller', 'Invalid credits amount - out of bounds', {
+        credits,
+        session_id: session.id,
+      })
       throw new Error('Invalid credits amount - out of bounds')
     }
 
@@ -185,11 +179,10 @@ async function handleCheckoutCompleted(session, eventId) {
     const user = await User.findOne({ user_id: userId })
 
     if (!user) {
-      logError(
-        'webhook.controller',
-        'User not found for checkout completion',
-        { userId, session_id: session.id }
-      )
+      logError('webhook.controller', 'User not found for checkout completion', {
+        userId,
+        session_id: session.id,
+      })
       throw new Error('User not found for checkout completion')
     }
 
@@ -232,11 +225,7 @@ async function handleCheckoutCompleted(session, eventId) {
         session.amount_total / 100
       )
     } catch (emailError) {
-      logError(
-        'webhook.controller',
-        'Failed to send credits purchase email',
-        emailError
-      )
+      logError('webhook.controller', 'Failed to send credits purchase email', emailError)
       // Don't throw - email is non-critical
     }
   }
@@ -256,18 +245,17 @@ async function handleSubscriptionCreated(subscription, eventId) {
     logError(
       'webhook.controller',
       'User not found for subscription creation - Customer ID may not be saved yet',
-      { 
+      {
         customerId: subscription.customer,
         subscriptionId: subscription.id,
-        priceId: subscription.items.data[0]?.price?.id
+        priceId: subscription.items.data[0]?.price?.id,
       }
     )
     throw new Error('User not found for subscription creation')
   }
 
   const priceId = subscription.items.data[0].price.id
-  const planType =
-    priceId === process.env.STRIPE_VIP_PRICE_ID ? 'vip' : 'premium'
+  const planType = priceId === process.env.STRIPE_VIP_PRICE_ID ? 'vip' : 'premium'
 
   logInfo(
     'webhook.controller',
@@ -305,11 +293,7 @@ async function handleSubscriptionCreated(subscription, eventId) {
   try {
     await sendSubscriptionWelcomeEmail(user.email, user.userName, planType)
   } catch (emailError) {
-    logError(
-      'webhook.controller',
-      'Failed to send subscription welcome email',
-      emailError
-    )
+    logError('webhook.controller', 'Failed to send subscription welcome email', emailError)
     // Continue execution even if email fails (non-critical)
   }
 }
@@ -320,17 +304,13 @@ async function handleSubscriptionUpdated(subscription, eventId) {
   const user = await User.findOne({ stripeSubscriptionId: subscription.id })
 
   if (!user) {
-    logError(
-      'webhook.controller',
-      'User not found for subscription update',
-      { subscriptionId: subscription.id }
-    )
+    logError('webhook.controller', 'User not found for subscription update', {
+      subscriptionId: subscription.id,
+    })
     throw new Error('User not found for subscription update')
   }
 
-  user.subscriptionStatus = subscription.cancel_at_period_end
-    ? 'canceling'
-    : subscription.status
+  user.subscriptionStatus = subscription.cancel_at_period_end ? 'canceling' : subscription.status
   user.subscriptionEndDate = new Date(subscription.current_period_end * 1000)
   await user.save()
 }
@@ -374,9 +354,7 @@ async function performPermanentDeletion(user) {
           },
         },
       }
-      const invalidationCommand = new CreateInvalidationCommand(
-        invalidationParams
-      )
+      const invalidationCommand = new CreateInvalidationCommand(invalidationParams)
       await cloudFrontClient.send(invalidationCommand)
     } catch (imageError) {
       // Silent error handling - image deletion is non-critical for account deletion
@@ -389,10 +367,7 @@ async function performPermanentDeletion(user) {
   })
 
   // Remove from other users' matches
-  await User.updateMany(
-    { matches: user.user_id },
-    { $pull: { matches: user.user_id } }
-  )
+  await User.updateMany({ matches: user.user_id }, { $pull: { matches: user.user_id } })
 
   // Delete user account
   await User.deleteOne({ user_id: user.user_id })
@@ -436,11 +411,10 @@ async function handleInvoicePaymentSucceeded(invoice, eventId) {
   const user = await User.findOne({ stripeCustomerId: invoice.customer })
 
   if (!user) {
-    logWarning(
-      'webhook.controller',
-      'User not found for invoice payment succeeded',
-      { customerId: invoice.customer, invoiceId: invoice.id }
-    )
+    logWarning('webhook.controller', 'User not found for invoice payment succeeded', {
+      customerId: invoice.customer,
+      invoiceId: invoice.id,
+    })
     return
   }
 
@@ -466,11 +440,10 @@ async function handleInvoicePaymentFailed(invoice, eventId) {
   const user = await User.findOne({ stripeCustomerId: invoice.customer })
 
   if (!user) {
-    logWarning(
-      'webhook.controller',
-      'User not found for invoice payment failed',
-      { customerId: invoice.customer, invoiceId: invoice.id }
-    )
+    logWarning('webhook.controller', 'User not found for invoice payment failed', {
+      customerId: invoice.customer,
+      invoiceId: invoice.id,
+    })
     return
   }
 

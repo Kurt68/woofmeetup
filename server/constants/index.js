@@ -51,11 +51,7 @@ export const IMAGE_MIME_TYPES = {
 }
 
 export const IMAGE_VALIDATION = {
-  ALLOWED_TYPES: [
-    IMAGE_MIME_TYPES.JPEG,
-    IMAGE_MIME_TYPES.PNG,
-    IMAGE_MIME_TYPES.WEBP,
-  ],
+  ALLOWED_TYPES: [IMAGE_MIME_TYPES.JPEG, IMAGE_MIME_TYPES.PNG, IMAGE_MIME_TYPES.WEBP],
   MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
   MAX_WIDTH: 2048,
   MAX_HEIGHT: 2048,
@@ -170,8 +166,7 @@ export const EMAIL_SUBJECTS = {
   [EMAIL_TEMPLATES.VERIFICATION]: 'Verify your Woof Meetup email',
   [EMAIL_TEMPLATES.PASSWORD_RESET]: 'Reset your Woof Meetup password',
   [EMAIL_TEMPLATES.WELCOME]: 'Welcome to Woof Meetup!',
-  [EMAIL_TEMPLATES.ACCOUNT_DELETION]:
-    'Your Woof Meetup account has been deleted',
+  [EMAIL_TEMPLATES.ACCOUNT_DELETION]: 'Your Woof Meetup account has been deleted',
 }
 
 // ============================================================================
