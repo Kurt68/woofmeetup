@@ -2,38 +2,9 @@ import { Nav } from '../components/layout'
 import { OnboardingHeader, OnboardingForm } from '../components/onboarding'
 import { PageHead } from '../components/PageHead'
 import { useOnboarding } from '../hooks/onboarding'
-import { useState, useEffect } from 'react'
 
 const Onboarding = () => {
-  const [renderError, setRenderError] = useState(null)
-
-  let hookData
-  try {
-    hookData = useOnboarding()
-  } catch (err) {
-    console.error('❌ Error in useOnboarding hook:', err)
-    setRenderError(`Hook Error: ${err.message}`)
-  }
-
-  if (renderError) {
-    return (
-      <div
-        style={{
-          padding: '20px',
-          color: 'red',
-          backgroundColor: '#fff',
-          border: '2px solid red',
-        }}
-      >
-        <h3>Onboarding Error</h3>
-        <p>{renderError}</p>
-      </div>
-    )
-  }
-
   const {
-    profileImageUploaded,
-    imageSelected,
     isLoading,
     error,
     aboutError,
@@ -53,7 +24,7 @@ const Onboarding = () => {
     clearDogImage,
     dogBreeds,
     setIsProfileImageUploading,
-  } = hookData
+  } = useOnboarding()
 
   console.log('✅ Onboarding component rendering', {
     formData,

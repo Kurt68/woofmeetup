@@ -217,7 +217,7 @@ const EditDogProfile = () => {
     }
   }
 
-  const validateUserAboutField = (value) => {
+  const validateUserAboutField = () => {
     setUserAboutError('')
     return true
   }

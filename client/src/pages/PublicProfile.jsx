@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/useAuthStore'
 import { sanitizeImageUrl } from '../utilities/sanitizeUrl'
@@ -8,6 +8,38 @@ import { Nav } from '../components/layout'
 import { X } from 'lucide-react'
 import '../pages/PublicProfile.css'
 
+const STORAGE_KEY = 'lastKnownCoordinates'
+const MONGODB_OBJECTID_REGEX = /^[0-9a-f]{24}$/i
+const MAX_RETRIES = 1
+const REFETCH_TIMEOUT_MS = 5000
+
+const isValidUserId = (id) => {
+  return id && typeof id === 'string' && MONGODB_OBJECTID_REGEX.test(id)
+}
+
+const isValidCoordinates = (coords) => {
+  return (
+    coords &&
+    typeof coords === 'object' &&
+    typeof coords.latitude === 'number' &&
+    typeof coords.longitude === 'number' &&
+    coords.latitude >= -90 &&
+    coords.latitude <= 90 &&
+    coords.longitude >= -180 &&
+    coords.longitude <= 180
+  )
+}
+
+const isValidProfile = (profile) => {
+  return (
+    profile &&
+    typeof profile === 'object' &&
+    profile.dogs_name &&
+    profile.userName &&
+    (profile.user_id || profile._id)
+  )
+}
+
 const PublicProfile = () => {
   const { userId } = useParams()
   const navigate = useNavigate()
@@ -15,42 +47,115 @@ const PublicProfile = () => {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [isUsingLastKnownDistance, setIsUsingLastKnownDistance] =
-    useState(false)
+  const [retryCount, setRetryCount] = useState(0)
+
+  const handleNavigateHome = useCallback(() => {
+    navigate('/')
+  }, [navigate])
+
+  const memoizedPageData = useMemo(
+    () => ({
+      title: profile ? `${profile.dogs_name || 'Dog'} - Woof Meetup` : 'Profile Not Found',
+      description: profile
+        ? `Meet ${profile.userName || 'User'} and ${profile.dogs_name || 'their dog'}. ${
+            profile.userAbout || 'Looking for dog meetups on Woof Meetup.'
+          }`
+        : 'This profile is no longer available.',
+    }),
+    [profile]
+  )
 
   useEffect(() => {
+    if (!isValidUserId(userId)) {
+      setError('Invalid profile URL')
+      setLoading(false)
+      return
+    }
+
+    const abortController = new AbortController()
+
     const loadProfile = async () => {
       try {
-        setLoading(true)
         setError(null)
 
         let profileData = await fetchPublicProfile(userId)
 
+        if (!profileData) {
+          throw new Error('Profile data is empty')
+        }
+
+        if (!isValidProfile(profileData)) {
+          throw new Error('Profile missing required fields')
+        }
+
         if (!isAuthenticated && !profileData.distance_to_other_users) {
-          const lastKnownCoords = localStorage.getItem('lastKnownCoordinates')
-          if (lastKnownCoords) {
-            const coords = JSON.parse(lastKnownCoords)
-            profileData = await fetchPublicProfile(userId, coords)
-            if (profileData.distance_to_other_users) {
-              setIsUsingLastKnownDistance(true)
+          try {
+            const lastKnownCoordsStr = localStorage.getItem(STORAGE_KEY)
+            if (lastKnownCoordsStr) {
+              const coords = JSON.parse(lastKnownCoordsStr)
+              if (isValidCoordinates(coords)) {
+                const refetchPromise = fetchPublicProfile(userId, coords)
+                const timeoutPromise = new Promise((_, reject) =>
+                  setTimeout(
+                    () => reject(new Error('Refetch timeout')),
+                    REFETCH_TIMEOUT_MS
+                  )
+                )
+
+                try {
+                  const refetchedData = await Promise.race([
+                    refetchPromise,
+                    timeoutPromise,
+                  ])
+                  if (refetchedData && isValidProfile(refetchedData)) {
+                    profileData = refetchedData
+                  }
+                } catch (refetchErr) {
+                  if (
+                    refetchErr instanceof Error &&
+                    refetchErr.message === 'Refetch timeout'
+                  ) {
+                    console.warn('Refetch with coordinates timed out, using first fetch')
+                  } else {
+                    console.warn('Failed to refetch with coordinates:', refetchErr)
+                  }
+                }
+              }
             }
+          } catch (storageErr) {
+            console.error('Failed to load coordinates from storage:', storageErr)
           }
         }
 
-        console.log('📸 Public profile loaded:', profileData)
-        setProfile(profileData)
-        setLoading(false)
+        if (!abortController.signal.aborted) {
+          setProfile(profileData)
+          setLoading(false)
+          setRetryCount(0)
+        }
       } catch (err) {
-        console.error('❌ Error loading profile:', err)
-        setError('Profile not found or unavailable')
-        setLoading(false)
+        if (!abortController.signal.aborted) {
+          const errorMessage =
+            err instanceof Error && err.message
+              ? err.message
+              : 'Profile not found or unavailable'
+          setError(errorMessage)
+          setLoading(false)
+
+          if (retryCount < MAX_RETRIES) {
+            console.warn(`Load failed, retrying (${retryCount + 1}/${MAX_RETRIES}):`, err)
+            setRetryCount(retryCount + 1)
+          } else {
+            console.error('Failed to load profile after retries:', err)
+          }
+        }
       }
     }
 
-    if (userId) {
-      loadProfile()
-    }
-  }, [userId, fetchPublicProfile, isAuthenticated])
+    setLoading(true)
+    loadProfile()
+
+    return () => abortController.abort()
+  }, [userId, fetchPublicProfile, isAuthenticated, retryCount])
 
   if (loading) {
     return (
@@ -74,41 +179,39 @@ const PublicProfile = () => {
     return (
       <>
         <PageHead title="Profile Not Found" />
-          <div className="overlay">
-            <Nav minimal={true} />
-            <div className="profile-modal-overlay">
-              <div className="profile-modal">
-                <div className="profile-modal-header">
-                  <button
-                    className="profile-modal-close"
-                    onClick={() => navigate('/')}
-                    aria-label="Close profile"
-                    type="button"
-                  >
-                    <X size={24} />
-                  </button>
-                </div>
-                <div className="profile-modal-scroll">
-                  <div className="error-message">
-                    <h2>Profile Not Found</h2>
-                    <p>{error || 'This profile is no longer available.'}</p>
-                  </div>
+        <div className="overlay">
+          <Nav minimal={true} />
+          <div className="profile-modal-overlay">
+            <div className="profile-modal">
+              <div className="profile-modal-header">
+                <button
+                  className="profile-modal-close"
+                  onClick={handleNavigateHome}
+                  aria-label="Close error message"
+                  type="button"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="profile-modal-scroll">
+                <div className="error-message">
+                  <h2>Profile Not Found</h2>
+                  <p>{error || 'This profile is no longer available.'}</p>
                 </div>
               </div>
             </div>
+          </div>
         </div>
       </>
     )
   }
 
-  const pageTitle = `${profile.dogs_name} - Woof Meetup`
-  const pageDescription = `Meet ${profile.userName} and ${profile.dogs_name}. ${
-    profile.userAbout || 'Looking for dog meetups on Woof Meetup.'
-  }`
-
   return (
     <>
-      <PageHead title={pageTitle} description={pageDescription} />
+      <PageHead
+        title={memoizedPageData.title}
+        description={memoizedPageData.description}
+      />
         <div className="overlay">
           <Nav minimal={true} />
           <div className="profile-modal-overlay">
@@ -120,7 +223,7 @@ const PublicProfile = () => {
                 </div>
                 <button
                   className="profile-modal-close"
-                  onClick={() => navigate('/')}
+                  onClick={handleNavigateHome}
                   aria-label="Close profile"
                   type="button"
                 >
@@ -133,18 +236,8 @@ const PublicProfile = () => {
                   {profile.imageUrl ? (
                     <img
                       src={sanitizeImageUrl(profile.imageUrl)}
-                      alt={profile.dogs_name}
+                      alt={profile.dogs_name || 'Dog photo'}
                       className="profile-modal-image dog-image"
-                      onError={(e) =>
-                        console.error(
-                          '❌ Dog image load error:',
-                          profile.imageUrl,
-                          e
-                        )
-                      }
-                      onLoad={() =>
-                        console.log('✅ Dog image loaded:', profile.imageUrl)
-                      }
                     />
                   ) : (
                     <div className="profile-image-placeholder">
@@ -155,21 +248,8 @@ const PublicProfile = () => {
                     profile.profileImageUrl !== profile.imageUrl && (
                       <img
                         src={sanitizeImageUrl(profile.profileImageUrl)}
-                        alt={profile.userName}
+                        alt={profile.userName || 'User photo'}
                         className="profile-modal-image user-image"
-                        onError={(e) =>
-                          console.error(
-                            '❌ User image load error:',
-                            profile.profileImageUrl,
-                            e
-                          )
-                        }
-                        onLoad={() =>
-                          console.log(
-                            '✅ User image loaded:',
-                            profile.profileImageUrl
-                          )
-                        }
                       />
                     )}
                 </div>
@@ -178,14 +258,11 @@ const PublicProfile = () => {
                   <div className="profile-section">
                     <div className="profile-details">
                       <p>
-                        <strong>{profile.dogs_name}</strong>
+                        <strong>{profile.dogs_name || 'Unknown Dog'}</strong>
                         {profile.age && `, Age ${profile.age}`}
                       </p>
                       {profile.distance_to_other_users && (
                         <p className="profile-distance">
-                          {isUsingLastKnownDistance
-                            ? 'Last known distance is '
-                            : ''}
                           {profile.distance_to_other_users} miles from you
                         </p>
                       )}
@@ -205,7 +282,7 @@ const PublicProfile = () => {
                   <div className="profile-section">
                     <div className="profile-details">
                       <p>
-                        <strong>{profile.userName}</strong>
+                        <strong>{profile.userName || 'Unknown User'}</strong>
                         {profile.userAge && `, Age ${profile.userAge}`}
                       </p>
                       {profile.userAbout && (
@@ -221,7 +298,7 @@ const PublicProfile = () => {
               <div className="profile-modal-footer">
                 <button
                   className="secondary-button"
-                  onClick={() => navigate('/')}
+                  onClick={handleNavigateHome}
                   type="button"
                 >
                   Explore More Profiles

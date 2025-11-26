@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../../store/useAuthStore'
 import { usePaymentStore } from '../../store/usePaymentStore'
 import ConfirmationModal from '../modals/ConfirmationModal'
 
 const SubscriptionCard = () => {
   const navigate = useNavigate()
-  const { user } = useAuthStore()
   const {
     subscription,
     fetchSubscriptionStatus,

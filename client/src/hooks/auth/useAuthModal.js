@@ -162,14 +162,14 @@ export const useAuthModal = (isSignUp, referralSource) => {
           setTurnstileError('Verification failed. Please try again.')
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setTurnstileError(
           'Unable to verify. Please check your connection and try again.'
         )
       })
   }
 
-  const handleTurnstileError = (errorCode) => {
+  const handleTurnstileError = () => {
     setTurnstileError(
       'Security verification failed. Please refresh the page and try again.'
     )

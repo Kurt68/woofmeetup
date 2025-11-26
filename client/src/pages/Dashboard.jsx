@@ -46,7 +46,6 @@ const Dashboard = () => {
   // Custom hooks for separation of concerns
   const { longitude, latitude, updateLocation } = useGeolocation()
   const {
-    user: dashboardUser,
     selectDistance,
     getUser,
     handleDistanceChange,

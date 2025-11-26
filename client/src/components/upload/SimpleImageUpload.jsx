@@ -173,7 +173,7 @@ const SimpleImageUpload = ({
         URL.revokeObjectURL(imageURL)
       }
     }
-  }, [])
+  }, [imageURL])
 
   return (
     <div className="simple-image-upload user-photo">

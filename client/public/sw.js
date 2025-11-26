@@ -21,7 +21,7 @@ self.addEventListener('activate', (event) => {
               cacheName !== CACHE_NAME && cacheName.startsWith('woof-meetup-')
           )
           .map((cacheName) => {
-            return caches.delete(cacheName).catch((error) => {
+            return caches.delete(cacheName).catch(() => {
               // Silently handle cache deletion errors (e.g., already deleted)
             })
           })

@@ -131,7 +131,7 @@ export const useOnboarding = () => {
     }
   }
 
-  const validateUserAboutField = (value) => {
+  const validateUserAboutField = () => {
     setUserAboutError('')
     return true
   }
