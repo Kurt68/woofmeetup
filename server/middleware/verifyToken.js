@@ -20,11 +20,14 @@ export const verifyToken = (req, res, next) => {
   const token = req.cookies.token
 
   if (!token) {
-    logInfo('auth.verifyToken', 'Token verification failed - no token provided')
-    logAuthFailure('missing_token', {
-      endpoint: req.path,
-      ip: req.ip,
-    })
+    // Don't spam logs for check-auth endpoint (expected on initial page load)
+    if (req.path !== '/api/auth/check-auth') {
+      logInfo('auth.verifyToken', 'Token verification failed - no token provided')
+      logAuthFailure('missing_token', {
+        endpoint: req.path,
+        ip: req.ip,
+      })
+    }
     return sendUnauthorized(res, 'No token provided')
   }
 

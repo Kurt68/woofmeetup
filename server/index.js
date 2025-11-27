@@ -197,7 +197,7 @@ app.use((req, res, next) => {
         ...options,
         secure: isLocalhost ? false : true, // HTTPS only (skip for localhost)
         httpOnly: true, // Prevent XSS access
-        sameSite: 'strict', // CSRF protection
+        sameSite: 'lax', // CSRF protection - lax allows same-site cookie transmission
       }
       // Don't override if already explicitly set to false
       if (options.secure === false) {
