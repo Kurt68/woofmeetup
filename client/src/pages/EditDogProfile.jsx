@@ -55,9 +55,13 @@ const EditDogProfile = () => {
 
   // Track component lifecycle
   useEffect(() => {
-    console.log('🔵 [EditProfile] Component mounted')
+    if (import.meta.env.MODE === 'development') {
+      console.log('🔵 [EditProfile] Component mounted')
+    }
     return () => {
-      console.log('🔴 [EditProfile] Component UNMOUNTING')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔴 [EditProfile] Component UNMOUNTING')
+      }
     }
   }, [])
 
@@ -119,7 +123,9 @@ const EditDogProfile = () => {
           if (sanitizedDogImageUrl) {
             setCurrentDogImageUrl(sanitizedDogImageUrl)
           } else {
-            console.warn('Failed to sanitize dog image URL from API response')
+            if (import.meta.env.MODE === 'development') {
+              console.warn('Failed to sanitize dog image URL from API response')
+            }
           }
         }
         if (data.profile_image) {
@@ -130,9 +136,11 @@ const EditDogProfile = () => {
           if (sanitizedProfileImageUrl) {
             setCurrentProfileImageUrl(sanitizedProfileImageUrl)
           } else {
-            console.warn(
-              'Failed to sanitize profile image URL from API response'
-            )
+            if (import.meta.env.MODE === 'development') {
+              console.warn(
+                'Failed to sanitize profile image URL from API response'
+              )
+            }
           }
         }
       } catch (err) {
@@ -269,30 +277,36 @@ const EditDogProfile = () => {
       setIsLoading(true)
       setError(null)
 
-      console.log('📝 [EditProfile] Submitting form with data:', {
-        dogs_name: formData.dogs_name,
-        about: formData.about,
-        userAbout: formData.userAbout,
-      })
+      if (import.meta.env.MODE === 'development') {
+        console.log('📝 [EditProfile] Submitting form with data:', {
+          dogs_name: formData.dogs_name,
+          about: formData.about,
+          userAbout: formData.userAbout,
+        })
+      }
 
       const response = await axiosInstance.patch('/api/auth/user', {
         formData,
       })
 
-      console.log('✅ [EditProfile] Backend response:', {
-        status: response.status,
-        data: response.data,
-        modifiedCount: response.data?.modifiedCount,
-        matchedCount: response.data?.matchedCount,
-      })
+      if (import.meta.env.MODE === 'development') {
+        console.log('✅ [EditProfile] Backend response:', {
+          status: response.status,
+          data: response.data,
+          modifiedCount: response.data?.modifiedCount,
+          matchedCount: response.data?.matchedCount,
+        })
+      }
 
       const success = response.status === 200
       if (success) {
         // Check if data was actually modified
         if (response.data?.modifiedCount === 0) {
-          console.warn(
-            "⚠️ [EditProfile] No documents were modified! Response was 200 but DB wasn't updated."
-          )
+          if (import.meta.env.MODE === 'development') {
+            console.warn(
+              "⚠️ [EditProfile] No documents were modified! Response was 200 but DB wasn't updated."
+            )
+          }
           setError(
             'Profile appears unchanged. Please verify your changes and try again.'
           )
@@ -301,23 +315,39 @@ const EditDogProfile = () => {
         }
 
         trackDogProfileUpdated()
-        console.log('🚀 [EditProfile] About to call navigate()...')
+        if (import.meta.env.MODE === 'development') {
+          console.log('🚀 [EditProfile] About to call navigate()...')
+        }
         navigate('/dashboard')
-        console.log('🚀 [EditProfile] navigate() called')
+        if (import.meta.env.MODE === 'development') {
+          console.log('🚀 [EditProfile] navigate() called')
+        }
 
         // Refresh auth state in background to update profile image and other user data
         // This ensures Header and Chat components display the new profile image
         // Don't await this - let it happen after navigation to avoid race conditions
-        console.log('🔄 [EditProfile] Refreshing auth state in background...')
+        if (import.meta.env.MODE === 'development') {
+          console.log('🔄 [EditProfile] Refreshing auth state in background...')
+        }
         checkAuth()
           .then(() => {
-            console.log('✅ [EditProfile] Auth state refreshed in background')
+            if (import.meta.env.MODE === 'development') {
+              console.log('✅ [EditProfile] Auth state refreshed in background')
+            }
           })
           .catch((err) => {
-            console.error('❌ [EditProfile] Auth refresh failed:', err)
+            if (import.meta.env.MODE === 'development') {
+              console.error('❌ [EditProfile] Auth refresh failed:', err)
+            }
           })
       }
     } catch (err) {
+      if (import.meta.env.MODE === 'development') {
+        console.error('❌ [EditProfile] Profile update error:', {
+          message: err.message,
+          status: err.response?.status,
+        })
+      }
       // Provide detailed error info for debugging double-submit issues
       const errorMessage =
         err.response?.data?.message ||

@@ -1,5 +1,5 @@
 import axiosInstance from '../../config/axiosInstance'
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuthStore } from '../../store/useAuthStore'
 import { SidebarSkeleton } from '../skeletons'
 
@@ -12,36 +12,35 @@ const MatchesDisplay = ({ matches, setSelectedUser, animatedMatchIds }) => {
 
   const userId = user?.user_id
 
-  const getMatches = useCallback(async () => {
-    const matchedUserIds = matches?.map(({ user_id }) => user_id)
-    try {
-      setMatchesLoading(true)
-      setError(null)
-
-      // Skip API call if no matches exist
-      if (!matchedUserIds || matchedUserIds.length === 0) {
-        setMatchedProfiles([])
-        return
-      }
-
-      const response = await axiosInstance.get('/api/auth/users', {
-        params: { userIds: JSON.stringify(matchedUserIds), _t: Date.now() },
-        headers: {
-          'Cache-Control': 'no-cache',
-          Pragma: 'no-cache',
-        },
-      })
-      setMatchedProfiles(response.data)
-    } catch (error) {
-      setError('Failed to load matches. Please try again.')
-    } finally {
-      setMatchesLoading(false)
-    }
-  }, [matches])
-
   useEffect(() => {
-    getMatches()
-  }, [getMatches])
+    const fetchMatches = async () => {
+      const matchedUserIds = matches?.map(({ user_id }) => user_id)
+      try {
+        setMatchesLoading(true)
+        setError(null)
+
+        if (!matchedUserIds || matchedUserIds.length === 0) {
+          setMatchedProfiles([])
+          return
+        }
+
+        const response = await axiosInstance.get('/api/auth/users', {
+          params: { userIds: JSON.stringify(matchedUserIds), _t: Date.now() },
+          headers: {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+          },
+        })
+        setMatchedProfiles(response.data.data.users)
+      } catch (error) {
+        setError('Failed to load matches. Please try again.')
+      } finally {
+        setMatchesLoading(false)
+      }
+    }
+
+    fetchMatches()
+  }, [matches])
 
   const filteredMatchedProfiles = matchedProfiles?.filter(
     (matchedProfile) =>
@@ -54,7 +53,6 @@ const MatchesDisplay = ({ matches, setSelectedUser, animatedMatchIds }) => {
     setSelectedUser(match)
   }
 
-  // Hide container if no matches exist
   if (!filteredMatchedProfiles || filteredMatchedProfiles.length === 0) {
     return null
   }

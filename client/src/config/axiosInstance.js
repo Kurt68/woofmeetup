@@ -90,14 +90,12 @@ axiosInstance.interceptors.response.use(
     if (import.meta.env.MODE === 'development') {
       console.log(`✅ [${response.status}] ${response.config.url}`)
     }
-    // Always log auth responses for debugging
-    if (response.config.url.includes('/auth/login')) {
+    if (import.meta.env.MODE === 'development' && response.config.url.includes('/auth/login')) {
       console.log('📨 [LOGIN RESPONSE] status:', response.status)
       console.log('📨 [LOGIN RESPONSE] data:', response.data)
-      console.log('📨 [LOGIN RESPONSE] user object:', response.data?.user)
-      console.log('📨 [LOGIN RESPONSE] user.isVerified:', response.data?.user?.isVerified)
+      console.log('📨 [LOGIN RESPONSE] user object:', response.data?.data?.user)
+      console.log("📨 [LOGIN RESPONSE] user.isVerified:", response.data?.data?.user?.isVerified)
     }
-    // Clear retry count on success
     retryCountMap.delete(response.config.url)
     return response
   },
@@ -106,9 +104,11 @@ axiosInstance.interceptors.response.use(
     const status = error.response?.status
     const message = error.response?.data?.message || error.message
     const errorCode = error.response?.data?.code
-    console.error(
-      `🔴 [${status || 'Network'}] ${error.config?.url}: ${message}`
-    )
+    if (import.meta.env.MODE === 'development') {
+      console.error(
+        `🔴 [${status || 'Network'}] ${error.config?.url}: ${message}`
+      )
+    }
 
     // Add custom error properties for easier handling
     error.isNetworkError = !error.response
@@ -120,13 +120,17 @@ axiosInstance.interceptors.response.use(
 
     // SECURITY FIX: Handle 401 Unauthorized (expired session) with auto-logout
     if (status === 401 && !error.config.url.includes('check-auth')) {
-      console.warn('🚨 [401] Unauthorized - session expired, clearing auth state')
+      if (import.meta.env.MODE === 'development') {
+        console.warn('🚨 [401] Unauthorized - session expired, clearing auth state')
+      }
       
       if (handleLogout) {
         try {
           handleLogout()
         } catch (logoutError) {
-          console.error('Error during logout:', logoutError)
+          if (import.meta.env.MODE === 'development') {
+            console.error('Error during logout:', logoutError)
+          }
         }
       }
       
@@ -139,7 +143,9 @@ axiosInstance.interceptors.response.use(
     // Security Fix #3: Handle CSRF token failures with automatic retry
     if (status === 403 && errorCode === 'CSRF_TOKEN_INVALID') {
       error.isCsrfError = true
-      console.error('🔐 CSRF token validation failed - attempting recovery')
+      if (import.meta.env.MODE === 'development') {
+        console.error('🔐 CSRF token validation failed - attempting recovery')
+      }
 
       // Prevent infinite retry loops
       const retryKey = error.config.url
@@ -151,21 +157,27 @@ axiosInstance.interceptors.response.use(
 
         try {
           // Refresh the CSRF token
-          console.log('🔄 Refreshing CSRF token...')
+          if (import.meta.env.MODE === 'development') {
+            console.log('🔄 Refreshing CSRF token...')
+          }
           const newToken = await refreshCsrfToken()
 
           if (newToken) {
             // Update the request with the new token
             error.config.headers['X-CSRF-Token'] = newToken
-            console.log('🔐 CSRF token refreshed, retrying request...')
+            if (import.meta.env.MODE === 'development') {
+              console.log('🔐 CSRF token refreshed, retrying request...')
+            }
 
             // Retry the request with the new token
             return axiosInstance.request(error.config)
           }
         } catch (refreshError) {
-          console.error('❌ Failed to refresh CSRF token:', refreshError)
+          if (import.meta.env.MODE === 'development') {
+            console.error('❌ Failed to refresh CSRF token:', refreshError)
+          }
         }
-      } else {
+      } else if (import.meta.env.MODE === 'development') {
         console.error('❌ CSRF token retry limit exceeded')
       }
     }
@@ -177,7 +189,9 @@ axiosInstance.interceptors.response.use(
     if (isTransientError && retryCount < 2 && error.config.method !== 'get') {
       error.config.__retryCount = retryCount + 1
       const delay = Math.pow(2, error.config.__retryCount) * 1000
-      console.log(`⏳ Retrying ${error.config.method.toUpperCase()} ${error.config.url} after ${delay}ms (attempt ${error.config.__retryCount}/2)`)
+      if (import.meta.env.MODE === 'development') {
+        console.log(`⏳ Retrying ${error.config.method.toUpperCase()} ${error.config.url} after ${delay}ms (attempt ${error.config.__retryCount}/2)`)
+      }
       
       await new Promise((resolve) => setTimeout(resolve, delay))
       return axiosInstance.request(error.config)

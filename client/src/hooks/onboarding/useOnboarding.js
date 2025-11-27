@@ -87,8 +87,8 @@ export const useOnboarding = () => {
       })
 
       // Capture dog breeds from response
-      if (response.data?.dogBreeds) {
-        setDogBreeds(response.data.dogBreeds)
+      if (response.data?.data?.dogBreeds) {
+        setDogBreeds(response.data.data.dogBreeds)
         setIsDogImageUploaded(true)
       } else {
         // If no breeds detected, it's likely not a dog image
@@ -196,7 +196,9 @@ export const useOnboarding = () => {
         // The checkAuth endpoint generates signed CloudFront URLs (valid for 24 hours)
         // Don't await this - let it happen after navigation to avoid race conditions
         checkAuth().catch((err) => {
-          console.error('❌ [Onboarding] Auth refresh failed:', err)
+          if (import.meta.env.MODE === 'development') {
+            console.error('❌ [Onboarding] Auth refresh failed:', err)
+          }
         })
       }
     } catch (err) {

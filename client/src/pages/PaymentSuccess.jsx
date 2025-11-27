@@ -22,11 +22,11 @@ const PaymentSuccess = () => {
           await new Promise((resolve) => setTimeout(resolve, 1000))
 
           const response = await axiosInstance.get('/api/auth/check-auth')
-          if (response.data.user) {
-            useAuthStore.setState({ user: response.data.user })
+          if (response.data.data.user) {
+            useAuthStore.setState({ user: response.data.data.user })
             console.log(
               '✅ User credits updated:',
-              response.data.user.messageCredits
+              response.data.data.user.messageCredits
             )
             trackPaymentCompleted(0, 'completed')
           }

@@ -38,7 +38,9 @@ export const useAuthStore = create((set, get) => ({
       try {
         get().connectSocket()
       } catch (socketError) {
-        console.error('⚠️ Failed to connect socket after signup:', socketError)
+        if (import.meta.env.MODE === 'development') {
+          console.error('⚠️ Failed to connect socket after signup:', socketError)
+        }
       }
     } catch (error) {
       const msg = getErrorMessage(error, 'Error signing up')
@@ -52,18 +54,24 @@ export const useAuthStore = create((set, get) => ({
   },
 
   login: async (email, password) => {
-    console.log('🔐 [useAuthStore] login START', { email, timestamp: Date.now() })
+    if (import.meta.env.MODE === 'development') {
+      console.log('🔐 [useAuthStore] login START', { email, timestamp: Date.now() })
+    }
     set({ isLoading: true, error: null })
     try {
       await ensureCsrfToken()
-      console.log('🔐 [useAuthStore] CSRF token obtained, about to POST /api/auth/login')
-      console.time('login-request')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔐 [useAuthStore] CSRF token obtained, about to POST /api/auth/login')
+        console.time('login-request')
+      }
       const response = await axiosInstance.post('/api/auth/login', {
         email,
         password,
       })
-      console.timeEnd('login-request')
-      console.log('🔐 [useAuthStore] login response received:', response.status, response.data)
+      if (import.meta.env.MODE === 'development') {
+        console.timeEnd('login-request')
+        console.log('🔐 [useAuthStore] login response received:', response.status, response.data)
+      }
       // Security Fix: JWT token is now stored in httpOnly cookies by backend
       // Removed sessionStorage usage to prevent XSS token theft
       // Backend automatically sets secure cookie, no need to store locally
@@ -73,19 +81,25 @@ export const useAuthStore = create((set, get) => ({
         error: null,
         isLoading: false,
       })
-      console.log('🔐 [useAuthStore] state updated, isAuthenticated=true')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔐 [useAuthStore] state updated, isAuthenticated=true')
+      }
       try {
         get().connectSocket()
       } catch (socketError) {
-        console.error('⚠️ Failed to connect socket after login:', socketError)
+        if (import.meta.env.MODE === 'development') {
+          console.error('⚠️ Failed to connect socket after login:', socketError)
+        }
       }
     } catch (error) {
-      console.error('🔐 [useAuthStore] login ERROR caught:', {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data,
-        timestamp: Date.now(),
-      })
+      if (import.meta.env.MODE === 'development') {
+        console.error('🔐 [useAuthStore] login ERROR caught:', {
+          message: error.message,
+          status: error.response?.status,
+          data: error.response?.data,
+          timestamp: Date.now(),
+        })
+      }
       const msg = getErrorMessage(error, 'Error logging in')
       set({
         error: msg,
@@ -153,7 +167,9 @@ export const useAuthStore = create((set, get) => ({
       try {
         get().connectSocket()
       } catch (socketError) {
-        console.error('⚠️ Failed to connect socket after checkAuth:', socketError)
+        if (import.meta.env.MODE === 'development') {
+          console.error('⚠️ Failed to connect socket after checkAuth:', socketError)
+        }
       }
     } catch (error) {
       set({ error: null, isCheckingAuth: false, isAuthenticated: false })

@@ -20,7 +20,7 @@ export const useLike = () => {
       }
     } catch (error) {
       if (error.response?.status === 400) {
-        toast.error(error.response.data.message || 'Could not like profile')
+        toast.error(error.response.data?.data?.message || 'Could not like profile')
       } else {
         toast.error('Failed to like profile')
       }
@@ -34,8 +34,8 @@ export const useLike = () => {
     try {
       const response = await axiosInstance.get(`/api/likes/check/${toUserId}`)
       if (response.data.success) {
-        setLiked(response.data.liked)
-        return response.data.liked
+        setLiked(response.data.data.liked)
+        return response.data.data.liked
       }
     } catch (error) {
       // Error handled silently
@@ -46,7 +46,7 @@ export const useLike = () => {
   const getLikes = useCallback(async () => {
     try {
       const response = await axiosInstance.get('/api/likes')
-      return response.data
+      return response.data.data
     } catch (error) {
       toast.error('Failed to fetch likes')
       return null

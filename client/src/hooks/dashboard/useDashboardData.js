@@ -20,7 +20,7 @@ export const useDashboardData = (userId) => {
       const response = await axiosInstance.get('/api/auth/user', {
         params: { userId, _t: Date.now() },
       })
-      setUser(response.data)
+      setUser(response.data.data)
     } catch (error) {
       // Error handled silently
     }
@@ -52,10 +52,10 @@ export const useDashboardData = (userId) => {
         )
         console.log(
           '✅ Meetup type users fetched:',
-          response.data.length,
+          response.data.data.users.length,
           'users found'
         )
-        setMeetupTypeUsers(response.data)
+        setMeetupTypeUsers(response.data.data.users)
         setMeetupTypeUsersError(null)
       } catch (error) {
         const msg = getErrorMessage(error, 'Failed to load profiles')

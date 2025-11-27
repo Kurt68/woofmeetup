@@ -36,7 +36,9 @@ const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore()
 
   if (isAuthenticated && user?.isVerified) {
-    console.log('🚀 [RedirectAuthenticatedUser] Redirecting to /dashboard')
+    if (import.meta.env.MODE === 'development') {
+      console.log('🚀 [RedirectAuthenticatedUser] Redirecting to /dashboard')
+    }
     return <Navigate to="/dashboard" replace />
   }
   return children
@@ -69,14 +71,18 @@ const App = () => {
   useEffect(() => {
     // Initialize CSRF token first (required for all state-changing requests)
     fetchCsrfToken().catch((error) => {
-      console.error('⚠️ Failed to initialize CSRF token:', error)
+      if (import.meta.env.MODE === 'development') {
+        console.error('⚠️ Failed to initialize CSRF token:', error)
+      }
       // Continue anyway - CSRF token will be fetched but may fail on requests
     })
 
     // Set up global 401 handler for session expiration
     setAxiosLogoutHandler(() => {
       logout().catch((err) => {
-        console.error('Error during auto-logout:', err)
+        if (import.meta.env.MODE === 'development') {
+          console.error('Error during auto-logout:', err)
+        }
       })
     })
 

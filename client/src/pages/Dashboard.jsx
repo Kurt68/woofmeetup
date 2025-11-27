@@ -19,9 +19,13 @@ const Dashboard = () => {
 
   // Track component lifecycle
   useEffect(() => {
-    console.log('🟢 [Dashboard] Component mounted')
+    if (import.meta.env.MODE === 'development') {
+      console.log('🟢 [Dashboard] Component mounted')
+    }
     return () => {
-      console.log('🟠 [Dashboard] Component UNMOUNTING')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🟠 [Dashboard] Component UNMOUNTING')
+      }
     }
   }, [])
 
@@ -57,16 +61,20 @@ const Dashboard = () => {
   // Refetch users when location updates
   useEffect(() => {
     if (longitude && latitude) {
-      console.log('📍 Location updated, fetching meetup type users:', {
-        longitude,
-        latitude,
-      })
+      if (import.meta.env.MODE === 'development') {
+        console.log('📍 Location updated, fetching meetup type users:', {
+          longitude,
+          latitude,
+        })
+      }
       getMeetupTypeUsers()
     } else {
-      console.log('⏳ Waiting for location data. Currently:', {
-        longitude,
-        latitude,
-      })
+      if (import.meta.env.MODE === 'development') {
+        console.log('⏳ Waiting for location data. Currently:', {
+          longitude,
+          latitude,
+        })
+      }
     }
   }, [longitude, latitude, getMeetupTypeUsers])
 

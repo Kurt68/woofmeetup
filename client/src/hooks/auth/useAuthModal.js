@@ -35,7 +35,9 @@ export const useAuthModal = (isSignUp, referralSource) => {
 
   const emailErrors = useMemo(() => {
     const errors = isAfterFirstSubmit ? checkEmail(email) : []
-    console.log('🔍 EMAIL VALIDATION:', { email, isAfterFirstSubmit, errors })
+    if (import.meta.env.MODE === 'development') {
+      console.log('🔍 EMAIL VALIDATION:', { email, isAfterFirstSubmit, errors })
+    }
     return errors
   }, [isAfterFirstSubmit, email])
 
@@ -64,20 +66,30 @@ export const useAuthModal = (isSignUp, referralSource) => {
   }
 
   const handleSubmit = async (e) => {
-    console.log('📝 [handleSubmit] FORM SUBMITTED START', { isSignUp, email, timestamp: Date.now() })
+    if (import.meta.env.MODE === 'development') {
+      console.log('📝 [handleSubmit] FORM SUBMITTED START', { isSignUp, email, timestamp: Date.now() })
+    }
     e.preventDefault()
-    console.log('📝 [handleSubmit] preventDefault called')
+    if (import.meta.env.MODE === 'development') {
+      console.log('📝 [handleSubmit] preventDefault called')
+    }
     setIsAfterFirstSubmit(true)
-    console.log('📝 [handleSubmit] setIsAfterFirstSubmit called')
+    if (import.meta.env.MODE === 'development') {
+      console.log('📝 [handleSubmit] setIsAfterFirstSubmit called')
+    }
 
     // Validate email and password synchronously
-    console.log('📝 [handleSubmit] Starting validation...')
+    if (import.meta.env.MODE === 'development') {
+      console.log('📝 [handleSubmit] Starting validation...')
+    }
     const emailValidationErrors = checkEmail(email)
     const passwordValidationErrors = checkPassword(password, isSignUp)
-    console.log('📝 [handleSubmit] Validation complete:', {
-      emailValidationErrors: emailValidationErrors.length,
-      passwordValidationErrors: passwordValidationErrors.length,
-    })
+    if (import.meta.env.MODE === 'development') {
+      console.log('📝 [handleSubmit] Validation complete:', {
+        emailValidationErrors: emailValidationErrors.length,
+        passwordValidationErrors: passwordValidationErrors.length,
+      })
+    }
 
     // Validate userName only for signup
     const userNameValidationErrors = isSignUp ? checkUserName(userName) : []
@@ -88,36 +100,50 @@ export const useAuthModal = (isSignUp, referralSource) => {
       passwordValidationErrors.length > 0 ||
       userNameValidationErrors.length > 0
     ) {
-      console.error('❌ [handleSubmit] Validation errors - early return', {
-        emailErrors: emailValidationErrors.length,
-        passwordErrors: passwordValidationErrors.length,
-        userNameErrors: userNameValidationErrors.length,
-      })
+      if (import.meta.env.MODE === 'development') {
+        console.error('❌ [handleSubmit] Validation errors - early return', {
+          emailErrors: emailValidationErrors.length,
+          passwordErrors: passwordValidationErrors.length,
+          userNameErrors: userNameValidationErrors.length,
+        })
+      }
       return
     }
 
     if (isSignUp && password !== confirmPassword) {
-      console.error('❌ [handleSubmit] Password mismatch - early return')
+      if (import.meta.env.MODE === 'development') {
+        console.error('❌ [handleSubmit] Password mismatch - early return')
+      }
       setPasswordMatchError('Passwords need to match!')
       return
     }
     
-    console.log('✅ [handleSubmit] All validation passed, proceeding to auth...')
+    if (import.meta.env.MODE === 'development') {
+      console.log('✅ [handleSubmit] All validation passed, proceeding to auth...')
+    }
 
     try {
-      console.log('🔐 [handleSubmit] Ensuring CSRF token...')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔐 [handleSubmit] Ensuring CSRF token...')
+      }
       // SECURITY FIX: Ensure CSRF token is loaded before making authenticated requests
       // This prevents race conditions where the form is submitted before the token is fetched
       const csrfToken = await ensureCsrfToken()
-      console.log('🔐 [handleSubmit] CSRF token result:', csrfToken ? 'SUCCESS' : 'FAILED')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔐 [handleSubmit] CSRF token result:', csrfToken ? 'SUCCESS' : 'FAILED')
+      }
       if (!csrfToken) {
-        console.error('🔐 CSRF token unavailable - delaying submission')
+        if (import.meta.env.MODE === 'development') {
+          console.error('🔐 CSRF token unavailable - delaying submission')
+        }
         setServerError(
           'Security initialization incomplete. Please try again in a moment.'
         )
         return
       }
-      console.log('🔐 [handleSubmit] CSRF token ready, proceeding...')
+      if (import.meta.env.MODE === 'development') {
+        console.log('🔐 [handleSubmit] CSRF token ready, proceeding...')
+      }
 
       if (isSignUp) {
         await signup(email, password, userName, referralSource)
@@ -125,29 +151,45 @@ export const useAuthModal = (isSignUp, referralSource) => {
         toast.success('Your profile is now public on Woof. You can change this anytime in Account Settings.', { duration: 6000 })
         navigate('/verify-email')
       } else {
-        console.log('📝 [useAuthModal] About to login...')
+        if (import.meta.env.MODE === 'development') {
+          console.log('📝 [useAuthModal] About to login...')
+        }
         await login(email, password)
-        console.log('✅ [useAuthModal] login() returned successfully')
+        if (import.meta.env.MODE === 'development') {
+          console.log('✅ [useAuthModal] login() returned successfully')
+        }
         trackLogin()
-        console.log('📊 [useAuthModal] trackLogin() called')
+        if (import.meta.env.MODE === 'development') {
+          console.log('📊 [useAuthModal] trackLogin() called')
+        }
         // Check if user needs to verify email
         const authState = useAuthStore.getState()
-        console.log('🔐 [useAuthModal] After login, authState.isAuthenticated:', authState.isAuthenticated)
-        console.log('🔐 [useAuthModal] After login, authState.user:', authState.user)
-        console.log('🔐 [useAuthModal] User isVerified:', authState.user?.isVerified)
+        if (import.meta.env.MODE === 'development') {
+          console.log('🔐 [useAuthModal] After login, authState.isAuthenticated:', authState.isAuthenticated)
+          console.log('🔐 [useAuthModal] After login, authState.user:', authState.user)
+          console.log('🔐 [useAuthModal] User isVerified:', authState.user?.isVerified)
+        }
         if (authState.user && !authState.user.isVerified) {
-          console.log('⚠️ [useAuthModal] NOT VERIFIED - navigating to /verify-email')
+          if (import.meta.env.MODE === 'development') {
+            console.log('⚠️ [useAuthModal] NOT VERIFIED - navigating to /verify-email')
+          }
           navigate('/verify-email')
         } else if (authState.user && authState.user.isVerified) {
-          console.log('✅ [useAuthModal] VERIFIED - navigating to /dashboard')
+          if (import.meta.env.MODE === 'development') {
+            console.log('✅ [useAuthModal] VERIFIED - navigating to /dashboard')
+          }
           navigate('/dashboard')
         } else {
-          console.error('❌ [useAuthModal] NO USER OBJECT - cannot navigate!')
+          if (import.meta.env.MODE === 'development') {
+            console.error('❌ [useAuthModal] NO USER OBJECT - cannot navigate!')
+          }
         }
       }
     } catch (serverError) {
       // Enhanced error handling with specific messages
-      console.error('📡 Auth error caught:', serverError)
+      if (import.meta.env.MODE === 'development') {
+        console.error('📡 Auth error caught:', serverError)
+      }
       let errorMessage = 'An error occurred. Please try again.'
 
       if (serverError.response) {
@@ -156,9 +198,11 @@ export const useAuthModal = (isSignUp, referralSource) => {
 
         // CSRF token validation failure
         if (statusCode === 403 && errorCode === 'CSRF_TOKEN_INVALID') {
-          console.error(
-            '🔐 CSRF token validation failed during login - page may need refresh'
-          )
+          if (import.meta.env.MODE === 'development') {
+            console.error(
+              '🔐 CSRF token validation failed during login - page may need refresh'
+            )
+          }
           errorMessage =
             'Security error: Please refresh the page and try again.'
         } else if (serverError.response.data?.message) {

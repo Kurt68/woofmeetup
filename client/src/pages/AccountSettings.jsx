@@ -87,9 +87,9 @@ const AccountSettings = () => {
       setShowModal(false)
 
       // Check if deletion was scheduled or immediate
-      if (response.data.scheduled) {
+      if (response.data.data.scheduled) {
         // Account scheduled for deletion - show message and keep user logged in
-        toast.success(response.data.message, { duration: 6000 })
+        toast.success(response.data.data.message, { duration: 6000 })
         // Optionally redirect to dashboard or stay on settings
         navigate('/dashboard')
       } else {
