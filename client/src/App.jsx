@@ -36,6 +36,7 @@ const RedirectAuthenticatedUser = ({ children }) => {
   const { isAuthenticated, user } = useAuthStore()
 
   if (isAuthenticated && user?.isVerified) {
+    console.log('🚀 [RedirectAuthenticatedUser] Redirecting to /dashboard')
     return <Navigate to="/dashboard" replace />
   }
   return children

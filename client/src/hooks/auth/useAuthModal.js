@@ -64,7 +64,7 @@ export const useAuthModal = (isSignUp, referralSource) => {
   }
 
   const handleSubmit = async (e) => {
-    console.log('📝 FORM SUBMITTED')
+    console.log('📝 FORM SUBMITTED', { isSignUp, email })
     e.preventDefault()
     setIsAfterFirstSubmit(true)
 
@@ -113,7 +113,16 @@ export const useAuthModal = (isSignUp, referralSource) => {
       } else {
         await login(email, password)
         trackLogin()
-        navigate('/dashboard')
+        // Check if user needs to verify email
+        const authState = useAuthStore.getState()
+        console.log('🔐 [useAuthModal] After login, authState:', authState)
+        if (authState.user && !authState.user.isVerified) {
+          console.log('⚠️ [useAuthModal] User email not verified, navigating to /verify-email')
+          navigate('/verify-email')
+        } else {
+          console.log('✅ [useAuthModal] User verified, navigating to /dashboard')
+          navigate('/dashboard')
+        }
       }
     } catch (serverError) {
       // Enhanced error handling with specific messages

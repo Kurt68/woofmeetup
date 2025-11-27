@@ -52,13 +52,16 @@ export const useAuthStore = create((set, get) => ({
   },
 
   login: async (email, password) => {
+    console.log('🔐 [useAuthStore] login START', { email })
     set({ isLoading: true, error: null })
     try {
       await ensureCsrfToken()
+      console.log('🔐 [useAuthStore] CSRF token obtained')
       const response = await axiosInstance.post('/api/auth/login', {
         email,
         password,
       })
+      console.log('🔐 [useAuthStore] login response:', response.data)
       // Security Fix: JWT token is now stored in httpOnly cookies by backend
       // Removed sessionStorage usage to prevent XSS token theft
       // Backend automatically sets secure cookie, no need to store locally
@@ -68,12 +71,14 @@ export const useAuthStore = create((set, get) => ({
         error: null,
         isLoading: false,
       })
+      console.log('🔐 [useAuthStore] state updated, isAuthenticated=true')
       try {
         get().connectSocket()
       } catch (socketError) {
         console.error('⚠️ Failed to connect socket after login:', socketError)
       }
     } catch (error) {
+      console.error('🔐 [useAuthStore] login ERROR:', error.message)
       const msg = getErrorMessage(error, 'Error logging in')
       set({
         error: msg,
