@@ -56,7 +56,7 @@ export const fetchCsrfToken = async (force = false) => {
       }
 
       const data = await response.json()
-      csrfToken = data.csrfToken
+      csrfToken = data.data.csrfToken
       lastFetchTime = Date.now()
       return csrfToken
     } catch (error) {
