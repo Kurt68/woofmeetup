@@ -199,7 +199,7 @@ app.use((req, res, next) => {
         httpOnly: true, // Prevent XSS access
         sameSite: options.sameSite || 'lax', // Respect explicit sameSite, default to lax
       }
-      // Don't override if already explicitly set to false
+      // Allow overrides if explicitly set to false
       if (options.secure === false) {
         secureOptions.secure = false
       }
@@ -208,6 +208,10 @@ app.use((req, res, next) => {
       }
       if (options.sameSite === false) {
         secureOptions.sameSite = false
+      }
+      // Override: localhost never needs secure flag, even if library sets it
+      if (isLocalhost && options.secure !== false) {
+        secureOptions.secure = false
       }
       return originalCookie.call(this, name, val, secureOptions)
     }

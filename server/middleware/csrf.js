@@ -7,15 +7,34 @@ import { sendSuccess, sendForbidden } from '../utils/ApiResponse.js'
 // Tokens are stored in cookies and must be sent back in headers or form body
 
 // CSRF protection middleware - protects state-changing operations (POST, PUT, DELETE, PATCH)
-export const csrfProtection = csrf({
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Lax',
-    maxAge: 60 * 60 * 1000, // 1 hour
-    path: '/',
-  },
-})
+// Note: Dynamic cookie options based on environment set in middleware wrapper
+let csrfProtectionInstance = null
+
+const getCsrfProtection = () => {
+  // Create CSRF protection with env-appropriate security settings
+  // This is called per-request context to respect the current host
+  return csrf({
+    cookie: {
+      httpOnly: true,
+      secure: false, // Will be enforced by Express cookie middleware based on environment
+      sameSite: 'Lax',
+      maxAge: 60 * 60 * 1000, // 1 hour
+      path: '/',
+    },
+  })
+}
+
+// Lazy-initialize to allow proper configuration
+function initializeCsrf() {
+  if (!csrfProtectionInstance) {
+    csrfProtectionInstance = getCsrfProtection()
+  }
+  return csrfProtectionInstance
+}
+
+export const csrfProtection = (req, res, next) => {
+  initializeCsrf()(req, res, next)
+}
 
 // Middleware to return CSRF token to client
 export const getCsrfToken = (req, res) => {

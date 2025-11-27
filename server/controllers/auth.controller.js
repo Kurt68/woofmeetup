@@ -91,7 +91,8 @@ export const signup = async (req, res) => {
 
     await user.save()
 
-    const token = generateTokenAndSetCookie(res, user.user_id, user._id, user.email)
+    const isLocalhost = req.hostname?.includes('localhost') || req.hostname?.includes('127.0.0.1')
+    const token = generateTokenAndSetCookie(res, user.user_id, user._id, user.email, isLocalhost)
 
     // Send verification email (non-blocking - don't fail signup if email fails)
     sendVerificationEmail(user.email, verificationToken).catch((error) => {
@@ -137,7 +138,8 @@ export const login = async (req, res) => {
       return sendError(res, 'Invalid credentials', 400)
     }
 
-    const token = generateTokenAndSetCookie(res, user.user_id, user._id, user.email)
+    const isLocalhost = req.hostname?.includes('localhost') || req.hostname?.includes('127.0.0.1')
+    const token = generateTokenAndSetCookie(res, user.user_id, user._id, user.email, isLocalhost)
 
     user.lastLogin = new Date()
     await user.save()
