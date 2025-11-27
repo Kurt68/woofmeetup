@@ -50,7 +50,9 @@
   border-radius: var(--radius-sm);
   padding: 0;
   margin: 0;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     background-color 0.2s ease;
   outline: none;
 
@@ -82,7 +84,9 @@
   font-size: var(--font-size-lg);
   border: 1px solid var(--color-primary);
   border-radius: var(--radius-sm);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   outline: none;
 }
 
@@ -136,8 +140,7 @@
   display: block;
   align-self: flex-start;
   width: fit-content;
-  margin: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs)
-    var(--spacing-xs);
+  margin: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-xs);
 }
 
 /* Client Side Form Validation */
@@ -236,7 +239,9 @@
   border: 2px solid var(--color-primary);
   border-radius: var(--radius-sm);
   text-align: center;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
     background-color 0.2s ease;
   outline: none;
 
@@ -277,7 +282,9 @@ select {
   padding: 0.7rem 7rem 0.7rem 0.6rem;
   cursor: pointer;
   border-radius: var(--radius-2xl);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 select:hover {
@@ -297,7 +304,7 @@ select:disabled {
 }
 
 .select-distance {
-  margin-top: -1.8rem;
+  margin-top: 1rem;
 }
 
 .select-distance label {
@@ -364,7 +371,7 @@ select:disabled {
 
 .dropdown-menu {
   position: absolute;
-  top: calc(100% + .5rem);
+  top: calc(100% + 0.5rem);
   left: 50%;
   transform: translateX(-50%);
   width: 115%;
