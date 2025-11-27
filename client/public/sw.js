@@ -42,7 +42,13 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Cache strategy: Stale-While-Revalidate for app resources (only GET requests)
+  // Never cache API responses - always fetch fresh
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(fetch(request))
+    return
+  }
+
+  // Cache strategy: Stale-While-Revalidate for static assets and HTML (only GET requests)
   if (url.origin === location.origin && request.method === 'GET') {
     event.respondWith(
       caches.open(CACHE_NAME).then((cache) => {

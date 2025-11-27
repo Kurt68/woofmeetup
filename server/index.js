@@ -266,11 +266,24 @@ app.use('/api/likes', likeRoutes)
 // Catches CSRF validation failures and returns proper JSON error responses
 app.use(csrfErrorHandler)
 
+// Prevent caching of index.html to ensure fresh app loads after login/logout
+app.use((req, res, next) => {
+  if (req.path === '/' || req.path === '/index.html' || !req.path.includes('.')) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+    res.setHeader('Pragma', 'no-cache')
+    res.setHeader('Expires', '0')
+  }
+  next()
+})
+
 // Serve static files and SPA catch-all route
 // Used in production builds and when testing production build locally
 app.use(express.static(path.join(__dirname, '/client/dist')))
 
 app.get('*', (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0')
+  res.setHeader('Pragma', 'no-cache')
+  res.setHeader('Expires', '0')
   res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'))
 })
 
