@@ -90,6 +90,13 @@ axiosInstance.interceptors.response.use(
     if (import.meta.env.MODE === 'development') {
       console.log(`✅ [${response.status}] ${response.config.url}`)
     }
+    // Always log auth responses for debugging
+    if (response.config.url.includes('/auth/login')) {
+      console.log('📨 [LOGIN RESPONSE] status:', response.status)
+      console.log('📨 [LOGIN RESPONSE] data:', response.data)
+      console.log('📨 [LOGIN RESPONSE] user object:', response.data?.user)
+      console.log('📨 [LOGIN RESPONSE] user.isVerified:', response.data?.user?.isVerified)
+    }
     // Clear retry count on success
     retryCountMap.delete(response.config.url)
     return response

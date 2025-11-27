@@ -64,16 +64,19 @@ export const useAuthModal = (isSignUp, referralSource) => {
   }
 
   const handleSubmit = async (e) => {
-    console.log('📝 FORM SUBMITTED', { isSignUp, email })
+    console.log('📝 [handleSubmit] FORM SUBMITTED START', { isSignUp, email, timestamp: Date.now() })
     e.preventDefault()
+    console.log('📝 [handleSubmit] preventDefault called')
     setIsAfterFirstSubmit(true)
+    console.log('📝 [handleSubmit] setIsAfterFirstSubmit called')
 
     // Validate email and password synchronously
+    console.log('📝 [handleSubmit] Starting validation...')
     const emailValidationErrors = checkEmail(email)
     const passwordValidationErrors = checkPassword(password, isSignUp)
-    console.log('✅ SYNC VALIDATION:', {
-      emailValidationErrors,
-      passwordValidationErrors,
+    console.log('📝 [handleSubmit] Validation complete:', {
+      emailValidationErrors: emailValidationErrors.length,
+      passwordValidationErrors: passwordValidationErrors.length,
     })
 
     // Validate userName only for signup
@@ -85,18 +88,28 @@ export const useAuthModal = (isSignUp, referralSource) => {
       passwordValidationErrors.length > 0 ||
       userNameValidationErrors.length > 0
     ) {
+      console.error('❌ [handleSubmit] Validation errors - early return', {
+        emailErrors: emailValidationErrors.length,
+        passwordErrors: passwordValidationErrors.length,
+        userNameErrors: userNameValidationErrors.length,
+      })
       return
     }
 
     if (isSignUp && password !== confirmPassword) {
+      console.error('❌ [handleSubmit] Password mismatch - early return')
       setPasswordMatchError('Passwords need to match!')
       return
     }
+    
+    console.log('✅ [handleSubmit] All validation passed, proceeding to auth...')
 
     try {
+      console.log('🔐 [handleSubmit] Ensuring CSRF token...')
       // SECURITY FIX: Ensure CSRF token is loaded before making authenticated requests
       // This prevents race conditions where the form is submitted before the token is fetched
       const csrfToken = await ensureCsrfToken()
+      console.log('🔐 [handleSubmit] CSRF token result:', csrfToken ? 'SUCCESS' : 'FAILED')
       if (!csrfToken) {
         console.error('🔐 CSRF token unavailable - delaying submission')
         setServerError(
@@ -104,6 +117,7 @@ export const useAuthModal = (isSignUp, referralSource) => {
         )
         return
       }
+      console.log('🔐 [handleSubmit] CSRF token ready, proceeding...')
 
       if (isSignUp) {
         await signup(email, password, userName, referralSource)
@@ -111,17 +125,24 @@ export const useAuthModal = (isSignUp, referralSource) => {
         toast.success('Your profile is now public on Woof. You can change this anytime in Account Settings.', { duration: 6000 })
         navigate('/verify-email')
       } else {
+        console.log('📝 [useAuthModal] About to login...')
         await login(email, password)
+        console.log('✅ [useAuthModal] login() returned successfully')
         trackLogin()
+        console.log('📊 [useAuthModal] trackLogin() called')
         // Check if user needs to verify email
         const authState = useAuthStore.getState()
-        console.log('🔐 [useAuthModal] After login, authState:', authState)
+        console.log('🔐 [useAuthModal] After login, authState.isAuthenticated:', authState.isAuthenticated)
+        console.log('🔐 [useAuthModal] After login, authState.user:', authState.user)
+        console.log('🔐 [useAuthModal] User isVerified:', authState.user?.isVerified)
         if (authState.user && !authState.user.isVerified) {
-          console.log('⚠️ [useAuthModal] User email not verified, navigating to /verify-email')
+          console.log('⚠️ [useAuthModal] NOT VERIFIED - navigating to /verify-email')
           navigate('/verify-email')
-        } else {
-          console.log('✅ [useAuthModal] User verified, navigating to /dashboard')
+        } else if (authState.user && authState.user.isVerified) {
+          console.log('✅ [useAuthModal] VERIFIED - navigating to /dashboard')
           navigate('/dashboard')
+        } else {
+          console.error('❌ [useAuthModal] NO USER OBJECT - cannot navigate!')
         }
       }
     } catch (serverError) {

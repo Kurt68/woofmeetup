@@ -34,7 +34,7 @@ export const useAuthStore = create((set, get) => ({
       // Security Fix: JWT token is now stored in httpOnly cookies by backend
       // Removed sessionStorage usage to prevent XSS token theft
       // Backend automatically sets secure cookie, no need to store locally
-      set({ user: response.data.user, isAuthenticated: true, isLoading: false })
+      set({ user: response.data.data.user, isAuthenticated: true, isLoading: false })
       try {
         get().connectSocket()
       } catch (socketError) {
@@ -52,22 +52,24 @@ export const useAuthStore = create((set, get) => ({
   },
 
   login: async (email, password) => {
-    console.log('🔐 [useAuthStore] login START', { email })
+    console.log('🔐 [useAuthStore] login START', { email, timestamp: Date.now() })
     set({ isLoading: true, error: null })
     try {
       await ensureCsrfToken()
-      console.log('🔐 [useAuthStore] CSRF token obtained')
+      console.log('🔐 [useAuthStore] CSRF token obtained, about to POST /api/auth/login')
+      console.time('login-request')
       const response = await axiosInstance.post('/api/auth/login', {
         email,
         password,
       })
-      console.log('🔐 [useAuthStore] login response:', response.data)
+      console.timeEnd('login-request')
+      console.log('🔐 [useAuthStore] login response received:', response.status, response.data)
       // Security Fix: JWT token is now stored in httpOnly cookies by backend
       // Removed sessionStorage usage to prevent XSS token theft
       // Backend automatically sets secure cookie, no need to store locally
       set({
         isAuthenticated: true,
-        user: response.data.user,
+        user: response.data.data.user,
         error: null,
         isLoading: false,
       })
@@ -78,7 +80,12 @@ export const useAuthStore = create((set, get) => ({
         console.error('⚠️ Failed to connect socket after login:', socketError)
       }
     } catch (error) {
-      console.error('🔐 [useAuthStore] login ERROR:', error.message)
+      console.error('🔐 [useAuthStore] login ERROR caught:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        timestamp: Date.now(),
+      })
       const msg = getErrorMessage(error, 'Error logging in')
       set({
         error: msg,
@@ -114,7 +121,7 @@ export const useAuthStore = create((set, get) => ({
       const response = await axiosInstance.post('/api/auth/verify-email', {
         code,
       })
-      set({ user: response.data.user, isAuthenticated: true, isLoading: false })
+      set({ user: response.data.data.user, isAuthenticated: true, isLoading: false })
       return response.data
     } catch (error) {
       const msg = getErrorMessage(error, 'Error verifying email')
@@ -139,7 +146,7 @@ export const useAuthStore = create((set, get) => ({
       // Removed sessionStorage usage - cookies are automatically sent with requests
       // No need to manually manage token storage
       set({
-        user: response.data.user,
+        user: response.data.data.user,
         isAuthenticated: true,
         isCheckingAuth: false,
       })
@@ -243,7 +250,7 @@ export const useAuthStore = create((set, get) => ({
       url += `?${params.toString()}`
     }
     const response = await axiosInstance.get(url)
-    return response.data.user
+    return response.data.data.user
   },
 
   updateProfileVisibility: async (userId, isProfilePublic) => {
