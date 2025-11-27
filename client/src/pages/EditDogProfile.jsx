@@ -114,7 +114,7 @@ const EditDogProfile = () => {
             params: { userId },
           }
         )
-        const data = profileRes.data
+        const data = profileRes.data.data
         setFormData(data)
 
         // Extract image URLs for preview (sanitize to prevent XSS)
@@ -188,8 +188,8 @@ const EditDogProfile = () => {
       const response = await axiosInstance.put('/api/auth/image', form)
 
       // Image uploaded successfully
-      if (response.data?.dogBreeds) {
-        setDogBreeds(response.data.dogBreeds)
+      if (response.data?.data?.dogBreeds) {
+        setDogBreeds(response.data.data.dogBreeds)
         setIsDogImageUploaded(true)
       }
     } catch (err) {

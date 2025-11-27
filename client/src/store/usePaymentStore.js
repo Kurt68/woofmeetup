@@ -20,8 +20,8 @@ export const usePaymentStore = create((set, get) => ({
       const response = await axiosInstance.get(
         '/api/payments/subscription-status'
       )
-      set({ subscription: response.data.subscription, isLoading: false })
-      return response.data.subscription
+      set({ subscription: response.data.data.subscription, isLoading: false })
+      return response.data.data.subscription
     } catch (error) {
       const msg = getErrorMessage(error, 'Error fetching subscription')
       set({
@@ -43,13 +43,13 @@ export const usePaymentStore = create((set, get) => ({
         }
       )
 
-      if (response.data.url) {
+      if (response.data.data.url) {
         trackPaymentInitiated(0, planType)
-        window.location.href = response.data.url
+        window.location.href = response.data.data.url
       }
 
       set({ isLoading: false })
-      return response.data
+      return response.data.data
     } catch (error) {
       const msg = getErrorMessage(error, 'Error creating checkout')
       set({
@@ -72,13 +72,13 @@ export const usePaymentStore = create((set, get) => ({
         }
       )
 
-      if (response.data.url) {
+      if (response.data.data.url) {
         trackPaymentInitiated(0, packageType)
-        window.location.href = response.data.url
+        window.location.href = response.data.data.url
       }
 
       set({ loadingPackage: null })
-      return response.data
+      return response.data.data
     } catch (error) {
       const msg = getErrorMessage(error, 'Error creating checkout')
       set({
@@ -104,13 +104,13 @@ export const usePaymentStore = create((set, get) => ({
         subscription: {
           ...currentSub,
           status: 'canceling',
-          endDate: response.data.endDate,
+          endDate: response.data.data.endDate,
         },
         isLoading: false,
       })
 
       toast.success('Subscription will be canceled at period end')
-      return response.data
+      return response.data.data
     } catch (error) {
       const msg = getErrorMessage(error, 'Error canceling subscription')
       set({
@@ -142,7 +142,7 @@ export const usePaymentStore = create((set, get) => ({
       })
 
       toast.success('Subscription reactivated successfully')
-      return response.data
+      return response.data.data
     } catch (error) {
       const msg = getErrorMessage(error, 'Error reactivating subscription')
       set({
@@ -158,8 +158,8 @@ export const usePaymentStore = create((set, get) => ({
     set({ isLoading: true, error: null })
     try {
       const response = await axiosInstance.get('/api/payments/payment-history')
-      set({ paymentHistory: response.data.transactions, isLoading: false })
-      return response.data.transactions
+      set({ paymentHistory: response.data.data.transactions, isLoading: false })
+      return response.data.data.transactions
     } catch (error) {
       const msg = getErrorMessage(error, 'Error fetching payment history')
       set({
@@ -174,8 +174,8 @@ export const usePaymentStore = create((set, get) => ({
     set({ isLoading: true, error: null })
     try {
       const response = await axiosInstance.get('/api/payments/credit-packages')
-      set({ creditPackages: response.data.packages, isLoading: false })
-      return response.data.packages
+      set({ creditPackages: response.data.data.packages, isLoading: false })
+      return response.data.data.packages
     } catch (error) {
       const msg = getErrorMessage(error, 'Error fetching credit packages')
       set({
@@ -194,12 +194,12 @@ export const usePaymentStore = create((set, get) => ({
         '/api/payments/create-portal-session'
       )
 
-      if (response.data.url) {
-        window.location.href = response.data.url
+      if (response.data.data.url) {
+        window.location.href = response.data.data.url
       }
 
       set({ isLoading: false })
-      return response.data
+      return response.data.data
     } catch (error) {
       const msg = getErrorMessage(error, 'Error creating portal session')
       set({

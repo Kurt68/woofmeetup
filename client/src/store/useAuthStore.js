@@ -45,6 +45,7 @@ export const useAuthStore = create((set, get) => ({
     } catch (error) {
       const msg = getErrorMessage(error, 'Error signing up')
       set({
+        message: msg,
         error: msg,
         isLoading: false,
       })
@@ -102,6 +103,7 @@ export const useAuthStore = create((set, get) => ({
       }
       const msg = getErrorMessage(error, 'Error logging in')
       set({
+        message: msg,
         error: msg,
         isLoading: false,
       })
@@ -182,7 +184,7 @@ export const useAuthStore = create((set, get) => ({
       const response = await axiosInstance.post('/api/auth/forgot-password', {
         email,
       })
-      set({ message: response.data.message, isLoading: false })
+      set({ message: response.data.message || 'Password reset instructions sent', isLoading: false })
     } catch (error) {
       const msg = getErrorMessage(error, 'Error sending reset password email')
       set({
@@ -201,7 +203,7 @@ export const useAuthStore = create((set, get) => ({
           password,
         }
       )
-      set({ message: response.data.message, isLoading: false })
+      set({ message: response.data.message || 'Password reset successfully', isLoading: false })
     } catch (error) {
       const msg = getErrorMessage(error, 'Error resetting password')
       set({
