@@ -21,7 +21,7 @@ export const verifyToken = (req, res, next) => {
 
   if (!token) {
     // Don't spam logs for check-auth endpoint (expected on initial page load)
-    if (req.path !== '/api/auth/check-auth') {
+    if (req.path !== '/check-auth') {
       logInfo('auth.verifyToken', 'Token verification failed - no token provided')
       logAuthFailure('missing_token', {
         endpoint: req.path,

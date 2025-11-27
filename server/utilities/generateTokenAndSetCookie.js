@@ -8,7 +8,7 @@ export const generateTokenAndSetCookie = (res, userId, _id, email) => {
   res.cookie('token', token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Lax', // 'Lax' allows cookies on top-level navigation (needed for dev with separate ports)
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds - reasonable session duration for dating app
     path: '/', // Ensure cookie is available on all paths
   })
