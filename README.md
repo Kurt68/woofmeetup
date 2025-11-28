@@ -12,20 +12,26 @@ A social platform for dog owners to connect, chat, and arrange meetups.
 
 ## 🚀 Quick Start
 
-```bash
-# Install dependencies
-npm install
-cd client && npm install && cd ..
+1. **Install dependencies:**
+   ```bash
+   npm install
+   cd client && npm install && cd ..
+   ```
 
-# Configure environment variables (see docs/DEVELOPMENT.md)
-nano .env
-nano client/.env
+2. **Configure environment variables:**
+   ```bash
+   # See docs/DEVELOPMENT.md for complete environment setup
+   cp .env.example .env  # If available
+   nano .env
+   nano client/.env
+   ```
 
-# Start development environment
-./shscripts/stripe/fix-stripe-account.sh
-```
+3. **Start development:**
+   ```bash
+   ./shscripts/stripe/fix-stripe-account.sh
+   ```
 
-Visit http://localhost:5173 for development.
+Visit http://localhost:5173 in your browser (Vite dev server runs on this port).
 
 ## 🛠️ Development Scripts
 

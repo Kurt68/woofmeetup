@@ -73,52 +73,107 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key
 ./shscripts/stripe/fix-stripe-account.sh
 ```
 
-**Manual:**
+This script automatically:
+- Sets up Stripe CLI authentication
+- Configures webhook forwarding
+- Starts both server and client in background
+- Updates environment variables
+
+**Manual Setup:**
 
 ```bash
-# Terminal 1: Server
-node server/index.js
+# Terminal 1: Server (development mode with hot reload)
+npm run server
 
-# Terminal 2: Client
+# Terminal 2: Client (Vite dev server with HMR)
 cd client && npm run dev
 
-# Terminal 3: Stripe CLI
+# Terminal 3: Stripe webhook listener (for local testing)
 stripe login
 stripe listen --forward-to localhost:8000/api/payments/webhook
 ```
+
+**Service Status:**
+- Server: http://localhost:8000 (Express API)
+- Client: http://localhost:5173 (Vite dev server with HMR)
+- Check status: `./shscripts/general/check-status.sh`
+- Stop all: `./shscripts/general/stop-all.sh`
 
 ---
 
 ## 🔧 Development Scripts
 
+### Quick Reference
+
 ```bash
-./shscripts/general/check-status.sh           # Check all services
-./shscripts/general/stop-all.sh              # Stop all services
-./shscripts/stripe/fix-stripe-account.sh    # Fix Stripe and restart
+./shscripts/stripe/fix-stripe-account.sh    # Recommended: Setup Stripe and start dev servers
+./shscripts/general/check-status.sh          # Check all services status
+./shscripts/general/stop-all.sh              # Stop all running services
+./shscripts/auth/setup-users.sh              # Setup test user credentials
+./shscripts/auth/login.sh                    # Quick login to test account
 ```
+
+For complete script documentation, see [shscripts/README.md](../shscripts/README.md).
 
 ---
 
 ## 🧪 Testing
 
-### Quick Webhook Test
+### E2E Tests (Playwright)
+
+```bash
+# Run all E2E tests in headless mode
+npm run test:e2e
+
+# Run with interactive UI
+npm run test:e2e:ui
+
+# Run with browser visible
+npm run test:e2e:headed
+
+# Debug a specific test
+npm run test:e2e:debug
+
+# View HTML report after run
+npm run test:e2e:report
+```
+
+### Stripe Integration Testing
+
+**Quick Webhook Test:**
 
 ```bash
 stripe trigger checkout.session.completed
 ```
 
-### Full Payment Flow Test
+**Full Payment Flow Test:**
 
 1. Navigate to http://localhost:5173
 2. Go to pricing page
 3. Use test card: `4242 4242 4242 4242`
-4. Verify credits added
+4. Verify credits added to account
 
-### Test Cards
+**Test Cards:**
 
 - **Success:** 4242 4242 4242 4242
 - **Decline:** 4000 0000 0000 0002
 - **3D Secure:** 4000 0025 0000 3155
+
+### Code Quality
+
+```bash
+# Lint all server code (auto-fix)
+npm run lint
+
+# Check linting without fixing
+npm run lint:check
+
+# Format all code with Prettier
+npm run format
+
+# Check formatting without changes
+npm run format:check
+```
 
 ---
 
@@ -254,19 +309,49 @@ See: `docs/MONGODB_SECURITY.md`
 
 ---
 
-## 🧪 Testing Checklist
+## 🧪 Pre-Commit Checklist
 
-Before committing:
+### Functionality
 
 - [ ] Server starts without errors
 - [ ] Client starts without errors
 - [ ] Can register new user
 - [ ] Can login
 - [ ] Can send messages
-- [ ] Can complete checkout
+- [ ] Can complete checkout (use test card)
 - [ ] Webhooks are received
 - [ ] Credits are added after purchase
-- [ ] No console errors
+- [ ] No console errors or warnings
+
+### Code Quality
+
+Before pushing code:
+
+```bash
+# Check linting
+npm run lint:check
+
+# Check formatting
+npm run format:check
+
+# Run E2E tests
+npm run test:e2e
+
+# Verify build succeeds
+npm run build
+```
+
+If any checks fail:
+```bash
+# Auto-fix linting issues
+npm run lint
+
+# Auto-format code
+npm run format
+
+# View and fix test failures
+npm run test:e2e:ui
+```
 
 ---
 

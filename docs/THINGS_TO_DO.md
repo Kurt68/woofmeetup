@@ -121,6 +121,7 @@ Organized list of planned features, improvements, and technical debt for Woof Me
 ### Social Media & Referrals
 
 **✅ Completed:**
+
 - Social share buttons (Twitter, Facebook, LinkedIn, WhatsApp)
 - Share URL generation with dog profile info
 - Referral source tracking during signup (`?referral=userId`)
@@ -129,6 +130,7 @@ Organized list of planned features, improvements, and technical debt for Woof Me
 - Referral stats show: top referral sources, conversion rates, signup breakdown
 
 **❌ Remaining:**
+
 - Admin dashboard page to view referral analytics UI
 - Referral rewards system (credits/perks for sharing)
 - Batch referral report export
@@ -257,11 +259,84 @@ Organized list of planned features, improvements, and technical debt for Woof Me
 - **Issue Tracking**: Check GitHub Issues for detailed bug reports
 - **Development Guide**: See [DEVELOPMENT.md](./DEVELOPMENT.md)
 - **Production Guide**: See [PRODUCTION.md](./PRODUCTION.md)
-- **Admin Guide**: See [ADMIN_DELETION_GUIDE.md](./ADDITIONAL_DOCS/ADMIN_DELETION_GUIDE.md)
+- **Admin Guide**: See [ADDITIONAL_DOCS/ADMIN_DELETION_GUIDE.md](./ADDITIONAL_DOCS/ADMIN_DELETION_GUIDE.md)
+- **Client Setup**: See [../client/README.md](../client/README.md)
+- **Scripts**: See [../shscripts/README.md](../shscripts/README.md)
+- **Code Standards**: See [../docs/CLAUDE.md](./CLAUDE.md)
 
 ---
 
 1. Fix signup.sh 1 - csfr getting in the way for dev testing.
 2. Fix email gray and Test Welcome email
+
+Optimization Opportunities:
+Response caching strategy (currently Cache-Control: no-cache)
+TypeScript adoption (would catch response structure mismatches at compile time)
+Request deduplication middleware (prevent simultaneous duplicate requests)
+Granular error boundaries (more specific than generic "Something went wrong")
+
+Unit Tests - Only E2E tests exist; no unit tests for utilities, middleware, or transaction wrapper
+Database Query Optimization - 46 .find() calls; could benefit from .lean(), .select() analysis
+API Documentation - No OpenAPI/Swagger docs
+Type Safety - No JSDoc or TypeScript despite ES6 modules
+
+Scripts added:
+npm run format - Format all server code
+npm run format:check - Check formatting
+
+npm run lint # Fix linting issues
+npm run lint:check # Check without fixing
+npm run format # Format code
+npm run format:check # Check formatting
+
+npm run server # Dev mode (existing)
+npm run start # Production (existing)
+
+Google's Crawling Limitations
+Google can crawl SPAs now (supports JavaScript rendering)
+BUT it's slower and less reliable than static HTML
+Social media crawlers (Twitter, Facebook, LinkedIn) often can't execute JavaScript
+
+Industry Solutions:
+Server-Side Rendering (SSR): Next.js, Nuxt - regenerate pages server-side
+Static Pre-rendering: Build-time generation of public profile HTML
+Headless CMS + API: Separate backend serving pre-rendered HTML
+Service like Prerender.io: Middleware that pre-generates static snapshots
+Open Graph meta tags: What you already have (helps with social sharing, not Google indexing)
+
+What Works Best for Dating Apps:
+Prerender public profiles at build time or on-demand
+User toggle to opt-in/out of search indexing
+Separate /public/ route that serves static HTML
+Cloudflare Workers/Lambda to render HTML server-side
+
+My Recommendation for Woof Meetup:
+✅ Add visibility toggle in AccountSettings (good UX + privacy)
+✅ Already have proper Open Graph meta tags (good for social)
+⚠️ For true Google indexing: implement pre-rendering or consider Next.js migration
+
+❌ Not Yet Implemented:
+
+<!-- Referral tracking - Capture ?referral=userId on home page → store in user signup data  -->
+
+Referral analytics - Dashboard showing which dogs drove signups
+Social login (Google, Apple) - Only email signup works now
+Public profile Open Graph - /profile/userId pages need dynamic OG tags so the card shows when shared directly
+Referral rewards/incentives - Could gamify (credits, perks for sharing that converts)
+
+
+
+SSR Options (Beyond Next.js)
+1. Express + React (Current Stack)
+Render React components server-side using ReactDOMServer.renderToString()
+Ship HTML + inline JSON for hydration
+Pros: Full control, minimal setup, uses your existing Express server
+Cons: Manual implementation, more boilerplate
+Files: server/index.js already runs Express — just add SSR middleware
+2. Vite SSR
+Your client already uses Vite — it has built-in SSR support
+Render pages on server, send hydrated HTML
+Pros: Minimal config change, works with current build system
+Cons: Still requires Express route modifications
 
 **Last Updated**: November 2025

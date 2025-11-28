@@ -142,17 +142,53 @@ See [../shscripts/README.md](../shscripts/README.md) for utility scripts documen
 
 ### Common Issues
 
-**Can't start the server?**
+**Can't start the server?**  
 → See [DEVELOPMENT.md - Troubleshooting](./DEVELOPMENT.md#-troubleshooting)
 
-**Stripe webhooks not working?**
-→ Run `../shscripts/general/check-status.sh` and `../shscripts/stripe/fix-stripe-account.sh`
+**Stripe webhooks not working?**  
+→ Run: `../shscripts/stripe/fix-stripe-account.sh`  
+→ Check status: `../shscripts/general/check-status.sh`
 
-**Need to trigger deletions?**
-→ See [ADMIN_DELETION_GUIDE.md - Quick Start](./ADDITIONAL_DOCS/ADMIN_DELETION_GUIDE.md#-quick-start)
+**Code quality issues before committing?**  
+→ Run: `npm run lint:check` and `npm run format:check`  
+→ Auto-fix: `npm run lint` and `npm run format`
 
-**Deployment issues?**
+**E2E tests failing?**  
+→ Run: `npm run test:e2e:ui` for interactive debugging  
+→ Check: `npm run test:e2e:report` for detailed results
+
+**Need to trigger deletions?**  
+→ See [ADMIN_DELETION_GUIDE.md](./ADDITIONAL_DOCS/ADMIN_DELETION_GUIDE.md)
+
+**Deployment issues?**  
 → See [PRODUCTION.md - Troubleshooting](./PRODUCTION.md#-troubleshooting)
+
+---
+
+## 📋 Quick Reference
+
+### Environment Setup
+
+For complete environment variable setup, see:
+- **[DEVELOPMENT.md](./DEVELOPMENT.md#2-configure-environment-variables)** - Development variables
+- **[PRODUCTION.md](./PRODUCTION.md#-environment-variables)** - Production variables
+
+Key services to configure:
+- MongoDB Atlas (database)
+- Stripe (payments)
+- Cloudinary/AWS S3 (image storage)
+- Mailtrap (email service)
+- OpenAI API (content moderation)
+- Cloudflare Turnstile (CAPTCHA)
+- Sentry (error tracking)
+- Redis (optional, for distributed rate limiting)
+
+### Code Quality & Standards
+
+- Linting: `npm run lint` & `npm run lint:check`
+- Formatting: `npm run format` & `npm run format:check`
+- Testing: `npm run test:e2e` (Playwright)
+- See [CLAUDE.md](./CLAUDE.md) for full code standards
 
 ---
 

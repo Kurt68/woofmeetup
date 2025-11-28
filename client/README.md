@@ -27,19 +27,23 @@ Visit **http://localhost:5173** in your browser.
 
 ```bash
 # Development
-npm run dev              # Start Vite dev server
+npm run dev              # Start Vite dev server with HMR
 
 # Production
 npm run build            # Build optimized bundle
-npm run preview          # Preview production build
+npm run preview          # Preview production build locally
 
 # Code Quality
-npm run lint             # Run ESLint
-npm run lint:fix         # Fix linting issues
+npm run lint             # Run ESLint with max-warnings=0
 
-# Analysis
-npm run build:analyze    # Analyze bundle size
-npm run build:report     # Generate build report
+# Bundle Analysis
+npm run build:analyze    # Analyze bundle size with visualization
+npm run build:report     # Generate detailed build report
+```
+
+**Note:** Client linting is strict (max-warnings: 0). To fix common issues:
+```bash
+npm run lint -- --fix
 ```
 
 ## 📦 Tech Stack

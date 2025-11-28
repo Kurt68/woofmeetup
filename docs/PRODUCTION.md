@@ -33,10 +33,69 @@ Guide for deploying Woof Meetup to production.
 ### Code Preparation
 
 - [ ] All tests passing: `npm run test:e2e`
+- [ ] Linting passed: `npm run lint:check`
+- [ ] Formatting valid: `npm run format:check`
 - [ ] Build tested locally: `npm run build && npm start`
 - [ ] No console errors or warnings in production build
 - [ ] Sentry DSN added to client `.env`
 - [ ] All API endpoints tested with production-like data
+
+---
+
+## 📋 Code Quality Standards
+
+Before deployment, verify all code meets these standards:
+
+### Response Format
+
+All API responses must use standardized format (`server/utils/ApiResponse.js`):
+
+**Success Response:**
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "optional message",
+  "timestamp": "2025-01-28T...",
+  "pagination": { "page": 1, "limit": 20 }
+}
+```
+
+**Error Response:**
+```json
+{
+  "success": false,
+  "message": "User-friendly message",
+  "errors": { "field": "error details" },
+  "timestamp": "2025-01-28T..."
+}
+```
+
+### Error Handling
+
+All errors must use `AppError` with standardized codes (`server/constants/errorCodes.js`):
+
+```javascript
+import { AppError } from './utilities/AppError.js'
+import { ErrorCodes } from './constants/errorCodes.js'
+
+throw AppError.badRequest(ErrorCodes.AUTH_INVALID_CREDENTIALS, {
+  field: 'email',
+  reason: 'not_registered'
+})
+```
+
+### Code Standards Checklist
+
+- [ ] All errors use `AppError` with error codes
+- [ ] All responses use `ApiResponse` helper functions
+- [ ] No hardcoded error messages in code
+- [ ] No sensitive data in error responses
+- [ ] CSRF protection on state-changing endpoints
+- [ ] Rate limiting configured appropriately
+- [ ] Input validation on all endpoints
+- [ ] Database queries optimized with `.lean()` where applicable
+- [ ] No console.log in production code
 
 ---
 
