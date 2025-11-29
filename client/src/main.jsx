@@ -5,7 +5,12 @@ import './styles/index.css'
 import App from './App.jsx'
 import { ErrorBoundary, ErrorComponent } from './components/ui'
 import { fetchCsrfToken } from './services/csrfService.js'
-import { initializeGA } from './services/analyticsService.js'
+import {
+  initializeGA,
+  initializeFacebookPixel,
+  initializeGoogleAdsConversion,
+  trackUTMParameters,
+} from './services/analyticsService.js'
 
 // Initialize Sentry with dynamic import to avoid production build issues
 async function initializeSentry() {
@@ -70,6 +75,21 @@ async function startApp() {
   if (gaMeasurementId) {
     initializeGA(gaMeasurementId)
   }
+
+  // Initialize Facebook Pixel
+  const facebookPixelId = import.meta.env.VITE_FACEBOOK_PIXEL_ID
+  if (facebookPixelId) {
+    initializeFacebookPixel(facebookPixelId)
+  }
+
+  // Initialize Google Ads Conversion Tracking
+  const googleAdsConversionId = import.meta.env.VITE_GOOGLE_ADS_CONVERSION_ID
+  if (googleAdsConversionId) {
+    initializeGoogleAdsConversion(googleAdsConversionId)
+  }
+
+  // Track UTM parameters if present in URL
+  trackUTMParameters()
 
   // Register service worker for caching optimization
   if ('serviceWorker' in navigator && import.meta.env.PROD) {

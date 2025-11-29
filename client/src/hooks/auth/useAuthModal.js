@@ -9,7 +9,11 @@ import {
 } from '../../utilities/validators'
 import { useAuthStore } from '../../store/useAuthStore'
 import { ensureCsrfToken } from '../../services/csrfService'
-import { trackSignup, trackLogin } from '../../services/analyticsService'
+import {
+  trackSignup,
+  trackLogin,
+  trackSignupConversion,
+} from '../../services/analyticsService'
 
 const SERVER_URL =
   import.meta.env.MODE === 'development' ? 'http://localhost:8000' : ''
@@ -148,6 +152,7 @@ export const useAuthModal = (isSignUp, referralSource) => {
       if (isSignUp) {
         await signup(email, password, userName, referralSource)
         trackSignup('email')
+        trackSignupConversion()
         toast.success('Your profile is now public on Woof. You can change this anytime in Account Settings.', { duration: 6000 })
         navigate('/verify-email')
       } else {

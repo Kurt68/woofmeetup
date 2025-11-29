@@ -4,7 +4,10 @@ import axiosInstance from '../config/axiosInstance'
 import { useAuthStore } from './useAuthStore'
 import { getErrorMessage } from '../utilities/axiosUtils.js'
 import { ensureCsrfToken } from '../services/csrfService.js'
-import { trackMessageSent } from '../services/analyticsService.js'
+import {
+  trackMessageSent,
+  trackFirstMessageConversion,
+} from '../services/analyticsService.js'
 
 let reconnectHandler = null
 let imageUpdateHandler = null
@@ -88,6 +91,10 @@ export const useChatStore = create((set, get) => ({
         console.log('📨 Message added to state, new messages:', get().messages.length)
       }
       trackMessageSent(1)
+
+      if (messages.length === 0) {
+        trackFirstMessageConversion()
+      }
 
       // If image was sent, poll for image URL update as fallback
       if (messageData.imageBlob && newMessage._id) {

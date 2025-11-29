@@ -10,11 +10,12 @@ import '../pages/PublicProfile.css'
 
 const STORAGE_KEY = 'lastKnownCoordinates'
 const MONGODB_OBJECTID_REGEX = /^[0-9a-f]{24}$/i
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 const MAX_RETRIES = 1
 const REFETCH_TIMEOUT_MS = 5000
 
 const isValidUserId = (id) => {
-  return id && typeof id === 'string' && MONGODB_OBJECTID_REGEX.test(id)
+  return id && typeof id === 'string' && (MONGODB_OBJECTID_REGEX.test(id) || UUID_REGEX.test(id))
 }
 
 const isValidCoordinates = (coords) => {
