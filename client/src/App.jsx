@@ -54,6 +54,7 @@ const PricingPage = lazy(() => import('./pages/PricingPage'))
 const PaymentSuccess = lazy(() => import('./pages/PaymentSuccess'))
 const Home = lazy(() => import('./pages/Home'))
 const PublicProfile = lazy(() => import('./pages/PublicProfile'))
+const About = lazy(() => import('./pages/About'))
 
 const LocationTracker = () => {
   const location = useLocation()
@@ -121,6 +122,8 @@ const App = () => {
                 </ErrorBoundary>
               }
             />
+
+            <Route path="/about" element={<About />} />
 
             <Route path="/verify-email" element={<EmailVerification />} />
 

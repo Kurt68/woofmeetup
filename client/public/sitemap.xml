@@ -9,6 +9,13 @@
     <mobile:mobile/>
   </url>
   <url>
+    <loc>https://www.woofmeetup.com/about</loc>
+    <lastmod>2025-12-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <mobile:mobile/>
+  </url>
+  <url>
     <loc>https://www.woofmeetup.com/forgot-password</loc>
     <lastmod>2025-11-19</lastmod>
     <changefreq>never</changefreq>
