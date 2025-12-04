@@ -340,3 +340,8 @@ Pros: Minimal config change, works with current build system
 Cons: Still requires Express route modifications
 
 **Last Updated**: November 2025
+
+
+
+Fix message about public profile appearing after signing up and before verify email.
+Fix onboarding form/edit form UI
