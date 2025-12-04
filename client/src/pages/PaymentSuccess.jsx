@@ -32,7 +32,7 @@ const PaymentSuccess = () => {
               response.data.data.user.messageCredits
             )
             trackPaymentCompleted(0, 'completed')
-            trackPaymentConversion(0)
+            trackPaymentConversion(0, 'USD', sessionId)
           }
         } catch (error) {
           console.error('⚠️ Failed to refresh user data:', error.message)

@@ -238,7 +238,9 @@ export const trackFirstMessageConversion = () => {
   }
 }
 
-export const trackPaymentConversion = (amount, currency = 'USD') => {
+export const trackPaymentConversion = (amount, currency = 'USD', transactionId = null) => {
+  const txnId = transactionId || `${Date.now()}`
+
   trackConversion('payment_completed', {
     value: amount,
     currency: currency,
@@ -253,7 +255,7 @@ export const trackPaymentConversion = (amount, currency = 'USD') => {
 
   if (window.gtag) {
     window.gtag('event', 'purchase', {
-      transaction_id: `${Date.now()}`,
+      transaction_id: txnId,
       value: amount,
       currency: currency,
     })
@@ -273,6 +275,8 @@ export const trackAddToCartConversion = (plan, credits, price) => {
 
   if (window.gtag) {
     window.gtag('event', 'add_to_cart', {
+      value: price,
+      currency: 'USD',
       items: [
         {
           item_id: credits,
