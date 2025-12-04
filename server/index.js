@@ -89,9 +89,8 @@ app.use(
           "'self'",
           "'unsafe-eval'",
           'https://challenges.cloudflare.com',
-          // Enzuzo external script (used for privacy policy, terms of service, and cookie policy)
-          // SECURITY: Consider using SRI (Subresource Integrity) hashes if Enzuzo provides them
-          // Format: 'https://app.enzuzo.com/scripts/ sha384-<hash>'
+          'https://www.googletagmanager.com',
+          'https://connect.facebook.net',
           'https://app.enzuzo.com/scripts/',
         ],
         frameSrc: ["'self'", 'https://challenges.cloudflare.com'],
@@ -100,6 +99,10 @@ app.use(
           'https://challenges.cloudflare.com',
           'https://app.enzuzo.com',
           'https://o4510116371038208.ingest.us.sentry.io',
+          'https://www.googletagmanager.com',
+          'https://www.google-analytics.com',
+          'https://googleads.g.doubleclick.net',
+          'https://graph.facebook.com',
         ],
         imgSrc: [
           "'self'",
@@ -108,6 +111,10 @@ app.use(
           'https://res.cloudinary.com',
           'https://*.cloudfront.net',
           'https://challenges.cloudflare.com',
+          'https://www.googletagmanager.com',
+          'https://www.google-analytics.com',
+          'https://googleads.g.doubleclick.net',
+          'https://graph.facebook.com',
         ],
         // Allow inline styles - necessary for React apps with style={{}} inline styles
         styleSrc: [
