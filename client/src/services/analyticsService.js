@@ -87,7 +87,7 @@ export const trackEvent = (eventName, eventData = {}) => {
 
 export const trackPageView = (path, title) => {
   if (window.gtag) {
-    window.gtag('config', undefined, {
+    window.gtag('event', 'page_view', {
       page_path: path,
       page_title: title,
     })
