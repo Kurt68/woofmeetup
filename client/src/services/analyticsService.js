@@ -239,7 +239,15 @@ export const trackFirstMessageConversion = () => {
 }
 
 export const trackPaymentConversion = (amount, currency = 'USD', transactionId = null) => {
-  const txnId = transactionId || `${Date.now()}`
+  const txnId = transactionId || `TXN-${Date.now()}`
+
+  if (import.meta.env.MODE === 'development') {
+    console.log('📊 [trackPaymentConversion] Tracking payment conversion:', {
+      amount,
+      currency,
+      transactionId: txnId,
+    })
+  }
 
   trackConversion('payment_completed', {
     value: amount,
@@ -256,7 +264,7 @@ export const trackPaymentConversion = (amount, currency = 'USD', transactionId =
   if (window.gtag) {
     window.gtag('event', 'purchase', {
       transaction_id: txnId,
-      value: amount,
+      value: amount || 0,
       currency: currency,
     })
   }

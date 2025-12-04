@@ -27,12 +27,13 @@ const PaymentSuccess = () => {
           const response = await axiosInstance.get('/api/auth/check-auth')
           if (response.data.data.user) {
             useAuthStore.setState({ user: response.data.data.user })
+            const creditsPurchased = response.data.data.user.messageCredits || 0
             console.log(
               '✅ User credits updated:',
-              response.data.data.user.messageCredits
+              creditsPurchased
             )
-            trackPaymentCompleted(0, 'completed')
-            trackPaymentConversion(0, 'USD', sessionId)
+            trackPaymentCompleted(creditsPurchased, 'completed')
+            trackPaymentConversion(creditsPurchased, 'USD', sessionId)
           }
         } catch (error) {
           console.error('⚠️ Failed to refresh user data:', error.message)
