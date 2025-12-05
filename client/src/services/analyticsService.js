@@ -65,9 +65,11 @@ export const initializeGoogleAdsConversion = (conversionId) => {
     return
   }
 
+  const accountId = conversionId.split('/')[0]
+
   const script = document.createElement('script')
   script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${conversionId}`
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${accountId}`
   document.head.appendChild(script)
 
   window.dataLayer = window.dataLayer || []
@@ -76,7 +78,7 @@ export const initializeGoogleAdsConversion = (conversionId) => {
   }
   window.gtag = gtag
   gtag('js', new Date())
-  gtag('config', conversionId)
+  gtag('config', accountId)
 }
 
 export const trackEvent = (eventName, eventData = {}) => {
