@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-hot-toast'
@@ -228,7 +228,7 @@ export const useAuthModal = (isSignUp, referralSource) => {
     }
   }
 
-  const handleTurnstileSuccess = (token) => {
+  const handleTurnstileSuccess = useCallback((token) => {
     setTurnstileError('')
 
     axios
@@ -246,13 +246,13 @@ export const useAuthModal = (isSignUp, referralSource) => {
           'Unable to verify. Please check your connection and try again.'
         )
       })
-  }
+  }, [])
 
-  const handleTurnstileError = () => {
+  const handleTurnstileError = useCallback(() => {
     setTurnstileError(
       'Security verification failed. Please refresh the page and try again.'
     )
-  }
+  }, [])
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value)

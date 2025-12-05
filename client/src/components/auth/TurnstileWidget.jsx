@@ -38,7 +38,11 @@ const TurnstileWidget = ({ siteKey, onSuccess, onError }) => {
 
     return () => {
       if (window.turnstile && currentWidget) {
-        window.turnstile.remove(currentWidget)
+        try {
+          window.turnstile.remove(currentWidget)
+        } catch (err) {
+          console.warn('Error removing turnstile widget:', err)
+        }
       }
     }
   }, [siteKey, onSuccess, onError, isDev])
