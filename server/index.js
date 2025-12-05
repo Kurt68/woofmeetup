@@ -99,6 +99,7 @@ app.use(
         ],
         scriptSrcElem: [
           "'self'",
+          'https://challenges.cloudflare.com',
           'https://www.googletagmanager.com',
           'https://www.gstatic.com',
           'https://googleads.g.doubleclick.net',
