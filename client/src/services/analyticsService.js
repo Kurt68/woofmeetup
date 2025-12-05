@@ -268,6 +268,34 @@ export const trackPaymentConversion = (amount, currency = 'USD', transactionId =
       currency: currency,
     })
   }
+
+  fireGoogleAdsConversion(amount, currency)
+}
+
+export const fireGoogleAdsConversion = (value = 1, currency = 'USD') => {
+  if (window.gtag) {
+    const conversionId = import.meta.env.VITE_GOOGLE_ADS_CONVERSION_ID
+    if (!conversionId) {
+      if (import.meta.env.MODE === 'development') {
+        console.warn('⚠️ Google Ads Conversion ID not configured')
+      }
+      return
+    }
+
+    if (import.meta.env.MODE === 'development') {
+      console.log('🎯 [fireGoogleAdsConversion] Firing conversion pixel:', {
+        conversionId,
+        value,
+        currency,
+      })
+    }
+
+    window.gtag('event', 'conversion', {
+      allow_custom_parameters: true,
+      value: value,
+      currency: currency,
+    })
+  }
 }
 
 export const trackAddToCartConversion = (plan, credits, price) => {
