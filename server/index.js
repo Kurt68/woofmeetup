@@ -117,6 +117,7 @@ app.use(
           'https://googleads.g.doubleclick.net',
           'https://www.googleadservices.com',
           'https://www.google.com/ccm/collect',
+          'https://www.google.com/ccm/form-data',
           'https://www.google.com/pagead/1p-conversion/',
           'https://graph.facebook.com',
           'https://www.facebook.com',
