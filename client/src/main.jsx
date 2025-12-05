@@ -82,11 +82,7 @@ async function startApp() {
     initializeFacebookPixel(facebookPixelId)
   }
 
-  // Initialize Google Ads Conversion Tracking
-  const googleAdsConversionId = import.meta.env.VITE_GOOGLE_ADS_CONVERSION_ID
-  if (googleAdsConversionId) {
-    initializeGoogleAdsConversion(googleAdsConversionId)
-  }
+
 
   // Track UTM parameters if present in URL
   trackUTMParameters()
