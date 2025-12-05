@@ -269,10 +269,10 @@ export const trackPaymentConversion = (amount, currency = 'USD', transactionId =
     })
   }
 
-  fireGoogleAdsConversion(amount, currency)
+  fireGoogleAdsConversion(amount, currency, txnId)
 }
 
-export const fireGoogleAdsConversion = (value = 1, currency = 'USD') => {
+export const fireGoogleAdsConversion = (value = 1, currency = 'USD', transactionId = '') => {
   if (window.gtag) {
     const conversionId = import.meta.env.VITE_GOOGLE_ADS_CONVERSION_ID
     if (!conversionId) {
@@ -284,16 +284,18 @@ export const fireGoogleAdsConversion = (value = 1, currency = 'USD') => {
 
     if (import.meta.env.MODE === 'development') {
       console.log('🎯 [fireGoogleAdsConversion] Firing conversion pixel:', {
-        conversionId,
+        send_to: conversionId,
         value,
         currency,
+        transaction_id: transactionId,
       })
     }
 
     window.gtag('event', 'conversion', {
-      allow_custom_parameters: true,
+      send_to: conversionId,
       value: value,
       currency: currency,
+      transaction_id: transactionId,
     })
   }
 }
