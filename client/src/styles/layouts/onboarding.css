@@ -182,7 +182,7 @@
   margin: 0 0 10px 0;
   width: 100%;
   box-sizing: border-box;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-md);
   border-radius: 0;
   font-family: inherit;
   resize: none;
