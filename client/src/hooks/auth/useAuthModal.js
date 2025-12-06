@@ -153,7 +153,6 @@ export const useAuthModal = (isSignUp, referralSource) => {
         await signup(email, password, userName, referralSource)
         trackSignup('email')
         trackSignupConversion()
-        toast.success('Your profile is now public on Woof. You can change this anytime in Account Settings.', { duration: 6000 })
         navigate('/verify-email')
       } else {
         if (import.meta.env.MODE === 'development') {

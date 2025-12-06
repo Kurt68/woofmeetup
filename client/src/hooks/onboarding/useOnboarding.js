@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
 import axiosInstance from '../../config/axiosInstance'
 import { useAuthStore } from '../../store/useAuthStore'
 import { formatSentenceCase } from '../../utilities/formatSentenceCase'
@@ -188,6 +189,7 @@ export const useOnboarding = () => {
       const success = response.status === 200
       if (success) {
         trackDogProfileCreated()
+        toast.success('Your profile is now public on Woof. You can change this anytime in Account Settings.', { duration: 6000 })
         // Navigate immediately to dashboard
         navigate('/dashboard')
 
