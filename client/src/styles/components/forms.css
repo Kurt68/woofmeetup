@@ -93,7 +93,7 @@
 /* Onboarding specific input styling */
 .auth-modal.onboarding input[type='text'],
 .auth-modal.onboarding input[type='number'] {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
 }
 
 /* Input hover state */

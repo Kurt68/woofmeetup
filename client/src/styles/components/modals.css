@@ -499,8 +499,8 @@
     margin: 1rem auto;
 
     & img {
-      width: 100px;
-      height: 100px;
+      width: 160px;
+      height: 160px;
       flex-shrink: 0;
       border-radius: 0;
       border: none;

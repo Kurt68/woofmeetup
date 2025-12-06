@@ -1,9 +1,6 @@
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { Upload, X, Loader, Check } from 'lucide-react'
-import {
-  sanitizeImageUrl,
-  sanitizeErrorMessage,
-} from '../../utilities/sanitizeUrl'
+import { sanitizeImageUrl, sanitizeErrorMessage } from '../../utilities/sanitizeUrl'
 
 /**
  * DogImageUploadSection - Dog photo upload with ML breed detection
@@ -131,7 +128,7 @@ const DogImageUploadSection = ({
         {isUploading && (
           <div className="upload-status uploading">
             <Loader className="spin" size={18} />
-            Analyzing your dog image...
+            Analyzing dog image...
           </div>
         )}
 
@@ -146,8 +143,7 @@ const DogImageUploadSection = ({
         {!imageURL && !showingCurrentImage && showCurrentImage && (
           <div className="upload-status warning" role="status">
             <p style={{ margin: 0, fontSize: '0.9em' }}>
-              Previous dog photo not available. Please upload a new photo or
-              select an existing one.
+              Previous dog photo not available. Please upload a new photo or select an existing one.
             </p>
           </div>
         )}
@@ -156,10 +152,7 @@ const DogImageUploadSection = ({
         {(imageURL || showingCurrentImage) && (
           <div className="image-preview dog-preview">
             <img
-              src={sanitizeImageUrl(
-                imageURL || currentImageUrl,
-                '/spinner.svg'
-              )}
+              src={sanitizeImageUrl(imageURL || currentImageUrl, '/spinner.svg')}
               alt="Dog preview for breed detection"
               loading="lazy"
               decoding="async"
@@ -172,9 +165,7 @@ const DogImageUploadSection = ({
                 <ul className="breed-items">
                   {dogBreeds.map((breed, index) => (
                     <li key={index} className="breed-item">
-                      <span className="breed-name">
-                        {breed.className.replace(/_/g, ' ')}
-                      </span>
+                      <span className="breed-name">{breed.className.replace(/_/g, ' ')}</span>
                       <span className="breed-probability">
                         {(breed.probability * 100).toFixed(0)}%
                       </span>
@@ -223,9 +214,7 @@ const DogImageUploadSection = ({
                   type="button"
                   onClick={handleUploadWithSuccess}
                   disabled={isUploading}
-                  className={`upload-button primary ${
-                    !isUploading ? 'bouncing' : ''
-                  }`}
+                  className={`upload-button primary ${!isUploading ? 'bouncing' : ''}`}
                 >
                   {isUploading ? 'Uploading...' : 'Upload Photo'}
                 </button>
@@ -238,7 +227,7 @@ const DogImageUploadSection = ({
                 className="upload-button secondary"
               >
                 <X size={16} />
-                {uploadSuccess ? 'Upload Different Photo' : 'Remove'}
+                {uploadSuccess ? 'Change Photo' : 'Remove'}
               </button>
             </div>
           ) : null}
