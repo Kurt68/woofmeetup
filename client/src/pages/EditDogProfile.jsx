@@ -4,6 +4,7 @@ import { PageHead } from '../components/PageHead'
 import axiosInstance from '../config/axiosInstance'
 import { Link, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import { formatSentenceCase } from '../utilities/formatSentenceCase'
 import { useAuthStore } from '../store/useAuthStore'
 import {
@@ -11,6 +12,7 @@ import {
   sanitizeImageUrl,
 } from '../utilities/sanitizeUrl'
 import { trackDogProfileUpdated } from '../services/analyticsService'
+import { compressImage } from '../utilities/compressImage'
 
 /**
  * EditDogProfile - Edit existing user profile with image previews
@@ -178,21 +180,25 @@ const EditDogProfile = () => {
     setDogImageError(null)
 
     try {
-      const form = new FormData()
-      form.append('image', dogImageFile)
+      toast.loading('Compressing image...', { id: 'compress-dog-edit' })
 
-      // SECURITY FIX: Authorization occurs via JWT token (sent automatically by axiosInstance)
-      // FormData text fields are not automatically parsed by multer, so we rely on JWT authentication
-      // Don't set Content-Type header manually - let axios set it with proper boundary
-      // Setting 'multipart/form-data' without boundary breaks multipart parsing on server
+      let uploadFile = dogImageFile
+      if (dogImageFile.type !== 'image/gif' && dogImageFile.type !== 'image/svg+xml') {
+        uploadFile = await compressImage(dogImageFile, 0.6)
+      }
+
+      const form = new FormData()
+      form.append('image', uploadFile)
+
+      toast.dismiss('compress-dog-edit')
       const response = await axiosInstance.put('/api/auth/image', form)
 
-      // Image uploaded successfully
       if (response.data?.data?.dogBreeds) {
         setDogBreeds(response.data.data.dogBreeds)
         setIsDogImageUploaded(true)
       }
     } catch (err) {
+      toast.dismiss('compress-dog-edit')
       const errorMessage =
         err.response?.data?.message ||
         err.message ||

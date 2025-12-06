@@ -5,6 +5,7 @@ import axiosInstance from '../../config/axiosInstance'
 import { useAuthStore } from '../../store/useAuthStore'
 import { formatSentenceCase } from '../../utilities/formatSentenceCase'
 import { trackDogProfileCreated } from '../../services/analyticsService'
+import { compressImage } from '../../utilities/compressImage'
 
 export const useOnboarding = () => {
   const { user, checkAuth } = useAuthStore()
@@ -76,23 +77,25 @@ export const useOnboarding = () => {
     setDogImageError(null)
 
     try {
-      const formData = new FormData()
-      formData.append('image', dogImageFile)
+      toast.loading('Compressing image...', { id: 'compress-dog' })
 
-      // SECURITY FIX: Authorization occurs via JWT token (sent automatically by axiosInstance)
-      // FormData text fields are not automatically parsed by multer, so we rely on JWT authentication
-      // Don't set Content-Type header manually - let axios set it with proper boundary
-      // Setting 'multipart/form-data' without boundary breaks multipart parsing on server
+      let uploadFile = dogImageFile
+      if (dogImageFile.type !== 'image/gif' && dogImageFile.type !== 'image/svg+xml') {
+        uploadFile = await compressImage(dogImageFile, 0.6)
+      }
+
+      const formData = new FormData()
+      formData.append('image', uploadFile)
+
+      toast.dismiss('compress-dog')
       const response = await axiosInstance.put('/api/auth/image', formData, {
-        timeout: 60000, // 60 second timeout for image upload with AI processing
+        timeout: 60000,
       })
 
-      // Capture dog breeds from response
       if (response.data?.data?.dogBreeds) {
         setDogBreeds(response.data.data.dogBreeds)
         setIsDogImageUploaded(true)
       } else {
-        // If no breeds detected, it's likely not a dog image
         const errorMsg =
           'Could not detect a dog in this image. Please upload a dog photo.'
         setDogImageError(errorMsg)
@@ -100,6 +103,7 @@ export const useOnboarding = () => {
         throw new Error(errorMsg)
       }
     } catch (error) {
+      toast.dismiss('compress-dog')
       const errorMessage =
         error.response?.data?.message ||
         error.message ||

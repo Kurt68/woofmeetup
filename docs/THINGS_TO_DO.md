@@ -324,24 +324,18 @@ Social login (Google, Apple) - Only email signup works now
 Public profile Open Graph - /profile/userId pages need dynamic OG tags so the card shows when shared directly
 Referral rewards/incentives - Could gamify (credits, perks for sharing that converts)
 
-
-
 SSR Options (Beyond Next.js)
+
 1. Express + React (Current Stack)
-Render React components server-side using ReactDOMServer.renderToString()
-Ship HTML + inline JSON for hydration
-Pros: Full control, minimal setup, uses your existing Express server
-Cons: Manual implementation, more boilerplate
-Files: server/index.js already runs Express — just add SSR middleware
+   Render React components server-side using ReactDOMServer.renderToString()
+   Ship HTML + inline JSON for hydration
+   Pros: Full control, minimal setup, uses your existing Express server
+   Cons: Manual implementation, more boilerplate
+   Files: server/index.js already runs Express — just add SSR middleware
 2. Vite SSR
-Your client already uses Vite — it has built-in SSR support
-Render pages on server, send hydrated HTML
-Pros: Minimal config change, works with current build system
-Cons: Still requires Express route modifications
+   Your client already uses Vite — it has built-in SSR support
+   Render pages on server, send hydrated HTML
+   Pros: Minimal config change, works with current build system
+   Cons: Still requires Express route modifications
 
 **Last Updated**: November 2025
-
-
-
-Fix message about public profile appearing after signing up and before verify email.
-Fix onboarding form/edit form UI

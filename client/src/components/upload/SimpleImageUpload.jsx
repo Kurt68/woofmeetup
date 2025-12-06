@@ -1,7 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
+import toast from 'react-hot-toast'
 import axiosInstance from '../../config/axiosInstance'
 import { Upload, X, Check, Loader } from 'lucide-react'
 import { sanitizeImageUrl, sanitizeErrorMessage } from '../../utilities/sanitizeUrl'
+import { compressImage } from '../../utilities/compressImage'
 
 /**
  * SimpleImageUpload - User profile/avatar image upload with content moderation
@@ -68,30 +70,34 @@ const SimpleImageUpload = ({
     }
 
     setIsUploading(true)
-    if (setParentIsUploading) setParentIsUploading(true) // Notify parent form that upload is starting
+    if (setParentIsUploading) setParentIsUploading(true)
     setUploadError(null)
 
     try {
-      const formData = new FormData()
-      formData.append('image', file)
+      toast.loading('Compressing image...', { id: 'compress-profile' })
 
-      // SECURITY FIX: Don't set Content-Type header manually - let axios set it with proper boundary
-      // Setting 'multipart/form-data' without boundary breaks multipart parsing on server
-      // NOTE: UserId is not sent in FormData because user is authenticated via JWT token (req.userId)
-      // Multer doesn't parse text fields from multipart/form-data by default, so we rely on JWT auth instead
+      let uploadFile = file
+      if (file.type !== 'image/gif' && file.type !== 'image/svg+xml') {
+        uploadFile = await compressImage(file, 0.6)
+      }
+
+      const formData = new FormData()
+      formData.append('image', uploadFile)
+
+      toast.dismiss('compress-profile')
       await axiosInstance.put('/api/auth/profile-image', formData)
 
       setUploadSuccess(true)
       if (setImageUploaded) setImageUploaded(true)
-      if (setImageSelected) setImageSelected(false) // Reset image selected state after successful upload
+      if (setImageSelected) setImageSelected(false)
     } catch (error) {
-      // Display server error message if available (includes nudity detection messages)
+      toast.dismiss('compress-profile')
       const errorMessage =
         error.response?.data?.message || 'Failed to upload image. Please try again.'
       setUploadError(sanitizeErrorMessage(errorMessage))
     } finally {
       setIsUploading(false)
-      if (setParentIsUploading) setParentIsUploading(false) // Notify parent form that upload is complete
+      if (setParentIsUploading) setParentIsUploading(false)
     }
   }, [file, setImageSelected, setImageUploaded, setParentIsUploading])
 
