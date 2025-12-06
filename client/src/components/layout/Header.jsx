@@ -34,7 +34,7 @@ const Header = ({ user }) => {
           loading="lazy"
           decoding="async"
         />
-        <h4>{user.dogs_name}</h4>
+        {/* <h4>{user.dogs_name}</h4> */}
       </div>
 
       {/* Hamburger Menu Button */}
