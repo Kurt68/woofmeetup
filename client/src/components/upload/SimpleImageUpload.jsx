@@ -1,10 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import axiosInstance from '../../config/axiosInstance'
 import { Upload, X, Check, Loader } from 'lucide-react'
-import {
-  sanitizeImageUrl,
-  sanitizeErrorMessage,
-} from '../../utilities/sanitizeUrl'
+import { sanitizeImageUrl, sanitizeErrorMessage } from '../../utilities/sanitizeUrl'
 
 /**
  * SimpleImageUpload - User profile/avatar image upload with content moderation
@@ -90,8 +87,7 @@ const SimpleImageUpload = ({
     } catch (error) {
       // Display server error message if available (includes nudity detection messages)
       const errorMessage =
-        error.response?.data?.message ||
-        'Failed to upload image. Please try again.'
+        error.response?.data?.message || 'Failed to upload image. Please try again.'
       setUploadError(sanitizeErrorMessage(errorMessage))
     } finally {
       setIsUploading(false)
@@ -181,8 +177,8 @@ const SimpleImageUpload = ({
         <strong>Upload Your Profile Photo</strong>
       </label>
       <p className="upload-description">
-        (Optional) Choose a clear photo of yourself to help other dog owners
-        recognize you during meetups.
+        (Optional) Choose a clear photo of yourself to help other dog owners recognize you during
+        meetups.
       </p>
       <div className="upload-container">
         {/* Hidden file input */}
@@ -203,19 +199,14 @@ const SimpleImageUpload = ({
         )}
 
         {uploadError && (
-          <div className="upload-status error">
-            {sanitizeErrorMessage(uploadError)}
-          </div>
+          <div className="upload-status error">{sanitizeErrorMessage(uploadError)}</div>
         )}
 
         {/* Image Preview */}
         {(imageURL || showingCurrentImage) && (
           <div className="image-preview">
             <img
-              src={sanitizeImageUrl(
-                imageURL || currentImageUrl,
-                '/spinner.svg'
-              )}
+              src={sanitizeImageUrl(imageURL || currentImageUrl, '/spinner.svg')}
               alt="Profile preview"
             />
           </div>
@@ -258,9 +249,7 @@ const SimpleImageUpload = ({
                   type="button"
                   onClick={handleImageUpload}
                   disabled={isUploading || !file}
-                  className={`upload-button primary ${
-                    !isUploading && file ? 'bouncing' : ''
-                  }`}
+                  className={`upload-button primary ${!isUploading && file ? 'bouncing' : ''}`}
                 >
                   {isUploading ? 'Uploading...' : 'Upload Photo'}
                 </button>
@@ -273,7 +262,7 @@ const SimpleImageUpload = ({
                 className="upload-button secondary"
               >
                 <X size={16} />
-                {uploadSuccess ? 'Upload New Photo' : 'Remove'}
+                {uploadSuccess ? 'Change Photo' : 'Remove'}
               </button>
             </div>
           )}
