@@ -16,7 +16,7 @@
 .onboarding form section {
   display: flex;
   flex-direction: column;
-  padding: var(--spacing-md-lg);
+  padding: var(--spacing-md);
   width: auto;
   text-align: start;
 }

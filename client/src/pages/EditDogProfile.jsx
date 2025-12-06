@@ -402,7 +402,7 @@ const EditDogProfile = () => {
               id="edit-dog-profile-heading"
               style={{
                 textAlign: 'center',
-                marginBottom: '20px',
+                marginBottom: '5px',
                 fontSize: '24px',
               }}
             >
