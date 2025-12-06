@@ -1,8 +1,4 @@
-const UserProfileSection = ({
-  formData,
-  handleChange,
-  userAboutError = '',
-}) => {
+const UserProfileSection = ({ formData, handleChange, userAboutError = '' }) => {
   return (
     <div className="user-profile-section">
       <label htmlFor="userAge">
@@ -32,7 +28,7 @@ const UserProfileSection = ({
       <textarea
         id="userAbout"
         name="userAbout"
-        placeholder="Tell others about yourself..."
+        placeholder="Tell others about yourself and your dogs personality. Such as their breed, temperment and what they like to do! For example play dates, walk buddy or exercise buddy..."
         value={formData.userAbout || ''}
         onChange={handleChange}
         style={{ height: '14rem' }}
