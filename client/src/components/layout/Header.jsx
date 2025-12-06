@@ -35,8 +35,6 @@ const Header = ({ user }) => {
           decoding="async"
         />
         <h4>{user.dogs_name}</h4>
-        {/* Message Credits Display */}
-        <MessageCreditsDisplay />
       </div>
 
       {/* Hamburger Menu Button */}
@@ -62,6 +60,9 @@ const Header = ({ user }) => {
             aria-hidden="true"
           ></div>
           <nav className="header-dropdown-menu" role="menu">
+            <div className="menu-credits-wrapper">
+              <MessageCreditsDisplay />
+            </div>
             <Link
               className="menu-item edit-dog-profile-link"
               to="/edit-profile"
