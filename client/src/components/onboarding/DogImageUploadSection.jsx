@@ -181,7 +181,7 @@ const DogImageUploadSection = ({
         {uploadSuccess && (
           <div className="upload-status success">
             <Check size={20} />
-            Dog photo uploaded successfully!
+            Photo Uploaded!
           </div>
         )}
 

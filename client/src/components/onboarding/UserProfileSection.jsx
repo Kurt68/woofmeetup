@@ -35,7 +35,7 @@ const UserProfileSection = ({
         placeholder="Tell others about yourself..."
         value={formData.userAbout || ''}
         onChange={handleChange}
-        style={{ height: '8rem' }}
+        style={{ height: '14rem' }}
         required={true}
       />
       {userAboutError && (
