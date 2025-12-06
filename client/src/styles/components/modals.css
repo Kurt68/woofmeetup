@@ -724,8 +724,8 @@
 
 .menu-credits-wrapper .credits-display .credits-text {
   font-weight: 500;
-  flex: 1;
-  min-width: 100%;
+  /* flex: 1;
+  min-width: 100%; */
 }
 
 .menu-credits-wrapper .credits-display .buy-credits-btn {
