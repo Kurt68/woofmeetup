@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import axiosInstance from '../../config/axiosInstance'
 import toast from 'react-hot-toast'
+import { trackLikeConversion } from '../../services/analyticsService'
 
 export const useLike = () => {
   const [liked, setLiked] = useState(false)
@@ -16,6 +17,7 @@ export const useLike = () => {
           duration: 4000,
           icon: false,
         })
+        trackLikeConversion()
         return true
       }
     } catch (error) {

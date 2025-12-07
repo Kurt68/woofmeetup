@@ -240,6 +240,31 @@ export const trackFirstMessageConversion = () => {
   }
 }
 
+export const trackLikeConversion = () => {
+  if (import.meta.env.MODE === 'development') {
+    console.log('💕 [trackLikeConversion] Tracking like conversion')
+  }
+
+  trackConversion('profile_liked', {
+    value: 1,
+  })
+
+  if (window.fbq) {
+    window.fbq('track', 'Interest', {
+      content_name: 'profile_liked',
+      content_category: 'engagement',
+    })
+  }
+
+  if (window.gtag) {
+    window.gtag('event', 'profile_liked', {
+      value: 1,
+    })
+  }
+
+  fireGoogleAdsConversion(1, 'USD', '')
+}
+
 export const trackPaymentConversion = (amount, currency = 'USD', transactionId = null) => {
   const txnId = transactionId || `TXN-${Date.now()}`
 
