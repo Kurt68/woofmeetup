@@ -6,23 +6,30 @@ export const initializeGA = (measurementId) => {
     return
   }
 
-  if (window.gtag) {
-    console.warn('⚠️ Google Analytics already initialized')
+  if (window._gaInitialized) {
     return
   }
 
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
-  document.head.appendChild(script)
+  const scriptId = `ga-script-${measurementId}`
+  if (!document.getElementById(scriptId)) {
+    const script = document.createElement('script')
+    script.id = scriptId
+    script.async = true
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
+    document.head.appendChild(script)
+  }
 
   window.dataLayer = window.dataLayer || []
-  function gtag() {
-    window.dataLayer.push(arguments)
+  if (!window.gtag) {
+    function gtag() {
+      window.dataLayer.push(arguments)
+    }
+    window.gtag = gtag
   }
-  window.gtag = gtag
-  gtag('js', new Date())
-  gtag('config', measurementId, {
+
+  window._gaInitialized = true
+  window.gtag('js', new Date())
+  window.gtag('config', measurementId, {
     page_path: window.location.pathname,
   })
 }
@@ -33,26 +40,31 @@ export const initializeFacebookPixel = (pixelId) => {
     return
   }
 
-  if (window.fbq) {
-    console.warn('⚠️ Facebook Pixel already initialized')
+  if (window._fbqInitialized) {
     return
   }
 
-  window.fbq = function() {
-    window.fbq.callMethod
-      ? window.fbq.callMethod.apply(window.fbq, arguments)
-      : window.fbq.queue.push(arguments)
+  if (!window.fbq) {
+    window.fbq = function() {
+      window.fbq.callMethod
+        ? window.fbq.callMethod.apply(window.fbq, arguments)
+        : window.fbq.queue.push(arguments)
+    }
+    window.fbq.push = window.fbq
+    window.fbq.loaded = true
+    window.fbq.version = '2.0'
+    window.fbq.queue = []
+
+    if (!document.getElementById('fb-pixel-script')) {
+      const script = document.createElement('script')
+      script.id = 'fb-pixel-script'
+      script.async = true
+      script.src = 'https://connect.facebook.net/en_US/fbevents.js'
+      document.head.appendChild(script)
+    }
   }
-  window.fbq.push = window.fbq
-  window.fbq.loaded = true
-  window.fbq.version = '2.0'
-  window.fbq.queue = []
 
-  const script = document.createElement('script')
-  script.async = true
-  script.src = 'https://connect.facebook.net/en_US/fbevents.js'
-  document.head.appendChild(script)
-
+  window._fbqInitialized = true
   window.fbq('init', pixelId)
   window.fbq('track', 'PageView')
 }
@@ -65,20 +77,32 @@ export const initializeGoogleAdsConversion = (conversionId) => {
     return
   }
 
-  const accountId = conversionId.split('/')[0]
-
-  const script = document.createElement('script')
-  script.async = true
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${accountId}`
-  document.head.appendChild(script)
-
-  window.dataLayer = window.dataLayer || []
-  function gtag() {
-    window.dataLayer.push(arguments)
+  if (window._googleAdsInitialized) {
+    return
   }
-  window.gtag = gtag
-  gtag('js', new Date())
-  gtag('config', accountId)
+
+  const accountId = conversionId.split('/')[0]
+  window.dataLayer = window.dataLayer || []
+
+  if (!window.gtag) {
+    const scriptId = `ga-script-ads-${accountId}`
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script')
+      script.id = scriptId
+      script.async = true
+      script.src = `https://www.googletagmanager.com/gtag/js?id=${accountId}`
+      document.head.appendChild(script)
+    }
+
+    function gtag() {
+      window.dataLayer.push(arguments)
+    }
+    window.gtag = gtag
+    window.gtag('js', new Date())
+  }
+
+  window._googleAdsInitialized = true
+  window.gtag('config', accountId)
 }
 
 export const trackEvent = (eventName, eventData = {}) => {
