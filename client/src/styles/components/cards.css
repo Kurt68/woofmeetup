@@ -60,7 +60,7 @@
 
 .caption {
   position: relative;
-  transform: translateY(clamp(6.3rem, 6.5vw, 6.6rem));
+  transform: translateY(clamp(6.6rem, 6.5vw, 6.6rem));
   user-select: none;
 
   & p,
