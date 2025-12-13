@@ -9,7 +9,7 @@ const About = () => {
   const authToken = cookies.token
 
   const handleClose = () => {
-    navigate(-1)
+    navigate('/')
   }
 
   return (
